@@ -14,12 +14,12 @@ public class Receiver {
 	private String currentGroup;
 	
 	//Constructor
-	public Receiver(WaveManager waveManager, String controlGroup){
+	public Receiver(WaveManager waveManager){
 		this.waveManager=waveManager;
 		try{
 			listener = new MulticastSocket(port);			
-			listener.joinGroup(InetAddress.getByName(controlGroup));
-			currentGroup = controlGroup;
+			listener.joinGroup(InetAddress.getByName(waveManager.controlGroup));
+			currentGroup = waveManager.controlGroup;
 		}catch(Exception e){
 			
 		}
@@ -50,9 +50,9 @@ public class Receiver {
 			String str = new String(message, 0, length);
 			String[] strings = str.split("/");
 			
-			System.out.println("Received message from CarID: "+strings[1]+" saying '"+strings[3]+"' from "+currentGroup);
+			System.out.println("Received message from CarID: "+strings[0]+" saying '"+strings[3]+"' from "+currentGroup);
 			
-			switchGroups(strings[0]);
+			switchGroups(strings[1]);
 		}catch(Exception e){
 			
 		}
