@@ -23,8 +23,8 @@ public class WaveManager {
 		speed = 20;
 		direction = checkDirection();
 		
-		breakService = new BreakService(this, CarID,controlGroup);
-		receiver = new Receiver(CarID,controlGroup);
+		breakService = new BreakService(this, controlGroup);
+		receiver = new Receiver(this, controlGroup);
 	}
 	
 	//Class Methods
