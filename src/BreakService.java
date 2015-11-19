@@ -3,8 +3,6 @@ public class BreakService extends Service{
 	//Class Variables
 	private WaveManager waveManager;
 	
-	//MyInfo
-	public int speedAdjustment;
 	
 	//Resources
 	private String controlGroup;
@@ -30,7 +28,7 @@ public class BreakService extends Service{
 	
 	public boolean checkBreak(int breakAmount){
 		if(breakAmount>5){
-			speedAdjustment = computeData(breakAmount);				
+			waveManager.speedAdjustment = computeData(breakAmount);				
 			return true;
 		}
 		
@@ -38,6 +36,7 @@ public class BreakService extends Service{
 	}
 	
 	private int computeData(int breakAmount){
+		int speedAdjustment;
 		if(breakAmount<25){
 			speedAdjustment = 5;
 		}else if(breakAmount<50){

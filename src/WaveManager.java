@@ -12,6 +12,8 @@ public class WaveManager {
 	private int breakAmount;
 	private String direction;
 	
+	public int speedAdjustment;
+	
 	//Resources
 	public String controlGroup = "230.0.0.1";
 	public String breakServiceGroup = "230.0.0.2";
