@@ -13,8 +13,8 @@ public class WaveManager {
 	private String direction;
 	
 	//Resources
-	private String controlGroup = "230.0.0.1";
-	private String breakServiceGroup = "230.0.0.2";
+	public String controlGroup = "230.0.0.1";
+	public String breakServiceGroup = "230.0.0.2";
 	
 	//Constructor
 	public WaveManager(){
@@ -23,8 +23,8 @@ public class WaveManager {
 		speed = 20;
 		direction = checkDirection();
 		
-		breakService = new BreakService(this, controlGroup);
-		receiver = new Receiver(this, controlGroup);
+		breakService = new BreakService(this);
+		receiver = new Receiver(this);
 	}
 	
 	//Class Methods
@@ -43,8 +43,9 @@ public class WaveManager {
 					breakService.sendServiceMessage(breakAmount,direction);
 					receiver.getPacket();
 					
+					//Wait 1 second
 					try{
-						TimeUnit.SECONDS.sleep(2);
+						TimeUnit.SECONDS.sleep(1);
 					}catch(Exception e){
 						
 					}

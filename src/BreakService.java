@@ -12,20 +12,20 @@ public class BreakService extends Service{
 	
 	
 	//Constructor
-	public BreakService(WaveManager waveManager, String controlGroup){
+	public BreakService(WaveManager waveManager){
 		super(waveManager);
 		this.waveManager = waveManager;
-		this.controlGroup = controlGroup;
+		this.controlGroup = waveManager.controlGroup;
 	}
 
 	//Class Methods
 	public void sendControlMessage(String serviceGroup){
-		sendMessage("Control", controlGroup, serviceGroup+"/"+waveManager.CarID+"/0/0");
+		sendMessage("Control", controlGroup, waveManager.CarID+"/"+serviceGroup+"/0/0");
 		this.serviceGroup = serviceGroup;
 	}
 	
 	public void sendServiceMessage(int breakAmount, String direction){
-		sendMessage("Service", serviceGroup, serviceGroup+"/"+waveManager.CarID+"/"+direction+"/"+breakAmount);
+		sendMessage("Service", serviceGroup, waveManager.CarID+"/"+serviceGroup+"/"+direction+"/"+breakAmount);
 	}
 	
 	public boolean checkBreak(int breakAmount){
