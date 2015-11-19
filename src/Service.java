@@ -6,7 +6,6 @@ public class Service {
 	//Class Variables7
 	private WaveManager waveManager;
 	private MulticastSocket sendingProcess;
-	private int port = 2222;
 	
 	//Constructor
 	public Service(WaveManager waveManager){
@@ -23,7 +22,7 @@ public class Service {
 		try{
 			//Preparing packet envelope
 			InetAddress InetDestination = InetAddress.getByName(serviceGroup);
-			DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetDestination, port);
+			DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetDestination, waveManager.port);
 			
 			//Send packet
 			sendingProcess.send(packet);

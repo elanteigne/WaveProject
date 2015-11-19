@@ -26,27 +26,25 @@ public class BreakService extends Service{
 		sendMessage("Service", serviceGroup, waveManager.CarID+"/"+serviceGroup+"/"+direction+"/"+breakAmount);
 	}
 	
+	//The check to see if I send
 	public boolean checkBreak(int breakAmount){
-		if(breakAmount>5){
-			waveManager.speedAdjustment = computeData(breakAmount);				
+		if(breakAmount>5){			
 			return true;
 		}
-		
 		return false;
 	}
 	
-	private int computeData(int breakAmount){
-		int speedAdjustment;
+	//Method to calculate speed adjustment based on received packets
+	public void computeData(int breakAmount){
 		if(breakAmount<25){
-			speedAdjustment = 5;
+			waveManager.speedAdjustment = 5;
 		}else if(breakAmount<50){
-			speedAdjustment = 20;				
+			waveManager.speedAdjustment = 20;				
 		}else if(breakAmount<75){
-			speedAdjustment = 40;				
+			waveManager.speedAdjustment = 40;				
 		}else{
-			speedAdjustment = 60;				
+			waveManager.speedAdjustment = 60;				
 		}
-		System.out.println("SpeedAdjustment '"+speedAdjustment+"'");
-		return speedAdjustment;
+		System.out.println("Calculated: SpeedAdjustment = '"+waveManager.speedAdjustment+"'");
 	}
 }

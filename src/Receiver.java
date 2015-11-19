@@ -5,19 +5,18 @@ import java.net.MulticastSocket;
 public class Receiver {
 	//Class Variables
 	private WaveManager waveManager;
+	private BreakService breakService;
 	private MulticastSocket listener;
-	
-	//MyInfo
-	private int port = 2222;
 	
 	//Resources
 	private String currentGroup;
 	
 	//Constructor
-	public Receiver(WaveManager waveManager){
+	public Receiver(WaveManager waveManager, BreakService breakService){
 		this.waveManager=waveManager;
+		this.breakService=breakService;
 		try{
-			listener = new MulticastSocket(port);			
+			listener = new MulticastSocket(waveManager.port);			
 			listener.joinGroup(InetAddress.getByName(waveManager.controlGroup));
 			currentGroup = waveManager.controlGroup;
 		}catch(Exception e){
@@ -30,6 +29,7 @@ public class Receiver {
 		try{		
 			listener.joinGroup(InetAddress.getByName(group));
 			currentGroup = group;
+			System.out.println("Switched to group "+currentGroup);
 			
 		}catch(Exception e){
 			
@@ -50,9 +50,17 @@ public class Receiver {
 			String str = new String(message, 0, length);
 			String[] strings = str.split("/");
 			
-			System.out.println("Received message from CarID: "+strings[0]+" saying '"+strings[3]+"' from "+currentGroup);
 			
-			switchGroups(strings[1]);
+			
+			if(strings[1].equals(waveManager.breakServiceGroup)&&currentGroup.equals(waveManager.breakServiceGroup)){
+				System.out.println("Received message from CarID: "+strings[0]+" saying '"+strings[3]+"' from "+currentGroup);
+				breakService.computeData(Integer.parseInt(strings[3]));
+				
+			}else{
+				switchGroups(strings[1]);
+				System.out.println("Received message from CarID: "+strings[0]+" advertising '"+strings[1]+"'");
+			}
+			
 		}catch(Exception e){
 			
 		}

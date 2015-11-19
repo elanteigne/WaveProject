@@ -15,6 +15,7 @@ public class WaveManager {
 	public int speedAdjustment;
 	
 	//Resources
+	public int port = 2222;
 	public String controlGroup = "230.0.0.1";
 	public String breakServiceGroup = "230.0.0.2";
 	
@@ -26,7 +27,7 @@ public class WaveManager {
 		direction = checkDirection();
 		
 		breakService = new BreakService(this);
-		receiver = new Receiver(this);
+		receiver = new Receiver(this,breakService);
 	}
 	
 	//Class Methods
