@@ -4,18 +4,18 @@ import java.net.MulticastSocket;
 
 public class Receiver {
 	//Class Variables
+	private WaveManager waveManager;
 	private MulticastSocket listener;
 	
 	//MyInfo
-	private String carID;
 	private int port = 2222;
 	
 	//Resources
 	private String currentGroup;
 	
 	//Constructor
-	public Receiver(String carID, String controlGroup){
-		this.carID=carID;
+	public Receiver(WaveManager waveManager, String controlGroup){
+		this.waveManager=waveManager;
 		try{
 			listener = new MulticastSocket(port);			
 			listener.joinGroup(InetAddress.getByName(controlGroup));

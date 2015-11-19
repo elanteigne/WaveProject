@@ -12,7 +12,7 @@ public class BreakService extends Service{
 	
 	
 	//Constructor
-	public BreakService(WaveManager waveManager, String carID, String controlGroup){
+	public BreakService(WaveManager waveManager, String controlGroup){
 		super(waveManager);
 		this.waveManager = waveManager;
 		this.controlGroup = controlGroup;
