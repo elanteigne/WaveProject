@@ -3,7 +3,7 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 
 public class Service {
-	//Class Variables7
+	//Class Variables
 	private WaveManager waveManager;
 	private MulticastSocket sendingProcess;
 	

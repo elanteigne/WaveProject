@@ -50,16 +50,18 @@ public class Receiver {
 			String str = new String(message, 0, length);
 			String[] strings = str.split("/");
 			
-			
-			
-			if(strings[1].equals(waveManager.breakServiceGroup)&&currentGroup.equals(waveManager.breakServiceGroup)){
-				System.out.println("Received message from CarID: "+strings[0]+" saying '"+strings[3]+"' from "+currentGroup);
-				breakService.computeData(Integer.parseInt(strings[3]));
-				
+			if(!(strings[0].equals(waveManager.CarID))){
+				if(strings[1].equals(waveManager.breakServiceGroup)&&currentGroup.equals(waveManager.breakServiceGroup)){
+					System.out.println("Received message from CarID: "+strings[0]+" saying '"+strings[3]+"' from "+currentGroup);
+					breakService.computeData(Integer.parseInt(strings[3]));
+					
+				}else{
+					System.out.println("Received message from CarID: "+strings[0]+" advertising '"+strings[1]+"'");
+				}
 			}else{
-				switchGroups(strings[1]);
-				System.out.println("Received message from CarID: "+strings[0]+" advertising '"+strings[1]+"'");
+				System.out.println("Omitted own message");
 			}
+			switchGroups(strings[1]);
 			
 		}catch(Exception e){
 			
