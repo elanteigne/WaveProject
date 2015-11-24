@@ -54,7 +54,6 @@ public class Receiver {
 				if(strings[1].equals(waveManager.breakServiceGroup)&&currentGroup.equals(waveManager.breakServiceGroup)){
 					System.out.println("Received message from CarID: "+strings[0]+" saying '"+strings[3]+"' from "+currentGroup);
 					breakService.computeData(Integer.parseInt(strings[3]));
-					
 				}else{
 					System.out.println("Received message from CarID: "+strings[0]+" advertising '"+strings[1]+"'");
 				}
