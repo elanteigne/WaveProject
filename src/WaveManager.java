@@ -5,7 +5,7 @@ public class WaveManager {
 	private static WaveManager waveManager;
 	private BreakService breakService;
 	private Receiver receiver;
-	
+
 	//MyInfo
 	public String CarID;
 	private int speed;
