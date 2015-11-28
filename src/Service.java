@@ -23,13 +23,15 @@ public class Service {
 			//Preparing packet envelope
 			InetAddress InetDestination = InetAddress.getByName(fromGroup);
 			
-			String message = waveManager.CarID+"/"+toGroup+"/"+waveManager.direction+"/"+data;
+			int hopCount = 0;
+			
+			String message = waveManager.CarID+"/"+hopCount+"/"+toGroup+"/"+waveManager.direction+"/"+data;
 			DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetDestination, waveManager.port);
 			
 			//Send packet
 			sendingProcess.send(packet);
 			
-			String output = "Sent "+packetType+" message to "+toGroup+": "+message;
+			String output = "Sent "+packetType+" message to "+fromGroup+": "+message;
 			System.out.println(output);
 		}catch(Exception e){
 			

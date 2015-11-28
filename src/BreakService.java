@@ -33,7 +33,9 @@ public class BreakService extends Service{
 	}
 	
 	//Method to calculate speed adjustment based on received packets
-	public void computeData(int breakAmount){
+	public void computeData(String data){
+		int breakAmount = Integer.parseInt(data);
+		
 		if(breakAmount<25){
 			waveManager.speedAdjustment = 5;
 		}else if(breakAmount<50){
