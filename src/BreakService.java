@@ -1,17 +1,25 @@
 
 public class BreakService extends Service{
-	//Class Variables	
-
+	//Class Variables
+	private WaveManager waveManager;
+	
+	
+	//Resources
+	private String controlGroup;
+	private String serviceGroup;
+	
+	
 	//Constructor
 	public BreakService(WaveManager waveManager){
-		super(waveManager);	
-		this.serviceGroup = waveManager.breakServiceGroup;
+		super(waveManager);
+		this.waveManager = waveManager;
+		this.controlGroup = waveManager.controlGroup;
 	}
 
 	//Class Methods
 	public void sendControlMessage(String serviceGroup){
 		sendMessage("Control", controlGroup, waveManager.CarID+"/"+serviceGroup+"/0/0");
-		
+		this.serviceGroup = serviceGroup;
 	}
 	
 	public void sendServiceMessage(int breakAmount, String direction){
