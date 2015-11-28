@@ -3,11 +3,9 @@ public class BreakService extends Service{
 	//Class Variables
 	private WaveManager waveManager;
 	
-	
 	//Resources
 	private String controlGroup;
 	private String serviceGroup;
-	
 	
 	//Constructor
 	public BreakService(WaveManager waveManager){
@@ -18,12 +16,12 @@ public class BreakService extends Service{
 
 	//Class Methods
 	public void sendControlMessage(String serviceGroup){
-		sendMessage("Control", controlGroup, waveManager.CarID+"/"+serviceGroup+"/0/0");
+		sendMessage("Control", controlGroup, serviceGroup, "0/0");
 		this.serviceGroup = serviceGroup;
 	}
 	
 	public void sendServiceMessage(int breakAmount, String direction){
-		sendMessage("Service", serviceGroup, waveManager.CarID+"/"+serviceGroup+"/"+direction+"/"+breakAmount);
+		sendMessage("Service", serviceGroup, serviceGroup, ""+breakAmount);
 	}
 	
 	//The check to see if I send

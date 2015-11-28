@@ -10,8 +10,8 @@ public class WaveManager {
 	public String CarID;
 	private int speed;
 	private int breakAmount;
-	private String direction;
 	
+	public String direction;
 	public int speedAdjustment;
 	
 	//Resources

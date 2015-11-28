@@ -56,10 +56,15 @@ public class Receiver {
 					breakService.computeData(Integer.parseInt(strings[3]));
 				}else{
 					System.out.println("Received message from CarID: "+strings[0]+" advertising '"+strings[1]+"'");
+					
+					//Will go here once we have multiple cars
+					//switchGroups(strings[1]);
 				}
 			}else{
 				System.out.println("Omitted own message");
 			}
+			
+			//Will move to line 60 once we have multiple cars
 			switchGroups(strings[1]);
 			
 		}catch(Exception e){
