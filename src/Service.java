@@ -6,13 +6,10 @@ public class Service {
 	//Class Variables
 	private WaveManager waveManager;
 	private MulticastSocket sendingProcess;
-	private String controlGroup;
-	private String serviceGroup;
+	
 	//Constructor
 	public Service(WaveManager waveManager){
 		this.waveManager=waveManager;
-		this.controlGroup = waveManager.controlGroup;
-
 		try{
 			sendingProcess = new MulticastSocket();
 		}catch(Exception e){
