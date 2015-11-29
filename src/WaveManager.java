@@ -8,16 +8,17 @@ public class WaveManager {
 	
 	//MyInfo
 	public String CarID;
-	private int speed;
-	private int breakAmount;
-	
+	public int speed;
+	public int breakAmount;
 	public String direction;
+	
+	//Calculated values
 	public int speedAdjustment;
 	
 	//Resources
 	public int port = 2222;
 	public String controlGroup = "230.0.0.1";
-	public String breakServiceGroup = "230.0.0.2";
+	public int messageIDglobal = 0;
 	
 	//Constructor
 	public WaveManager(){
@@ -38,12 +39,12 @@ public class WaveManager {
 	
 	public void run(){
 		if(speed>10){
-			if(breakService.checkBreak(breakAmount)){
-				breakService.sendControlMessage(breakServiceGroup);
+			if(breakService.checkBreak()){
+				breakService.sendControlMessage();
 				receiver.getPacket();
 				
-				while(breakService.checkBreak(breakAmount)){
-					breakService.sendServiceMessage(breakAmount,direction);
+				while(breakService.checkBreak()){
+					breakService.sendServiceMessage();
 					receiver.getPacket();
 					
 					//Wait 1 second
