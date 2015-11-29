@@ -38,6 +38,6 @@ public class BreakService extends Service{
 		}else{
 			waveManager.speedAdjustment = 60;				
 		}
-		//System.out.println("Calculated: SpeedAdjustment = '"+waveManager.speedAdjustment+"'");
+		System.out.println("Calculated: SpeedAdjustment = '"+waveManager.speedAdjustment+"'");
 	}
 }

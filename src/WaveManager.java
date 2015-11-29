@@ -49,7 +49,7 @@ public class WaveManager {
 					
 					//Wait 1 second
 					try{
-						TimeUnit.SECONDS.sleep(1);
+						TimeUnit.MILLISECONDS.sleep(100);
 					}catch(Exception e){
 						
 					}

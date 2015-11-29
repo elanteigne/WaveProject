@@ -12,7 +12,7 @@ public class Receiver {
 	private MulticastSocket passAlongProcess;
 	private String currentGroup;
 	private int maxHopCount = 5;
-	private String[] recentlyReceivedMessages= {"", "", ""};
+	private String[] recentlyReceivedMessages= {"", "", "", "", "", "", "", "", "", ""};
 	
 	//Constructor
 	public Receiver(WaveManager waveManager, BreakService breakService){
@@ -55,18 +55,15 @@ public class Receiver {
 					
 					if(messageGroup.equals(breakService.serviceGroup)&&currentGroup.equals(breakService.serviceGroup)){
 						System.out.println("Received messageID '"+messageID+"' from CarID '"+fromCarID+"' going direction '"+direction+"' saying '"+strings[5]+"' from "+currentGroup+" with hopCount = "+hopCount);
-						
-						//Add PackedID to recently received packets
-						
 						breakService.computeData(strings[5]);
 
-						if(hopCount < maxHopCount){
-							passAlongMessage(fromCarID, messageID, hopCount, strings[5]);
-						}
 					}else{
 						System.out.println("Received messageID '"+messageID+"' from CarID '"+fromCarID+"' advertising '"+messageGroup+"'");
-						
 						//Once we have multiple cars, add group to a list of group to listen to
+					}
+					
+					if(hopCount < maxHopCount){
+						passAlongMessage(fromCarID, messageID, hopCount, strings[5]);
 					}
 				}
 			}else{
@@ -96,7 +93,7 @@ public class Receiver {
 			//Send packet
 			passAlongProcess.send(packet);
 		
-			System.out.println("Passed messageID '"+messageID+"' along to "+currentGroup+": "+message);
+			System.out.println("Passed messageID '"+messageID+"' along on "+currentGroup+" with hopCount '"+hopCount+"': "+message);
 		}catch(Exception e){
 			
 		}
@@ -106,20 +103,21 @@ public class Receiver {
 		try{		
 			listener.joinGroup(InetAddress.getByName(group));
 			currentGroup = group;
-			//System.out.println("Switched to group "+currentGroup);
+			System.out.println("Switched to group "+currentGroup);
 		}catch(Exception e){
 			
 		}
 	}
 	
 	private boolean receivedMessagePreviously(String messageID){
-		for(int i=0; i<3; i++){
+		for(int i=0; i<10; i++){
 			if(recentlyReceivedMessages[i].equals(messageID)){
+				System.out.println("Message '"+messageID+"' has recently been received. Omit message");
 				return false;
 			}
 		}
 		
-		for(int i=2; i>0; i--){
+		for(int i=9; i>0; i--){
 			recentlyReceivedMessages[i] = recentlyReceivedMessages[i-1];
 		}
 		recentlyReceivedMessages[0] = messageID;	
