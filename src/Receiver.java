@@ -59,7 +59,7 @@ public class Receiver {
 
 					}else{
 						System.out.println("Received messageID '"+messageID+"' from CarID '"+fromCarID+"' advertising '"+messageGroup+"'");
-						//Once we have multiple cars, add group to a list of group to listen to
+						//Once we have multiple cars, add group to a list of group to listen to and switch groups there
 					}
 					
 					if(hopCount < maxHopCount){
@@ -70,7 +70,7 @@ public class Receiver {
 				System.out.println("Omitted own message");
 			}
 			
-			//Will move to line 73 once we have multiple cars
+			//Once we have more services the switch group sound be done cyclicly
 			switchGroups(messageGroup);
 			
 		}catch(Exception e){
