@@ -12,7 +12,9 @@ public class Receiver {
 	private MulticastSocket passAlongProcess;
 	private String currentGroup;
 	private int maxHopCount = 5;
-	private String[] recentlyReceivedMessages= {"", "", "", "", "", "", "", "", "", ""};
+	private String[][] recentlyReceivedMessages={{"", "",}, {"", "",}, {"", "",}, 
+												{"", "",}, {"", "",}, {"", "",}, 
+												{"", "",}, {"", "",}};
 	
 	//Constructor
 	public Receiver(WaveManager waveManager, BreakService breakService){
@@ -51,7 +53,7 @@ public class Receiver {
 			//if(!(strings[0].equals(waveManager.CarID))){
 			if(fromCarID.equals(waveManager.CarID)){
 				
-				if(receivedMessagePreviously(messageID)){
+				if(receivedMessagePreviously(fromCarID, messageID)){
 					
 					if(messageGroup.equals(breakService.serviceGroup)&&currentGroup.equals(breakService.serviceGroup)){
 						System.out.println("Received messageID '"+messageID+"' from CarID '"+fromCarID+"' going direction '"+direction+"' saying '"+strings[5]+"' from "+currentGroup+" with hopCount = "+hopCount);
@@ -109,18 +111,20 @@ public class Receiver {
 		}
 	}
 	
-	private boolean receivedMessagePreviously(String messageID){
-		for(int i=0; i<10; i++){
-			if(recentlyReceivedMessages[i].equals(messageID)){
-				System.out.println("Message '"+messageID+"' has recently been received. Omit message");
+	private boolean receivedMessagePreviously(String fromCarID, String messageID){
+		for(int i=0; i<8; i++){
+			if(recentlyReceivedMessages[i][0].equals(fromCarID)&&recentlyReceivedMessages[i][1].equals(messageID)){
+				System.out.println("Message '"+messageID+"' from carID '"+fromCarID+"' has recently been received. Omit message");
 				return false;
 			}
 		}
 		
-		for(int i=9; i>0; i--){
-			recentlyReceivedMessages[i] = recentlyReceivedMessages[i-1];
+		for(int i=7; i>0; i--){
+			recentlyReceivedMessages[i][0] = recentlyReceivedMessages[i-1][0];
+			recentlyReceivedMessages[i][1] = recentlyReceivedMessages[i-1][1];
 		}
-		recentlyReceivedMessages[0] = messageID;	
+		recentlyReceivedMessages[0][0] = fromCarID;	
+		recentlyReceivedMessages[0][1] = messageID;	
 		return true;
 	}
 }
