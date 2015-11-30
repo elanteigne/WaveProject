@@ -1,6 +1,8 @@
+import java.util.concurrent.TimeUnit;
 
-public class BreakService extends Service{
+public class BreakService extends Service implements Runnable{
 	//Class Variables
+	private Thread breakServiceThread;
 	public String serviceGroup = "230.0.0.2";
 	
 	//Constructor
@@ -9,6 +11,32 @@ public class BreakService extends Service{
 	}
 
 	//Class Methods
+	public void start(){
+		if(breakServiceThread==null){
+			breakServiceThread = new Thread(this, "BreakService");
+			breakServiceThread.start();
+		}
+	}
+	
+	public void run(){
+		while(waveManager.speed>10){
+			if(checkBreak()){
+				sendControlMessage();
+				//Wait
+				try{ TimeUnit.MILLISECONDS.sleep(500); } catch(Exception e){ }
+				
+				int count = 0;
+				while(count<5){
+					sendServiceMessage();
+					
+					//Wait
+					try{ TimeUnit.MILLISECONDS.sleep(500); } catch(Exception e){ }
+					count++;
+				}
+			}
+		}
+	}
+	
 	public void sendControlMessage(){
 		sendMessage("Control", waveManager.controlGroup, serviceGroup, "0/0");
 	}

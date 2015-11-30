@@ -1,4 +1,5 @@
 import java.util.concurrent.TimeUnit;
+@SuppressWarnings("unused")
 
 public class WaveManager {
 	//Class Variables
@@ -29,42 +30,21 @@ public class WaveManager {
 		
 		breakService = new BreakService(this);
 		receiver = new Receiver(this,breakService);
+		
+		receiver.start();
+		breakService.start();
 	}
 	
 	//Class Methods
 	public static void main(String[] args){
 		waveManager = new WaveManager();
-		waveManager.run();
-	}
-	
-	public void run(){
-		if(speed>10){
-			if(breakService.checkBreak()){
-				breakService.sendControlMessage();
-				receiver.getPacket();
-				
-				while(breakService.checkBreak()){
-					breakService.sendServiceMessage();
-					receiver.getPacket();
-					
-					//Wait 1 second
-					try{
-						TimeUnit.MILLISECONDS.sleep(100);
-					}catch(Exception e){
-						
-					}
-				}
-			}
-		}
 	}
 	
 	public String checkVinNumber(){
-		//Check Vin Number
 		return "000-000-000-001";
 	}
 	
 	public String checkDirection(){
-		//Check compass
 		return "N";
 	}
 }

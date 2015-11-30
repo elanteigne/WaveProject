@@ -25,7 +25,7 @@ public class Service {
 			
 			int hopCount = 0;
 			
-			String message = waveManager.CarID+"/"+waveManager.messageIDglobal+"/"+hopCount+"/"+toGroup+"/"+waveManager.direction+"/"+data;
+			String message = waveManager.CarID+"/"+waveManager.messageIDglobal+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.direction+"/"+data;
 			DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetDestination, waveManager.port);
 			
 			//Send packet
