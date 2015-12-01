@@ -5,6 +5,8 @@ public class WaveManager {
 	private static WaveManager waveManager;
 	private BreakService breakService;
 	private Receiver receiver;
+	private EmergencyService emergencyService;
+	
 
 	//MyInfo
 	public String CarID;
@@ -28,6 +30,10 @@ public class WaveManager {
 		
 		breakService = new BreakService(this);
 		receiver = new Receiver(this,breakService);
+		emergencyService = new EmergencyService(this);
+		
+		//How can we make the "main" listen to all services?
+		//receiver = new Receiver(this,emergencyService)
 	}
 	
 	//Class Methods
