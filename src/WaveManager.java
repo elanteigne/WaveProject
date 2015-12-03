@@ -5,9 +5,11 @@ public class WaveManager {
 	//Class Variables
 	private static WaveManager waveManager;
 	private BreakService breakService;
+	private EmergencyService emergencyService;
 	private Receiver receiver;
 	
 	//MyInfo
+	private String vehicleType;
 	public String CarID;
 	public int speed;
 	public int breakAmount;
@@ -24,6 +26,7 @@ public class WaveManager {
 	//Constructor
 	public WaveManager(){
 		CarID = checkVinNumber();
+		vehicleType = checkVehicleType();
 		breakAmount = 100;
 		speed = 20;
 		direction = checkDirection();
@@ -33,6 +36,11 @@ public class WaveManager {
 		
 		receiver.start();
 		breakService.start();
+		
+		if(vehicleType.equals("Emergency")){
+			emergencyService = new EmergencyService(this);
+			emergencyService.start();
+		}
 	}
 	
 	//Class Methods
@@ -42,6 +50,11 @@ public class WaveManager {
 	
 	public String checkVinNumber(){
 		return "000-000-000-001";
+	}
+	
+	public String checkVehicleType(){
+		return "Emergency";
+		//return "Civilian";
 	}
 	
 	public String checkDirection(){
