@@ -10,11 +10,18 @@ public class Receiver implements Runnable{
 	private MulticastSocket listener;
 	
 	//Resources
+<<<<<<< HEAD
 	public int timeout = 1;
 	private MulticastSocket passAlongProcess;
 	private String currentGroup;
 	private int maxHopCount = 5;
 	private String[] groupsToListenTo={"230.0.0.1", "", ""};
+=======
+	private MulticastSocket passAlongProcess;
+	private String currentGroup;
+	private int maxHopCount = 5;
+	private String[] groupsToListenTo={"230.0.0.1", ""};
+>>>>>>> refs/remotes/origin/Adam
 	private String[][] recentlyReceivedMessages={{"", "",}, {"", "",}, {"", "",}, {"", "",},
 												{"", "",}, {"", "",}, {"", "",}, {"", "",}};
 	
@@ -42,10 +49,15 @@ public class Receiver implements Runnable{
 	public void run(){
 		while(true){
 			for(int i=0; i<groupsToListenTo.length; i++){
+<<<<<<< HEAD
 				if(!(groupsToListenTo[i].equals(""))){
 					switchGroups(groupsToListenTo[i]);
 					getPacket();
 				}
+=======
+				switchGroups(groupsToListenTo[i]);
+				getPacket();
+>>>>>>> refs/remotes/origin/Adam
 			}
 		}
 	}
@@ -56,7 +68,11 @@ public class Receiver implements Runnable{
 			DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 			
 			try{
+<<<<<<< HEAD
 				listener.setSoTimeout(timeout);
+=======
+				listener.setSoTimeout(100);
+>>>>>>> refs/remotes/origin/Adam
 				listener.receive(packet);
 			}catch(Exception e){
 				
@@ -91,7 +107,10 @@ public class Receiver implements Runnable{
 						boolean alreadyListening = false;
 						for(int i=0; i<groupsToListenTo.length; i++){
 							if(groupsToListenTo[i].equals(messageGroup)){
+<<<<<<< HEAD
 								System.out.println("Group '"+messageGroup+"' is already in groupsToListenTo");
+=======
+>>>>>>> refs/remotes/origin/Adam
 								alreadyListening = true;
 							}
 						}

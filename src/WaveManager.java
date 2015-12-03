@@ -1,6 +1,8 @@
 import java.util.concurrent.TimeUnit;
 @SuppressWarnings("unused")
 
+@SuppressWarnings("unused")
+
 public class WaveManager {
 	//Class Variables
 	private static WaveManager waveManager;
@@ -36,11 +38,14 @@ public class WaveManager {
 		
 		receiver.start();
 		breakService.start();
+<<<<<<< HEAD
 		
 		if(vehicleType.equals("Emergency")){
 			emergencyService = new EmergencyService(this);
 			emergencyService.start();
 		}
+=======
+>>>>>>> refs/remotes/origin/Adam
 	}
 	
 	//Class Methods
