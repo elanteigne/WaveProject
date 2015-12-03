@@ -1,10 +1,13 @@
-
 import java.util.concurrent.TimeUnit;
 
 public class BreakService extends Service implements Runnable{
-	//Class Variables
+	//Objects
 	private Thread breakServiceThread;
-	public String serviceGroup = "230.0.0.2";
+	
+	//Resources
+	public int delay = 500;
+	public String serviceGroup = "230.0.0.3";
+	public int messageID = 0;
 	
 	//Constructor
 	public BreakService(WaveManager waveManager){
@@ -24,14 +27,16 @@ public class BreakService extends Service implements Runnable{
 			if(checkBreak()){
 				sendControlMessage();
 				//Wait
-				try{ TimeUnit.MILLISECONDS.sleep(500); } catch(Exception e){ }
+				try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
+
 				
 				int count = 0;
 				while(count<5){
 					sendServiceMessage();
 					
 					//Wait
-					try{ TimeUnit.MILLISECONDS.sleep(500); } catch(Exception e){ }
+					try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
+
 					count++;
 				}
 			}
@@ -39,11 +44,13 @@ public class BreakService extends Service implements Runnable{
 	}
 	
 	public void sendControlMessage(){
-		sendMessage("Control", waveManager.controlGroup, serviceGroup, "0/0");
+		sendMessage("Control", messageID, waveManager.controlGroup, serviceGroup, "0/0");
+		 messageID++;
 	}
 	
 	public void sendServiceMessage(){
-		sendMessage("Service", serviceGroup, serviceGroup, ""+waveManager.breakAmount);
+		sendMessage("Service", messageID, serviceGroup, serviceGroup, ""+waveManager.breakAmount);
+		 messageID++;
 	}
 	
 	//The check to see if I send
@@ -60,13 +67,14 @@ public class BreakService extends Service implements Runnable{
 		
 		if(breakAmount<25){
 			waveManager.speedAdjustment = 5;
-		}else if(breakAmount<50){
-			waveManager.speedAdjustment = 20;				
-		}else if(breakAmount<75){
-			waveManager.speedAdjustment = 40;				
+		}else if(breakAmount>25 && breakAmount<50){
+			waveManager.speedAdjustment = 20;
+		}else if(breakAmount>50 && breakAmount<75){
+			waveManager.speedAdjustment = 40;		
 		}else{
 			waveManager.speedAdjustment = 60;				
 		}
+		
 		System.out.println("Calculated: SpeedAdjustment = '"+waveManager.speedAdjustment+"'");
 	}
 }
