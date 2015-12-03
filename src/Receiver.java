@@ -14,7 +14,7 @@ public class Receiver implements Runnable{
 	private MulticastSocket passAlongProcess;
 	private String currentGroup;
 	private int maxHopCount = 5;
-	private String[] groupsToListenTo={"230.0.0.1", ""};
+	private String[] groupsToListenTo={"230.0.0.1", "", ""};
 	private String[][] recentlyReceivedMessages={{"", "",}, {"", "",}, {"", "",}, {"", "",},
 												{"", "",}, {"", "",}, {"", "",}, {"", "",}};
 	
@@ -42,8 +42,10 @@ public class Receiver implements Runnable{
 	public void run(){
 		while(true){
 			for(int i=0; i<groupsToListenTo.length; i++){
-				switchGroups(groupsToListenTo[i]);
-				getPacket();
+				if(!(groupsToListenTo[i].equals(""))){
+					switchGroups(groupsToListenTo[i]);
+					getPacket();
+				}
 			}
 		}
 	}

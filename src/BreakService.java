@@ -5,7 +5,7 @@ public class BreakService extends Service implements Runnable{
 	private Thread breakServiceThread;
 	public String serviceGroup = "230.0.0.2";
 	
-	public int delay = 2;
+	public int delay = 3;
 	
 	//Constructor
 	public BreakService(WaveManager waveManager){
@@ -61,13 +61,14 @@ public class BreakService extends Service implements Runnable{
 		
 		if(breakAmount<25){
 			waveManager.speedAdjustment = 5;
-		}else if(breakAmount<50){
-			waveManager.speedAdjustment = 20;				
-		}else if(breakAmount<75){
-			waveManager.speedAdjustment = 40;				
+		}else if(breakAmount>25 && breakAmount<50){
+			waveManager.speedAdjustment = 20;
+		}else if(breakAmount>50 && breakAmount<75){
+			waveManager.speedAdjustment = 40;		
 		}else{
 			waveManager.speedAdjustment = 60;				
 		}
+		
 		System.out.println("Calculated: SpeedAdjustment = '"+waveManager.speedAdjustment+"'");
 	}
 }
