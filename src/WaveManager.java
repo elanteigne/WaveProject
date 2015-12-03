@@ -1,8 +1,6 @@
 import java.util.concurrent.TimeUnit;
 @SuppressWarnings("unused")
 
-@SuppressWarnings("unused")
-
 public class WaveManager {
 	//Class Variables
 	private static WaveManager waveManager;
@@ -12,6 +10,7 @@ public class WaveManager {
 	
 	//MyInfo
 	private String vehicleType;
+	public boolean sirensOn;
 	public String CarID;
 	public int speed;
 	public int breakAmount;
@@ -34,18 +33,19 @@ public class WaveManager {
 		direction = checkDirection();
 		
 		breakService = new BreakService(this);
-		receiver = new Receiver(this,breakService);
-		
-		receiver.start();
-		breakService.start();
-<<<<<<< HEAD
 		
 		if(vehicleType.equals("Emergency")){
 			emergencyService = new EmergencyService(this);
+			sirensOn = true;
+		}
+		
+		receiver = new Receiver(this,breakService, emergencyService);
+		
+		receiver.start();
+		breakService.start();
+		if(vehicleType.equals("Emergency")){
 			emergencyService.start();
 		}
-=======
->>>>>>> refs/remotes/origin/Adam
 	}
 	
 	//Class Methods

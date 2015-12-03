@@ -7,28 +7,23 @@ public class Receiver implements Runnable{
 	private Thread receiverThread;
 	private WaveManager waveManager;
 	private BreakService breakService;
+	private EmergencyService emergencyService;
 	private MulticastSocket listener;
 	
 	//Resources
-<<<<<<< HEAD
 	public int timeout = 1;
 	private MulticastSocket passAlongProcess;
 	private String currentGroup;
 	private int maxHopCount = 5;
 	private String[] groupsToListenTo={"230.0.0.1", "", ""};
-=======
-	private MulticastSocket passAlongProcess;
-	private String currentGroup;
-	private int maxHopCount = 5;
-	private String[] groupsToListenTo={"230.0.0.1", ""};
->>>>>>> refs/remotes/origin/Adam
 	private String[][] recentlyReceivedMessages={{"", "",}, {"", "",}, {"", "",}, {"", "",},
 												{"", "",}, {"", "",}, {"", "",}, {"", "",}};
 	
 	//Constructor
-	public Receiver(WaveManager waveManager, BreakService breakService){
+	public Receiver(WaveManager waveManager, BreakService breakService, EmergencyService emergencyService){
 		this.waveManager=waveManager;
 		this.breakService=breakService;
+		this.emergencyService=emergencyService;
 		try{
 			listener = new MulticastSocket(waveManager.port);			
 			listener.joinGroup(InetAddress.getByName(waveManager.controlGroup));
@@ -49,15 +44,10 @@ public class Receiver implements Runnable{
 	public void run(){
 		while(true){
 			for(int i=0; i<groupsToListenTo.length; i++){
-<<<<<<< HEAD
 				if(!(groupsToListenTo[i].equals(""))){
 					switchGroups(groupsToListenTo[i]);
 					getPacket();
 				}
-=======
-				switchGroups(groupsToListenTo[i]);
-				getPacket();
->>>>>>> refs/remotes/origin/Adam
 			}
 		}
 	}
@@ -68,11 +58,7 @@ public class Receiver implements Runnable{
 			DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 			
 			try{
-<<<<<<< HEAD
 				listener.setSoTimeout(timeout);
-=======
-				listener.setSoTimeout(100);
->>>>>>> refs/remotes/origin/Adam
 				listener.receive(packet);
 			}catch(Exception e){
 				
@@ -94,30 +80,26 @@ public class Receiver implements Runnable{
 			//Commented for testing purposes
 			//if(!(strings[0].equals(waveManager.CarID))){
 			if(fromCarID.equals(waveManager.CarID)){
-				
 				if(receivedMessagePreviously(fromCarID, messageID)){
-					
 					if(fromGroup.equals(breakService.serviceGroup)){
 						System.out.println("Received messageID '"+messageID+"' on channel '"+fromGroup+"' from CarID '"+fromCarID+"' going direction '"+direction+"' saying '"+strings[6]+"' from "+currentGroup+" with hopCount = "+hopCount);
 						breakService.computeData(strings[6]);
-
+					}else if(fromGroup.equals(emergencyService.serviceGroup)){
+						System.out.println("Received messageID '"+messageID+"' on channel '"+fromGroup+"' from CarID '"+fromCarID+"' going direction '"+direction+"' saying '"+strings[6]+"' from "+currentGroup+" with hopCount = "+hopCount);
+						emergencyService.computeData();
 					}else{
 						System.out.println("Received messageID '"+messageID+"' on channel '"+fromGroup+"' from CarID '"+fromCarID+"' advertising '"+messageGroup+"'");
 						
 						boolean alreadyListening = false;
 						for(int i=0; i<groupsToListenTo.length; i++){
 							if(groupsToListenTo[i].equals(messageGroup)){
-<<<<<<< HEAD
 								System.out.println("Group '"+messageGroup+"' is already in groupsToListenTo");
-=======
->>>>>>> refs/remotes/origin/Adam
 								alreadyListening = true;
 							}
 						}
 						if(!alreadyListening){
 							groupsToListenTo[1] = messageGroup;
 							System.out.println("Added '"+messageGroup+"' to groupsToListenTo");
-							
 						}
 					}
 					
@@ -158,11 +140,11 @@ public class Receiver implements Runnable{
 	public void switchGroups(String group){
 		try{
 			listener.joinGroup(InetAddress.getByName(group));
+			currentGroup = group;
 			System.out.println("Switched to group "+currentGroup);
 		}catch(Exception e){
 			
 		}
-		currentGroup = group;
 	}
 	
 	private boolean receivedMessagePreviously(String fromCarID, String messageID){

@@ -1,19 +1,11 @@
 import java.util.concurrent.TimeUnit;
 
-<<<<<<< HEAD
-=======
-import java.util.concurrent.TimeUnit;
-
->>>>>>> refs/remotes/origin/Adam
 public class BreakService extends Service implements Runnable{
 	//Class Variables
 	private Thread breakServiceThread;
 	public String serviceGroup = "230.0.0.2";
-<<<<<<< HEAD
 	
-	public int delay = 3;
-=======
->>>>>>> refs/remotes/origin/Adam
+	public int delay = 500;
 	
 	//Constructor
 	public BreakService(WaveManager waveManager){
@@ -33,22 +25,16 @@ public class BreakService extends Service implements Runnable{
 			if(checkBreak()){
 				sendControlMessage();
 				//Wait
-<<<<<<< HEAD
 				try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
-=======
-				try{ TimeUnit.MILLISECONDS.sleep(500); } catch(Exception e){ }
->>>>>>> refs/remotes/origin/Adam
+
 				
 				int count = 0;
 				while(count<5){
 					sendServiceMessage();
 					
 					//Wait
-<<<<<<< HEAD
 					try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
-=======
-					try{ TimeUnit.MILLISECONDS.sleep(500); } catch(Exception e){ }
->>>>>>> refs/remotes/origin/Adam
+
 					count++;
 				}
 			}
