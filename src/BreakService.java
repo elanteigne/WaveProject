@@ -5,6 +5,8 @@ public class BreakService extends Service implements Runnable{
 	private Thread breakServiceThread;
 	public String serviceGroup = "230.0.0.2";
 	
+	public int delay = 2;
+	
 	//Constructor
 	public BreakService(WaveManager waveManager){
 		super(waveManager);
@@ -23,14 +25,14 @@ public class BreakService extends Service implements Runnable{
 			if(checkBreak()){
 				sendControlMessage();
 				//Wait
-				try{ TimeUnit.MILLISECONDS.sleep(500); } catch(Exception e){ }
+				try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
 				
 				int count = 0;
 				while(count<5){
 					sendServiceMessage();
 					
 					//Wait
-					try{ TimeUnit.MILLISECONDS.sleep(500); } catch(Exception e){ }
+					try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
 					count++;
 				}
 			}

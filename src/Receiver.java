@@ -10,6 +10,7 @@ public class Receiver implements Runnable{
 	private MulticastSocket listener;
 	
 	//Resources
+	public int timeout = 1;
 	private MulticastSocket passAlongProcess;
 	private String currentGroup;
 	private int maxHopCount = 5;
@@ -53,7 +54,7 @@ public class Receiver implements Runnable{
 			DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 			
 			try{
-				listener.setSoTimeout(100);
+				listener.setSoTimeout(timeout);
 				listener.receive(packet);
 			}catch(Exception e){
 				
@@ -88,6 +89,7 @@ public class Receiver implements Runnable{
 						boolean alreadyListening = false;
 						for(int i=0; i<groupsToListenTo.length; i++){
 							if(groupsToListenTo[i].equals(messageGroup)){
+								System.out.println("Group '"+messageGroup+"' is already in groupsToListenTo");
 								alreadyListening = true;
 							}
 						}
