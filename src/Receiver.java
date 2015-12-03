@@ -3,21 +3,21 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 
 public class Receiver implements Runnable{
-	//Class Variables
+	//Object
 	private Thread receiverThread;
 	private WaveManager waveManager;
 	private BreakService breakService;
 	private EmergencyService emergencyService;
 	private MulticastSocket listener;
+	private MulticastSocket passAlongProcess;
 	
 	//Resources
 	public int timeout = 1;
-	private MulticastSocket passAlongProcess;
 	private String currentGroup;
 	private int maxHopCount = 5;
 	private String[] groupsToListenTo={"230.0.0.1", "", ""};
-	private String[][] recentlyReceivedMessages={{"", "",}, {"", "",}, {"", "",}, {"", "",},
-												{"", "",}, {"", "",}, {"", "",}, {"", "",}};
+	private String[][] recentlyReceivedMessages={{"", "", ""}, {"", "", ""}, {"", "", ""}, {"", "", ""},
+												{"", "", ""}, {"", "", ""}, {"", "", ""}, {"", "", ""}};
 	
 	//Constructor
 	public Receiver(WaveManager waveManager, BreakService breakService, EmergencyService emergencyService){
@@ -80,7 +80,7 @@ public class Receiver implements Runnable{
 			//Commented for testing purposes
 			//if(!(strings[0].equals(waveManager.CarID))){
 			if(fromCarID.equals(waveManager.CarID)){
-				if(receivedMessagePreviously(fromCarID, messageID)){
+				if(receivedMessagePreviously(fromCarID, messageID, messageGroup)){
 					if(fromGroup.equals(breakService.serviceGroup)){
 						System.out.println("Received messageID '"+messageID+"' on channel '"+fromGroup+"' from CarID '"+fromCarID+"' going direction '"+direction+"' saying '"+strings[6]+"' from "+currentGroup+" with hopCount = "+hopCount);
 						breakService.computeData(strings[6]);
@@ -104,7 +104,7 @@ public class Receiver implements Runnable{
 					}
 					
 					if(hopCount < maxHopCount){
-						passAlongMessage(fromCarID, messageID, hopCount, messageGroup, strings[5]);
+						passAlongMessage(fromCarID, fromGroup, messageID, hopCount, messageGroup, strings[5]);
 					}
 				}
 			}else{
@@ -115,8 +115,17 @@ public class Receiver implements Runnable{
 			
 		}		
 	}
+	
+	public void switchGroups(String group){
+		try{
+			listener.joinGroup(InetAddress.getByName(group));
+		}catch(Exception e){
+			
+		}
+		currentGroup = group;
+	}
 
-	private void passAlongMessage(String fromCarID, String messageID, int hopCount, String messageGroup, String data){
+	private void passAlongMessage(String fromCarID, String fromGroup, String messageID, int hopCount, String messageGroup, String data){
 		try{
 			passAlongProcess = new MulticastSocket();
 			
@@ -125,32 +134,22 @@ public class Receiver implements Runnable{
 			//Preparing packet envelope
 			InetAddress InetDestination = InetAddress.getByName(currentGroup);
 			
-			String message = fromCarID+"/"+messageID+"/"+currentGroup+"/"+hopCount+"/"+messageGroup+"/"+waveManager.direction+"/"+data;
+			String message = fromCarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+messageGroup+"/"+waveManager.direction+"/"+data;
 			DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetDestination, waveManager.port);
 			
 			//Send packet
 			passAlongProcess.send(packet);
 		
-			System.out.println("Passed messageID '"+messageID+"' along on "+currentGroup+" with hopCount '"+hopCount+"': "+message);
+			System.out.println("Passed messageID '"+messageID+"' along on "+fromGroup+" with hopCount '"+hopCount+"': "+message);
 		}catch(Exception e){
 			
 		}
 	}
 	
-	public void switchGroups(String group){
-		try{
-			listener.joinGroup(InetAddress.getByName(group));
-			currentGroup = group;
-			System.out.println("Switched to group "+currentGroup);
-		}catch(Exception e){
-			
-		}
-	}
-	
-	private boolean receivedMessagePreviously(String fromCarID, String messageID){
+	private boolean receivedMessagePreviously(String fromCarID, String messageID, String fromGroup){
 		for(int i=0; i<8; i++){
-			if(recentlyReceivedMessages[i][0].equals(fromCarID)&&recentlyReceivedMessages[i][1].equals(messageID)){
-				System.out.println("Message '"+messageID+"' from carID '"+fromCarID+"' has recently been received. Omit message");
+			if(recentlyReceivedMessages[i][0].equals(fromCarID)&&recentlyReceivedMessages[i][1].equals(messageID)&&recentlyReceivedMessages[i][2].equals(fromGroup)){
+				System.out.println("Message '"+messageID+"' from carID '"+fromCarID+"' on service channel '"+fromGroup+"' has recently been received. Omit message");
 				return false;
 			}
 		}
@@ -158,9 +157,11 @@ public class Receiver implements Runnable{
 		for(int i=7; i>0; i--){
 			recentlyReceivedMessages[i][0] = recentlyReceivedMessages[i-1][0];
 			recentlyReceivedMessages[i][1] = recentlyReceivedMessages[i-1][1];
+			recentlyReceivedMessages[i][2] = recentlyReceivedMessages[i-1][2];
 		}
 		recentlyReceivedMessages[0][0] = fromCarID;	
 		recentlyReceivedMessages[0][1] = messageID;	
+		recentlyReceivedMessages[0][2] = fromGroup;	
 		return true;
 	}
 }

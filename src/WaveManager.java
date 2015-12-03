@@ -2,7 +2,7 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("unused")
 
 public class WaveManager {
-	//Class Variables
+	//Objects
 	private static WaveManager waveManager;
 	private BreakService breakService;
 	private EmergencyService emergencyService;
@@ -22,7 +22,6 @@ public class WaveManager {
 	//Resources
 	public int port = 2222;
 	public String controlGroup = "230.0.0.1";
-	public int messageIDglobal = 0;
 	
 	//Constructor
 	public WaveManager(){

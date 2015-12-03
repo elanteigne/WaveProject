@@ -6,7 +6,8 @@ public class EmergencyService extends Service implements Runnable {
 	
 	//Resources
 	public int delay = 500;
-	public String serviceGroup = "230.0.0.3";
+	public int messageID = 0;
+	public String serviceGroup = "230.0.0.2";
 	
 	//Constructor
 	public EmergencyService(WaveManager waveManager){
@@ -22,11 +23,13 @@ public class EmergencyService extends Service implements Runnable {
 	}
 	
 	public void sendControlMessage(){
-		sendMessage("Control", waveManager.controlGroup, serviceGroup, "0/0");
+		sendMessage("Control", messageID, waveManager.controlGroup, serviceGroup, "0/0");
+		 messageID++;
 	}
 	
 	public void sendServiceMessage(){
-		sendMessage("Service", serviceGroup, serviceGroup, "");
+		sendMessage("Service", messageID, serviceGroup, serviceGroup, "");
+		 messageID++;
 	}
 	
 	//The check to see if I send
