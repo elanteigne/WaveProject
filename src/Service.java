@@ -4,7 +4,7 @@ import java.net.MulticastSocket;
 
 public class Service {
 	//Class Variables
-	private WaveManager waveManager;
+	public WaveManager waveManager;
 	private MulticastSocket sendingProcess;
 	
 	//Constructor
@@ -18,16 +18,21 @@ public class Service {
 	}
 	
 	//Class Methods
-	public void sendMessage(String type, String serviceGroup, String message){
+	public void sendMessage(String packetType, String fromGroup, String toGroup, String data){
 		try{
 			//Preparing packet envelope
-			InetAddress InetDestination = InetAddress.getByName(serviceGroup);
+			InetAddress InetDestination = InetAddress.getByName(fromGroup);
+			
+			int hopCount = 0;
+			
+			String message = waveManager.CarID+"/"+waveManager.messageIDglobal+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.direction+"/"+data;
 			DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetDestination, waveManager.port);
 			
 			//Send packet
 			sendingProcess.send(packet);
+			waveManager.messageIDglobal++;
 			
-			String output = "Sent "+type+" message to "+serviceGroup+": "+message;
+			String output = "Sent "+packetType+" message to "+fromGroup+": "+message;
 			System.out.println(output);
 		}catch(Exception e){
 			

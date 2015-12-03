@@ -1,29 +1,31 @@
 
-public class EmergencyService extends Service {
+	public class EmergencyService extends Service implements Runnable {
 		//Class Variables
 			private WaveManager waveManager;
-			
-			
-			//Resources
-			private String controlGroup;
-			private String serviceGroup;
 			private String EmergType;
+			
+			private Thread emergencyServiceThread;
+			public String serviceGroup = "230.0.0.3";
 			
 			//Constructor
 			public EmergencyService(WaveManager waveManager){
 				super(waveManager);
-				this.waveManager = waveManager;
-				this.controlGroup = waveManager.controlGroup;
 			}
 
 			//Class Methods
-			public void sendControlMessage(String serviceGroup){
-				sendMessage("Control", controlGroup, waveManager.CarID+"/"+serviceGroup+"/0/0");
-				this.serviceGroup = serviceGroup;
+			public void start(){
+				if(emergencyServiceThread==null){
+					emergencyServiceThread = new Thread(this, "EmergencyService");
+					emergencyServiceThread.start();
+				}
 			}
 			
-			public void sendServiceMessage(int breakAmount, String direction){
-				sendMessage("Service", serviceGroup, waveManager.CarID+"/"+serviceGroup+"/"+direction+"/"+breakAmount);
+			public void sendControlMessage(){
+				sendMessage("Control", waveManager.controlGroup, serviceGroup, "0/0");
+			}
+			
+			public void sendServiceMessage(){
+				sendMessage("Service", serviceGroup, serviceGroup, ""+waveManager.breakAmount);
 			}
 			
 			//The check to see if I send
@@ -34,8 +36,9 @@ public class EmergencyService extends Service {
 				return false;
 			}
 			
+			public void run(){
 			
-			
+			}
 			//Method to calculate speed adjustment based on received packets
 			public void ComputeData(String emergencytype){
 				if(emergencytype .equals ("Ambulance")){
