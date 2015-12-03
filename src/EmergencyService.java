@@ -1,17 +1,19 @@
+import java.util.concurrent.TimeUnit;
 
 public class EmergencyService extends Service implements Runnable {
 	//Class Variables
-	private WaveManager waveManager;
-	private String EmergType;
-	
 	private Thread emergencyServiceThread;
-	public String serviceGroup = "230.0.0.3";
+	
+	//Resources
+	public int delay = 500;
+	public int messageID = 0;
+	public String serviceGroup = "230.0.0.2";
 	
 	//Constructor
 	public EmergencyService(WaveManager waveManager){
 		super(waveManager);
 	}
-
+	
 	//Class Methods
 	public void start(){
 		if(emergencyServiceThread==null){
@@ -21,35 +23,43 @@ public class EmergencyService extends Service implements Runnable {
 	}
 	
 	public void sendControlMessage(){
-		sendMessage("Control", waveManager.controlGroup, serviceGroup, "0/0");
+		sendMessage("Control", messageID, waveManager.controlGroup, serviceGroup, "0/0");
+		 messageID++;
 	}
 	
 	public void sendServiceMessage(){
-		sendMessage("Service", serviceGroup, serviceGroup, ""+waveManager.breakAmount);
+		sendMessage("Service", messageID, serviceGroup, serviceGroup, "");
+		 messageID++;
 	}
 	
 	//The check to see if I send
-	public boolean checkSiren(int SirenAmount){
-		if(SirenAmount != 0){			
+	public boolean checkSiren(){
+		if(waveManager.sirensOn){
 			return true;
+		}else{
+			return false;
 		}
-		return false;
 	}
 	
 	public void run(){
-	
-	}
-	//Method to calculate speed adjustment based on received packets
-	public void ComputeData(String emergencytype){
-		if(emergencytype .equals ("Ambulance")){
-			EmergType =("Ambulance");
-		}else if(emergencytype .equals ("Police")){
-			EmergType=("Police Car");				
-		}else if(emergencytype .equals ("Fire")){
-			EmergType=("Fire Truck");				
-		}else{
-			EmergType=("Error : Unknown Type");				
+		while(checkSiren()){
+			sendControlMessage();
+			//Wait 
+			try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
+			
+			int count = 0;
+			while(count<5){
+				sendServiceMessage();
+				
+				//Wait
+				try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
+				count++;
+			}
 		}
-		System.out.println("There is a " + EmergType + " in your area. Be aware.");
+	}
+	
+	//Method to calculate speed adjustment based on received packets
+	public void computeData(){
+		System.out.println("There is an Emergency Vehicle approaching. Please be aware.");
 	}
 }
