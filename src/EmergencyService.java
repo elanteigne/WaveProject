@@ -1,8 +1,9 @@
+import java.util.concurrent.TimeUnit;
 
-	public class EmergencyService extends Service implements Runnable {
+public class EmergencyService extends Service implements Runnable {
 		//Class Variables
 			private WaveManager waveManager;
-			private String EmergType;
+			private String EmergencyVehicleType;
 			
 			private Thread emergencyServiceThread;
 			public String serviceGroup = "230.0.0.3";
@@ -25,32 +26,45 @@
 			}
 			
 			public void sendServiceMessage(){
-				sendMessage("Service", serviceGroup, serviceGroup, ""+waveManager.breakAmount);
+				sendMessage("Service", serviceGroup, serviceGroup, ""+EmergencyVehicleType);
 			}
 			
 			//The check to see if I send
-			public boolean checkSiren(int SirenAmount){
-				if(SirenAmount != 0){			
+			public boolean checkSiren(){
+				if(waveManager.sirensOn){			
 					return true;
 				}
 				return false;
 			}
 			
 			public void run(){
-			
+				if(checkSiren()){
+					sendControlMessage();
+					//wait 
+					try{ TimeUnit.MILLISECONDS.sleep(500); } catch(Exception e){ }
+					
+					int count = 0;
+					while(count<5){
+						sendServiceMessage();
+						
+						//Wait
+						try{ TimeUnit.MILLISECONDS.sleep(500); } catch(Exception e){ }
+						count++;
+					}
+				}
 			}
 			//Method to calculate speed adjustment based on received packets
-			public void ComputeData(String emergencytype){
+			public void computeData(String emergencytype){
 				if(emergencytype .equals ("Ambulance")){
-					EmergType =("Ambulance");
+					EmergencyVehicleType =("Ambulance");
 				}else if(emergencytype .equals ("Police")){
-					EmergType=("Police Car");				
+					EmergencyVehicleType=("Police Car");				
 				}else if(emergencytype .equals ("Fire")){
-					EmergType=("Fire Truck");				
+					EmergencyVehicleType=("Fire Truck");				
 				}else{
-					EmergType=("Error : Unknown Type");				
+					EmergencyVehicleType=("Error : Unknown Type");				
 				}
-				System.out.println("There is a " + EmergType + " in your area. Be aware.");
+				System.out.println("There is a " + EmergencyVehicleType + " in your area. Be aware.");
 			}
 
 }
