@@ -5,7 +5,7 @@ public class BreakService extends Service implements Runnable{
 	private Thread breakServiceThread;
 	
 	//Resources
-	public int delay = 500;
+	public int delay = 5;
 	public String serviceGroup = "230.0.0.3";
 	public int messageID = 0;
 	

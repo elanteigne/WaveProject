@@ -46,7 +46,11 @@ public class Receiver implements Runnable{
 			for(int i=0; i<groupsToListenTo.length; i++){
 				if(!(groupsToListenTo[i].equals(""))){
 					switchGroups(groupsToListenTo[i]);
-					getPacket();
+					int gotPacket = 0;
+					while(gotPacket<2){
+						getPacket();
+						gotPacket++;
+					}
 				}
 			}
 		}
