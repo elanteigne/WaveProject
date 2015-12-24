@@ -23,7 +23,8 @@ public class BreakService extends Service{
 	}
 	
 	public void sendServiceMessage(int breakAmount, String direction){
-		sendMessage("Service", serviceGroup, waveManager.CarID+"/"+serviceGroup+"/"+direction+"/"+breakAmount);
+		//sendMessage("Service", serviceGroup, waveManager.CarID+"/"+serviceGroup+"/"+direction+"/"+breakAmount);
+		sendMessage("Service", serviceGroup, 120+"|"+waveManager.CarID+"/"+72+"|"+serviceGroup+"/"+8+"|"+breakAmount);
 	}
 	
 	//The check to see if I send

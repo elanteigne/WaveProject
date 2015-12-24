@@ -7,6 +7,7 @@ public class Receiver {
 	private WaveManager waveManager;
 	private BreakService breakService;
 	private MulticastSocket listener;
+	//private TrafficService TrafficService;
 	
 	//Resources
 	private String currentGroup;
@@ -15,6 +16,7 @@ public class Receiver {
 	public Receiver(WaveManager waveManager, BreakService breakService){
 		this.waveManager=waveManager;
 		this.breakService=breakService;
+		//this.TrafficService = TrafficService;
 		try{
 			listener = new MulticastSocket(waveManager.port);			
 			listener.joinGroup(InetAddress.getByName(waveManager.controlGroup));
