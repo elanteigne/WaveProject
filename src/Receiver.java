@@ -92,13 +92,13 @@ public class Receiver implements Runnable{
 
 					//The order of these is where PRIORITIES take place
 					 if(fromGroup.equals(emergencyService.serviceGroup)){
-						System.out.println("Received messageID '"+messageID+"' on channel '"+fromGroup+"' from CarID '"+fromCarID+"' going direction '"+direction+"' saying '"+strings[6]+"' from "+currentGroup+" with hopCount = "+hopCount);
+						System.out.println("+ Received *EmergencyService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Sirens 'On', Direction:'"+direction+"', Speed:'"+strings[6]+"', HopCount = "+hopCount);
 						emergencyService.computeData();
 					}else if(fromGroup.equals(brakeService.serviceGroup)){
-						System.out.println("Received messageID '"+messageID+"' on channel '"+fromGroup+"' from CarID '"+fromCarID+"' going direction '"+direction+"' saying '"+strings[6]+"' from "+currentGroup+" with hopCount = "+hopCount);
+						System.out.println("+ Received *BrakeService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+strings[6]+"', BrakeAmount:'"+strings[7]+"', Direction:'"+direction+"', HopCount = "+hopCount);
 						brakeService.computeData(strings[6]);
 					}else if(fromGroup.equals(generalInfoService.serviceGroup)){
-						System.out.println("Received messageID '"+messageID+"' on channel '"+fromGroup+"' from CarID '"+fromCarID+"' going direction '"+direction+"' saying '"+strings[6]+"' from "+currentGroup+" with hopCount = "+hopCount);
+						System.out.println("+ Received *GeneralInfoService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+strings[6]+"', Lattitude:'"+strings[7]+"' Longitude:'"+strings[8]+"', Direction:'"+direction+"', HopCount = "+hopCount);
 						
 						//Either check if car is ahead here or check within compute data
 						//Likely requires GPS and some math using GPS and direction
@@ -107,7 +107,7 @@ public class Receiver implements Runnable{
 						generalInfoService.computeData(direction, strings[6], strings[7], strings[8]);
 					}else{
 
-						System.out.println("Received messageID '"+messageID+"' on channel '"+fromGroup+"' from CarID '"+fromCarID+"' advertising '"+messageGroup+"'");
+						System.out.println("+ Received *Control* message advertising '"+messageGroup+"' from CarID '"+fromCarID+"'");
 						
 						boolean alreadyListening = false;
 						for(int i=0; i<groupsToListenTo.length; i++){
@@ -122,12 +122,13 @@ public class Receiver implements Runnable{
 						}
 					}
 					
+					//DECIDE IF CONTROL MESSAGES SHOULD BE PASSED
 					if(hopCount < maxHopCount){
 						passAlongMessage(fromCarID, fromGroup, messageID, hopCount, messageGroup, strings[5]);
 					}
 				}
 			}else{
-				System.out.println("Omitted own message");
+				System.out.println("X Omitted own message");
 			}
 			
 		}catch(Exception e){
@@ -159,7 +160,7 @@ public class Receiver implements Runnable{
 			//Send packet
 			passAlongProcess.send(packet);
 		
-			System.out.println("Passed messageID '"+messageID+"' along on "+fromGroup+" with hopCount '"+hopCount+"': "+message);
+			System.out.println("->-> Passed messageID '"+messageID+"' along on "+fromGroup+" with hopCount '"+hopCount+"': "+message);
 		}catch(Exception e){
 			
 		}
@@ -168,7 +169,7 @@ public class Receiver implements Runnable{
 	private boolean receivedMessagePreviously(String fromCarID, String messageID, String fromGroup){
 		for(int i=0; i<8; i++){
 			if(recentlyReceivedMessages[i][0].equals(fromCarID)&&recentlyReceivedMessages[i][1].equals(messageID)&&recentlyReceivedMessages[i][2].equals(fromGroup)){
-				System.out.println("Message '"+messageID+"' from carID '"+fromCarID+"' on service channel '"+fromGroup+"' has recently been received. Omit message");
+				System.out.println("X Recently received message '"+messageID+"' from carID '"+fromCarID+"' on service channel '"+fromGroup+"'. Omit message");
 				return false;
 			}
 		}

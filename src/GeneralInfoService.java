@@ -6,7 +6,7 @@ public class GeneralInfoService extends Service implements Runnable{
 	
 	//Resources
 	public int delay = 500;
-	public String serviceGroup = "230.0.0.4";
+	public String serviceGroup = "230.0.0.2";
 	public int messageID = 0;
 	
 	//Constructor
@@ -46,8 +46,10 @@ public class GeneralInfoService extends Service implements Runnable{
 	}
 	
 	public void sendServiceMessage(){
+		//Test shows traffic ahead being slower
+		//sendMessage("Service", messageID, serviceGroup, serviceGroup, ""+0+"/"+45.3476235+"/"+-73.7597858);
 		sendMessage("Service", messageID, serviceGroup, serviceGroup, ""+waveManager.speed+"/"+waveManager.GPSlattitude+"/"+waveManager.GPSlongitude);
-		 messageID++;
+		messageID++;
 	}
 	
 	//Method to calculate speed adjustment based on received packets
@@ -56,46 +58,71 @@ public class GeneralInfoService extends Service implements Runnable{
 		double otherVehicleLattitude = Double.parseDouble(lattitude);
 		double otherVehicleLongitude = Double.parseDouble(longitude);
 		
-		if(checkIfAhead(direction, otherVehicleLattitude, otherVehicleLongitude)){
-			if(otherVehicleSpeed<waveManager.speed){
-				int speedDifference = waveManager.speed - otherVehicleSpeed;
-				outputWarningLights(speedDifference);
-				
-				waveManager.trafficAheadSlower = true;
-				System.out.println("Calculated: TrafficAheadSlower");
-			}else{
-				waveManager.trafficAheadSlower = false;		
-			}
-		}else if(checkIfBehind(direction, otherVehicleLattitude, otherVehicleLongitude)){
-			if(otherVehicleSpeed>waveManager.speed){
-				int speedDifference = otherVehicleSpeed - waveManager.speed;
-				outputWarningLights(speedDifference);
-				
-				waveManager.trafficBehindFaster = true;
-				System.out.println("Calculated: TrafficBehindFaster");
-			}else{
-				waveManager.trafficBehindFaster = false;		
+		double distanceBetweenVehicles = twoPointDistance(otherVehicleLattitude, otherVehicleLongitude, waveManager.GPSlattitude, waveManager.GPSlongitude);
+		if(distanceBetweenVehicles<150){
+			//Only way to check ahead so far is checking the direction
+			if(checkIfAhead(direction)){
+				if(otherVehicleSpeed<waveManager.speed){
+					int speedDifference = waveManager.speed - otherVehicleSpeed;
+					int warningLevel = outputWarningLights(speedDifference);
+					waveManager.trafficAheadSlowerWarningLight = warningLevel;
+					
+					System.out.println("Calculated: TrafficAheadSlower x"+warningLevel);
+				}
+			}else if(checkIfBehind(direction)){
+				if(otherVehicleSpeed>waveManager.speed){
+					int speedDifference = otherVehicleSpeed - waveManager.speed;
+					int warningLevel = outputWarningLights(speedDifference);
+					waveManager.trafficBehindFasterWarningLight = warningLevel;
+					
+					System.out.println("Calculated: TrafficBehindFaster x"+warningLevel);
+				}
 			}
 		}
 	}
 	
-	private boolean checkIfAhead(String direction, double otherVehicleLattitude, double otherVehicleLongitude){
-		double distanceBetweenVehicles = twoPointDistance(otherVehicleLattitude, otherVehicleLongitude, waveManager.GPSlattitude, waveManager.GPSlongitude);
-		return true;
+	private boolean checkIfAhead(String direction){
+		if(direction.equals(waveManager.direction)){		
+			return true;
+		}else{		
+			return false;
+		}
 	}
 	
-	private boolean checkIfBehind(String direction, double otherVehicleLattitude, double otherVehicleLongitude){
+	private boolean checkIfBehind(String direction){
+		String oppositeDirection = "";
+		if(direction.equals("N")){
+			oppositeDirection = "S";
+		}else if(direction.equals("NE")){
+			oppositeDirection = "SW";
+		}else if(direction.equals("E")){
+			oppositeDirection = "W";
+		}else if(direction.equals("SE")){
+			oppositeDirection = "NW";
+		}else if(direction.equals("S")){
+			oppositeDirection = "N";
+		}else if(direction.equals("SW")){
+			oppositeDirection = "NE";
+		}else if(direction.equals("W")){
+			oppositeDirection = "E";
+		}else if(direction.equals("NW")){
+			oppositeDirection = "SE";
+		}
 		
-		return true;
+		if(oppositeDirection.equals(waveManager.direction)){		
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
-	private void outputWarningLights(int speedDifference){
+	private int outputWarningLights(int speedDifference){
 		if(speedDifference<10){
-			//Turn on first warning light
+			return 1; //Turn on first warning light
 		}else if(speedDifference<20){
-			//Turn on second warning light
+			return 2; //Turn on second warning light
 		}else{
-			//Turn on third warning light
+			return 3; //Turn on third warning light
 		}		
 	}
 

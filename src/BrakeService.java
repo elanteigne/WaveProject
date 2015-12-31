@@ -49,7 +49,7 @@ public class BrakeService extends Service implements Runnable{
 	}
 	
 	public void sendServiceMessage(){
-		sendMessage("Service", messageID, serviceGroup, serviceGroup, ""+waveManager.brakeAmount);
+		sendMessage("Service", messageID, serviceGroup, serviceGroup, waveManager.speed+"/"+waveManager.brakeAmount);
 		 messageID++;
 	}
 	

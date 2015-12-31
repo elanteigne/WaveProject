@@ -31,7 +31,7 @@ public class Service {
 			//Send packet
 			sendingProcess.send(packet);
 			
-			String output = "Sent "+packetType+" message to "+fromGroup+": "+message;
+			String output = "-> Sent "+packetType+" message to "+fromGroup+": "+message;
 			System.out.println(output);
 		}catch(Exception e){
 			

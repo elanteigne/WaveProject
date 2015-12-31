@@ -21,8 +21,8 @@ public class WaveManager {
 	
 	//Calculated values
 	public int speedAdjustment;
-	public boolean trafficAheadSlower;
-	public boolean trafficBehindFaster;
+	public int trafficAheadSlowerWarningLight;
+	public int trafficBehindFasterWarningLight;
 	
 	//Resources
 	public int port = 2222;
@@ -42,7 +42,7 @@ public class WaveManager {
 		
 		if(vehicleType.equals("Emergency")){
 			emergencyService = new EmergencyService(this);
-			sirensOn = true;
+			sirensOn = false;
 		}
 		
 		receiver = new Receiver(this,generalInfoService, brakeService, emergencyService);
