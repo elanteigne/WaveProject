@@ -1,3 +1,4 @@
+import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 @SuppressWarnings("unused")
 
@@ -20,8 +21,8 @@ public class WaveManager {
 	public String direction;
 	
 	//Calculated values
-	public int speedAdjustment;
-	public int trafficAheadSlowerWarningLight;
+	public int speedAdjustment; //Percentage of brake that should be applied
+	public int trafficAheadSlowerWarningLight; 
 	public int trafficBehindFasterWarningLight;
 	
 	//Resources
@@ -53,6 +54,7 @@ public class WaveManager {
 		if(vehicleType.equals("Emergency")){
 			emergencyService.start();
 		}
+		
 	}
 	
 	//Class Methods
