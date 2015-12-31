@@ -1,24 +1,24 @@
 import java.util.concurrent.TimeUnit;
 
-public class BreakService extends Service implements Runnable{
+public class BrakeService extends Service implements Runnable{
 	//Objects
-	private Thread breakServiceThread;
+	private Thread brakeServiceThread;
 	
 	//Resources
-	public int delay = 5;
+	public int delay = 500;
 	public String serviceGroup = "230.0.0.3";
 	public int messageID = 0;
 	
 	//Constructor
-	public BreakService(WaveManager waveManager){
+	public BrakeService(WaveManager waveManager){
 		super(waveManager);
 	}
 
 	//Class Methods
 	public void start(){
-		if(breakServiceThread==null){
-			breakServiceThread = new Thread(this, "BreakService");
-			breakServiceThread.start();
+		if(brakeServiceThread==null){
+			brakeServiceThread = new Thread(this, "BreakService");
+			brakeServiceThread.start();
 		}
 	}
 	
@@ -49,13 +49,13 @@ public class BreakService extends Service implements Runnable{
 	}
 	
 	public void sendServiceMessage(){
-		sendMessage("Service", messageID, serviceGroup, serviceGroup, ""+waveManager.breakAmount);
+		sendMessage("Service", messageID, serviceGroup, serviceGroup, ""+waveManager.brakeAmount);
 		 messageID++;
 	}
 	
 	//The check to see if I send
 	public boolean checkBreak(){
-		if(waveManager.breakAmount>5){			
+		if(waveManager.brakeAmount>5){			
 			return true;
 		}
 		return false;

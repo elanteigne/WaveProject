@@ -4,7 +4,8 @@ import java.util.concurrent.TimeUnit;
 public class WaveManager {
 	//Objects
 	private static WaveManager waveManager;
-	private BreakService breakService;
+	private GeneralInfoService generalInfoService;
+	private BrakeService brakeService;
 	private EmergencyService emergencyService;
 	private Receiver receiver;
 	
@@ -12,12 +13,16 @@ public class WaveManager {
 	private String vehicleType;
 	public boolean sirensOn;
 	public String CarID;
+	public double GPSlattitude;
+	public double GPSlongitude;
 	public int speed;
-	public int breakAmount;
+	public int brakeAmount;
 	public String direction;
 	
 	//Calculated values
 	public int speedAdjustment;
+	public boolean trafficAheadSlower;
+	public boolean trafficBehindFaster;
 	
 	//Resources
 	public int port = 2222;
@@ -27,21 +32,24 @@ public class WaveManager {
 	public WaveManager(){
 		CarID = checkVinNumber();
 		vehicleType = checkVehicleType();
-		breakAmount = 100;
+		brakeAmount = 100;
 		speed = 20;
 		direction = checkDirection();
+		checkGPS();
 		
-		breakService = new BreakService(this);
+		generalInfoService = new GeneralInfoService(this);
+		brakeService = new BrakeService(this);
 		
 		if(vehicleType.equals("Emergency")){
 			emergencyService = new EmergencyService(this);
 			sirensOn = true;
 		}
 		
-		receiver = new Receiver(this,breakService, emergencyService);
+		receiver = new Receiver(this,generalInfoService, brakeService, emergencyService);
 		
 		receiver.start();
-		breakService.start();
+		generalInfoService.start();
+		brakeService.start();
 		if(vehicleType.equals("Emergency")){
 			emergencyService.start();
 		}
@@ -54,6 +62,12 @@ public class WaveManager {
 	
 	public String checkVinNumber(){
 		return "000-000-000-001";
+	}
+	
+	//Make this recurring and figure out GPS format
+	public void checkGPS(){
+		GPSlattitude = 45.3496235;
+		GPSlongitude = -73.7597858;
 	}
 	
 	public String checkVehicleType(){

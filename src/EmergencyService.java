@@ -5,7 +5,7 @@ public class EmergencyService extends Service implements Runnable {
 	private Thread emergencyServiceThread;
 	
 	//Resources
-	public int delay = 5;
+	public int delay = 500;
 	public int messageID = 0;
 	public String serviceGroup = "230.0.0.2";
 	
