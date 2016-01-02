@@ -16,6 +16,7 @@ public class Receiver implements Runnable{
 	public int timeout = 1;
 	private String currentGroup;
 	private int maxHopCount = 5;
+	private int numGroupsToListenTo = 0;
 	private String[] groupsToListenTo={"230.0.0.1", "", "", "", ""};
 	private String[][] recentlyReceivedMessages={{"", "", ""}, {"", "", ""}, {"", "", ""}, {"", "", ""},
 												{"", "", ""}, {"", "", ""}, {"", "", ""}, {"", "", ""},
@@ -87,6 +88,7 @@ public class Receiver implements Runnable{
 			//Commented for testing purposes
 			//if(!(strings[0].equals(waveManager.CarID))){
 			if(fromCarID.equals(waveManager.CarID)){
+
 				if(receivedMessagePreviously(fromCarID, messageID, messageGroup)){
 					
 					//The order of these is where PRIORITIES take place
@@ -96,7 +98,7 @@ public class Receiver implements Runnable{
 						emergencyService.computeData();
 					}else if(fromGroup.equals(brakeService.serviceGroup)){
 						System.out.println("+ Received *BrakeService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+strings[6]+"', BrakeAmount:'"+strings[7]+"', Direction:'"+direction+"', HopCount = "+hopCount);
-						
+
 						int brakeAmount = Integer.parseInt(strings[9]);
 						brakeService.computeData(direction, vehicleSpeed, vehicleLattitude, vehicleLongitude, brakeAmount);
 					}else if(fromGroup.equals(generalInfoService.serviceGroup)){
@@ -114,14 +116,19 @@ public class Receiver implements Runnable{
 							}
 						}
 						if(!alreadyListening){
-							groupsToListenTo[1] = messageGroup;
+							numGroupsToListenTo++;
+							groupsToListenTo[numGroupsToListenTo] = messageGroup;
 							System.out.println("Added '"+messageGroup+"' to groupsToListenTo");
 						}
 					}
-					
+
 					//DECIDE IF CONTROL MESSAGES SHOULD BE PASSED
 					if(hopCount < maxHopCount){
-						passAlongMessage(fromCarID, fromGroup, messageID, hopCount, messageGroup, strings[5]);
+						if(fromGroup.equals(brakeService.serviceGroup)){
+							passAlongMessage(fromCarID, fromGroup, messageID, hopCount, messageGroup, direction, vehicleSpeed, vehicleLattitude, vehicleLongitude, strings[9]);
+						}else{
+							passAlongMessage(fromCarID, fromGroup, messageID, hopCount, messageGroup, direction, vehicleSpeed, vehicleLattitude, vehicleLongitude, "");
+						}
 					}
 				}
 			}else{
@@ -140,7 +147,7 @@ public class Receiver implements Runnable{
 		currentGroup = group;
 	}
 
-	private void passAlongMessage(String fromCarID, String fromGroup, String messageID, int hopCount, String messageGroup, String data){
+	private void passAlongMessage(String fromCarID, String fromGroup, String messageID, int hopCount, String messageGroup, String direction,  int vehicleSpeed, double vehicleLattitude, double vehicleLongitudeString, String data){
 		try{
 			passAlongProcess = new MulticastSocket();
 			
@@ -149,7 +156,7 @@ public class Receiver implements Runnable{
 			//Preparing packet envelope
 			InetAddress InetDestination = InetAddress.getByName(currentGroup);
 			
-			String message = fromCarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+messageGroup+"/"+waveManager.direction+"/"+data;
+			String message = fromCarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+messageGroup+"/"+direction+"/"+vehicleSpeed+"/"+vehicleLattitude+"/"+vehicleLongitudeString+"/"+data;
 			DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetDestination, waveManager.port);
 			
 			//Send packet
@@ -166,7 +173,7 @@ public class Receiver implements Runnable{
 				return false;
 			}
 		}
-		
+
 		for(int i=7; i>0; i--){
 			recentlyReceivedMessages[i][0] = recentlyReceivedMessages[i-1][0];
 			recentlyReceivedMessages[i][1] = recentlyReceivedMessages[i-1][1];

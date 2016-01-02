@@ -41,21 +41,19 @@ public class GeneralInfoService extends Service implements Runnable{
 	}
 	
 	public void sendControlMessage(){
-		sendMessage("Control", messageID, waveManager.controlGroup, serviceGroup, "0/0");
+		sendMessage("Control", messageID, waveManager.controlGroup, serviceGroup, "");
 		 messageID++;
 	}
 	
 	public void sendServiceMessage(){
-		//Test shows traffic ahead being slower
-		//sendMessage("Service", messageID, serviceGroup, serviceGroup, ""+0+"/"+45.3476235+"/"+-73.7597858);
-		sendMessage("Service", messageID, serviceGroup, serviceGroup, ""+waveManager.speed+"/"+waveManager.GPSlattitude+"/"+waveManager.GPSlongitude);
+		sendMessage("Service", messageID, serviceGroup, serviceGroup, "");
 		messageID++;
 	}
 	
 	//Method to calculate speed adjustment based on received packets
 	public void computeData(String direction,  int vehicleSpeed, double vehicleLattitude, double vehicleLongitude){
-		
 		double distanceBetweenVehicles = calculateDistance(vehicleLattitude, vehicleLongitude, waveManager.GPSlattitude, waveManager.GPSlongitude);
+
 		if(distanceBetweenVehicles<150){
 			//Only way to check ahead so far is checking the direction
 			if(checkIfAhead(direction)){
@@ -77,8 +75,6 @@ public class GeneralInfoService extends Service implements Runnable{
 			}
 		}
 	}
-	
-	
 	
 	private int outputWarningLights(int speedDifference){
 		if(speedDifference<10){

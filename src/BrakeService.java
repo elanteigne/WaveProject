@@ -44,13 +44,13 @@ public class BrakeService extends Service implements Runnable{
 	}
 	
 	public void sendControlMessage(){
-		sendMessage("Control", messageID, waveManager.controlGroup, serviceGroup, "0/0");
+		sendMessage("Control", messageID, waveManager.controlGroup, serviceGroup, "0");
 		 messageID++;
 	}
 	
 	public void sendServiceMessage(){
-		sendMessage("Service", messageID, serviceGroup, serviceGroup, waveManager.speed+"/"+waveManager.GPSlattitude+"/"+waveManager.GPSlongitude+"/"+waveManager.brakeAmount);
-		 messageID++;
+		sendMessage("Service", messageID, serviceGroup, serviceGroup, ""+waveManager.brakeAmount);
+		messageID++;
 	}
 	
 	//The check to see if I send
@@ -72,12 +72,14 @@ public class BrakeService extends Service implements Runnable{
 			
 			double distanceBetweenVehicles = calculateDistance(vehicleLattitude, vehicleLongitude, waveManager.GPSlattitude, waveManager.GPSlongitude);
 			int speedDifference = waveManager.speed-speed;
-			
+
+			System.out.println("Calculating: "+speedDifference);
 			//If vehicle ahead is going faster then there is no point in braking
 			if(speedDifference>0){
 				waveManager.suggestedBrakeAmount = brakeAmount;
 				
 				//The more of a speed difference there is the more the brake should be applied
+				//Possibly include weather conditions here
 				if(speedDifference<10){
 					waveManager.additionalBrakeAmount = 0;
 				}else if(speedDifference<25){

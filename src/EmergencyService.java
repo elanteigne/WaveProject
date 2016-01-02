@@ -23,12 +23,12 @@ public class EmergencyService extends Service implements Runnable {
 	}
 	
 	public void sendControlMessage(){
-		sendMessage("Control", messageID, waveManager.controlGroup, serviceGroup, "0/0");
+		sendMessage("Control", messageID, waveManager.controlGroup, serviceGroup, "");
 		 messageID++;
 	}
 	
 	public void sendServiceMessage(){
-		sendMessage("Service", messageID, serviceGroup, serviceGroup, waveManager.speed+"");
+		sendMessage("Service", messageID, serviceGroup, serviceGroup, "");
 		 messageID++;
 	}
 	
