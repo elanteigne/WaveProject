@@ -133,7 +133,6 @@ public class Receiver implements Runnable{
 			}else{
 				System.out.println("X Omitted own message");
 			}
-			
 		}catch(Exception e){ }		
 	}
 	

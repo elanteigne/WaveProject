@@ -5,7 +5,7 @@ public class GeneralInfoService extends Service implements Runnable{
 	private Thread generalInfoServiceThread;
 	
 	//Resources
-	public int delay = 500;
+	public int delay = 1000;
 	public String serviceGroup = "230.0.0.2";
 	public int messageID = 0;
 	

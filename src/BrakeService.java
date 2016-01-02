@@ -79,9 +79,7 @@ public class BrakeService extends Service implements Runnable{
 				
 				//The more of a speed difference there is the more the brake should be applied
 				//Possibly include weather conditions here
-				if(speedDifference<10){
-					waveManager.additionalBrakeAmount = 0;
-				}else if(speedDifference<25){
+				if(speedDifference<25){
 					waveManager.additionalBrakeAmount = 5;
 				}else if(speedDifference<40){
 					waveManager.additionalBrakeAmount = 10;
@@ -108,10 +106,10 @@ public class BrakeService extends Service implements Runnable{
 				}
 				System.out.println("o Calculated: SpeedDifference = "+speedDifference+" km/h, mySpeed = "+waveManager.speed+" km/h, DistanceBetweenVehicles = "+distanceBetweenVehicles+" m, SuggestedBrakeAmount = "+waveManager.suggestedBrakeAmount+"%, AdditionalBrakeAmount = "+waveManager.additionalBrakeAmount+"%, SuggestedBrakeSpeed = '"+waveManager.suggestedBrakeSpeed+"'");
 			}else{
-				System.out.println("o Calculated: Vehicle ahead is not going slower, therefore braking in uneffective");
+				System.out.println("o Calculated: Vehicle ahead is going faster then you, therefore braking is not considered");
 			}
 		}else{
-			System.out.println("o Calculated: Vehicle is not ahead, therefore braking in uneffective");
+			System.out.println("o Calculated: Vehicle is not ahead, therefore braking is not considered");
 		}
 	}
 }
