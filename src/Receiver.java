@@ -32,9 +32,7 @@ public class Receiver implements Runnable{
 			listener = new MulticastSocket(waveManager.port);			
 			listener.joinGroup(InetAddress.getByName(waveManager.controlGroup));
 			currentGroup = waveManager.controlGroup;
-		}catch(Exception e){
-			
-		}
+		}catch(Exception e){ }
 	}
 	
 	//Class Methods
@@ -68,9 +66,7 @@ public class Receiver implements Runnable{
 			try{
 				listener.setSoTimeout(timeout);
 				listener.receive(packet);
-			}catch(Exception e){
-				
-			}
+			}catch(Exception e){ }
 			
 			byte[] message = packet.getData();
 			int length = packet.getLength();
@@ -84,29 +80,30 @@ public class Receiver implements Runnable{
 			int hopCount = Integer.parseInt(strings[3]);
 			String messageGroup = strings[4];
 			String direction = strings[5];
+			int vehicleSpeed = Integer.parseInt(strings[6]);
+			double vehicleLattitude = Double.parseDouble(strings[7]);
+			double vehicleLongitude = Double.parseDouble(strings[8]);
 			
 			//Commented for testing purposes
 			//if(!(strings[0].equals(waveManager.CarID))){
 			if(fromCarID.equals(waveManager.CarID)){
 				if(receivedMessagePreviously(fromCarID, messageID, messageGroup)){
-
+					
 					//The order of these is where PRIORITIES take place
 					 if(fromGroup.equals(emergencyService.serviceGroup)){
 						System.out.println("+ Received *EmergencyService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Sirens 'On', Direction:'"+direction+"', Speed:'"+strings[6]+"', HopCount = "+hopCount);
+						
 						emergencyService.computeData();
 					}else if(fromGroup.equals(brakeService.serviceGroup)){
 						System.out.println("+ Received *BrakeService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+strings[6]+"', BrakeAmount:'"+strings[7]+"', Direction:'"+direction+"', HopCount = "+hopCount);
-						brakeService.computeData(strings[6]);
+						
+						int brakeAmount = Integer.parseInt(strings[9]);
+						brakeService.computeData(direction, vehicleSpeed, vehicleLattitude, vehicleLongitude, brakeAmount);
 					}else if(fromGroup.equals(generalInfoService.serviceGroup)){
 						System.out.println("+ Received *GeneralInfoService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+strings[6]+"', Lattitude:'"+strings[7]+"' Longitude:'"+strings[8]+"', Direction:'"+direction+"', HopCount = "+hopCount);
-						
-						//Either check if car is ahead here or check within compute data
-						//Likely requires GPS and some math using GPS and direction
-						//Check if car ahead is going slower or if car behind is going faster
-						
-						generalInfoService.computeData(direction, strings[6], strings[7], strings[8]);
+												
+						generalInfoService.computeData(direction, vehicleSpeed, vehicleLattitude, vehicleLongitude);
 					}else{
-
 						System.out.println("+ Received *Control* message advertising '"+messageGroup+"' from CarID '"+fromCarID+"'");
 						
 						boolean alreadyListening = false;
@@ -131,9 +128,7 @@ public class Receiver implements Runnable{
 				System.out.println("X Omitted own message");
 			}
 			
-		}catch(Exception e){
-			
-		}		
+		}catch(Exception e){ }		
 	}
 	
 	public void switchGroups(String group){
@@ -161,9 +156,7 @@ public class Receiver implements Runnable{
 			passAlongProcess.send(packet);
 		
 			System.out.println("->-> Passed messageID '"+messageID+"' along on "+fromGroup+" with hopCount '"+hopCount+"': "+message);
-		}catch(Exception e){
-			
-		}
+		}catch(Exception e){ }
 	}
 	
 	private boolean receivedMessagePreviously(String fromCarID, String messageID, String fromGroup){

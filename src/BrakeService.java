@@ -49,7 +49,7 @@ public class BrakeService extends Service implements Runnable{
 	}
 	
 	public void sendServiceMessage(){
-		sendMessage("Service", messageID, serviceGroup, serviceGroup, waveManager.speed+"/"+waveManager.brakeAmount);
+		sendMessage("Service", messageID, serviceGroup, serviceGroup, waveManager.speed+"/"+waveManager.GPSlattitude+"/"+waveManager.GPSlongitude+"/"+waveManager.brakeAmount);
 		 messageID++;
 	}
 	
@@ -62,32 +62,51 @@ public class BrakeService extends Service implements Runnable{
 	}
 	
 	//Method to calculate speed adjustment based on received packets
-	public void computeData(String data){
-		int breakAmount = Integer.parseInt(data);
-		//if(conditions=="snowy"){
-		//}
-		if(waveManager.speed<40){
-			if(breakAmount<25){
-				waveManager.speedAdjustment = 5;
-			}else if(breakAmount>25 && breakAmount<50){
-				waveManager.speedAdjustment = 10;
-			}else if(breakAmount>50 && breakAmount<75){
-				waveManager.speedAdjustment = 15;		
-			}else{
-				waveManager.speedAdjustment = 20;				
+	public void computeData(String direction, int speed, double vehicleLattitude, double vehicleLongitude, int brakeAmount){
+		//This should check if it is ahead on the SAME ROAD if possible
+		if(checkIfAhead(direction)){
+			//Distance away affect speed at which you get to desired amount
+			//Speed difference affects the amount of brake that should be pressed
+			//The amount others ahead are breaking should influence how much you need to break
+			//If there are weather conditions it should affect break amount by a certain percentage
+			
+			double distanceBetweenVehicles = calculateDistance(vehicleLattitude, vehicleLongitude, waveManager.GPSlattitude, waveManager.GPSlongitude);
+			int speedDifference = waveManager.speed-speed;
+			
+			//If vehicle ahead is going faster then there is no point in braking
+			if(speedDifference>0){
+				waveManager.suggestedBrakeAmount = brakeAmount;
+				
+				//The more of a speed difference there is the more the brake should be applied
+				if(speedDifference<10){
+					waveManager.additionalBrakeAmount = 0;
+				}else if(speedDifference<25){
+					waveManager.additionalBrakeAmount = 5;
+				}else if(speedDifference<40){
+					waveManager.additionalBrakeAmount = 10;
+				}else if(speedDifference<60){
+					//Get data to ensure the values below
+					waveManager.additionalBrakeAmount = 15;
+				}else if(speedDifference<75){
+					waveManager.additionalBrakeAmount = 20;
+				}else if(speedDifference<90){
+					waveManager.additionalBrakeAmount = 30;
+				}else{
+					waveManager.additionalBrakeAmount = 40;
+				}
+				
+				//The closer the vehicle ahead is the faster the brake should be applied
+				if(distanceBetweenVehicles<50){
+					waveManager.suggestedBrakeSpeed = 4;
+				}else if(distanceBetweenVehicles<100){
+					waveManager.suggestedBrakeSpeed = 3;
+				}else if(distanceBetweenVehicles<150){
+					waveManager.suggestedBrakeSpeed = 2;
+				}else{
+					waveManager.suggestedBrakeSpeed = 1;
+				}
 			}
-		}else if(waveManager.speed<70){
-			
-		}else if(waveManager.speed<90){
-			
-		}else if(waveManager.speed<110){
-			
-		}else if(waveManager.speed<130){
-			
-		}else if(waveManager.speed<150){
-			
-		}
-		
-		System.out.println("Calculated: SpeedAdjustment = '"+waveManager.speedAdjustment+"'");
+		}		
+		System.out.println("Calculated: SuggestedBrakeAmount = '"+waveManager.suggestedBrakeAmount+"', AdditionalBrakeAmount = '"+waveManager.additionalBrakeAmount+"', SuggestedBrakeSpeed = '"+waveManager.suggestedBrakeSpeed+"'");
 	}
 }

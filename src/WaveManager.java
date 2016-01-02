@@ -21,7 +21,9 @@ public class WaveManager {
 	public String direction;
 	
 	//Calculated values
-	public int speedAdjustment; //Percentage of brake that should be applied
+	public int suggestedBrakeAmount; //Percentage of brake that should be applied
+	public int additionalBrakeAmount; //Percentage of additional brake that should be applied due to speed difference
+	public int suggestedBrakeSpeed; //Speed at which brake should be applied, dependent on distance between vehicles
 	public int trafficAheadSlowerWarningLight; 
 	public int trafficBehindFasterWarningLight;
 	
