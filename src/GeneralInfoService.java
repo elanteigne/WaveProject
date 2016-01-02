@@ -62,7 +62,9 @@ public class GeneralInfoService extends Service implements Runnable{
 					int warningLevel = outputWarningLights(speedDifference);
 					waveManager.trafficAheadSlowerWarningLight = warningLevel;
 					
-					System.out.println("Calculated: TrafficAheadSlower x"+warningLevel);
+					System.out.println("o Calculated: TrafficAheadSlower x"+warningLevel);
+				}else{
+					System.out.println("o Calculated: Vehicle is ahead but is faster so is not considered");
 				}
 			}else if(checkIfBehind(direction)){
 				if(vehicleSpeed>waveManager.speed){
@@ -70,9 +72,15 @@ public class GeneralInfoService extends Service implements Runnable{
 					int warningLevel = outputWarningLights(speedDifference);
 					waveManager.trafficBehindFasterWarningLight = warningLevel;
 					
-					System.out.println("Calculated: TrafficBehindFaster x"+warningLevel);
+					System.out.println("o Calculated: TrafficBehindFaster x"+warningLevel);
+				}else{
+					System.out.println("o Calculated: Vehicle is behind but is slower so is not considered");
 				}
+			}else{
+				System.out.println("o Calculated: Vehicle is not in critical area, therefore not considered");
 			}
+		}else{
+			System.out.println("o Calculated: Vehicle is too far ahead to be considered");
 		}
 	}
 	

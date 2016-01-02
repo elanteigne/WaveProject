@@ -36,9 +36,14 @@ public class WaveManager {
 		CarID = checkVinNumber();
 		vehicleType = checkVehicleType();
 		brakeAmount = 100;
-		speed = 90;
+		speed = 0;
 		direction = checkDirection();
 		checkGPS();		
+		
+		/**Testing**/
+		//General & Braking 
+		//brakeAmount = 5;
+		//speed = 90;
 		
 		generalInfoService = new GeneralInfoService(this);
 		brakeService = new BrakeService(this);

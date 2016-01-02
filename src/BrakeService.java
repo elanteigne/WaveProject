@@ -55,7 +55,7 @@ public class BrakeService extends Service implements Runnable{
 	
 	//The check to see if I send
 	public boolean checkBrake(){
-		if(waveManager.brakeAmount>5){			
+		if(waveManager.brakeAmount>0){			
 			return true;
 		}
 		return false;
@@ -73,7 +73,6 @@ public class BrakeService extends Service implements Runnable{
 			double distanceBetweenVehicles = calculateDistance(vehicleLattitude, vehicleLongitude, waveManager.GPSlattitude, waveManager.GPSlongitude);
 			int speedDifference = waveManager.speed-speed;
 
-			System.out.println("Calculating: "+speedDifference);
 			//If vehicle ahead is going faster then there is no point in braking
 			if(speedDifference>0){
 				waveManager.suggestedBrakeAmount = brakeAmount;
@@ -107,8 +106,12 @@ public class BrakeService extends Service implements Runnable{
 				}else{
 					waveManager.suggestedBrakeSpeed = 1;
 				}
+				System.out.println("o Calculated: SpeedDifference = "+speedDifference+" km/h, mySpeed = "+waveManager.speed+" km/h, DistanceBetweenVehicles = "+distanceBetweenVehicles+" m, SuggestedBrakeAmount = "+waveManager.suggestedBrakeAmount+"%, AdditionalBrakeAmount = "+waveManager.additionalBrakeAmount+"%, SuggestedBrakeSpeed = '"+waveManager.suggestedBrakeSpeed+"'");
+			}else{
+				System.out.println("o Calculated: Vehicle ahead is not going slower, therefore braking in uneffective");
 			}
-		}		
-		System.out.println("Calculated: SuggestedBrakeAmount = '"+waveManager.suggestedBrakeAmount+"', AdditionalBrakeAmount = '"+waveManager.additionalBrakeAmount+"', SuggestedBrakeSpeed = '"+waveManager.suggestedBrakeSpeed+"'");
+		}else{
+			System.out.println("o Calculated: Vehicle is not ahead, therefore braking in uneffective");
+		}
 	}
 }

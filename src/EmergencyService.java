@@ -60,6 +60,6 @@ public class EmergencyService extends Service implements Runnable {
 	
 	//Method to calculate speed adjustment based on received packets
 	public void computeData(){
-		System.out.println("There is an Emergency Vehicle approaching. Please be aware.");
+		System.out.println("o There is an Emergency Vehicle approaching. Please be aware.");
 	}
 }

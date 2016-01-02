@@ -86,23 +86,22 @@ public class Receiver implements Runnable{
 			double vehicleLongitude = Double.parseDouble(strings[8]);
 			
 			//Commented for testing purposes
-			//if(!(strings[0].equals(waveManager.CarID))){
-			if(fromCarID.equals(waveManager.CarID)){
-
+			if(!(strings[0].equals(waveManager.CarID))){
+			//if(fromCarID.equals(waveManager.CarID)){
 				if(receivedMessagePreviously(fromCarID, messageID, messageGroup)){
 					
 					//The order of these is where PRIORITIES take place
 					 if(fromGroup.equals(emergencyService.serviceGroup)){
-						System.out.println("+ Received *EmergencyService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Sirens 'On', Direction:'"+direction+"', Speed:'"+strings[6]+"', HopCount = "+hopCount);
+						System.out.println("+ Received *EmergencyService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Sirens 'On', Direction:'"+direction+"', Speed: "+vehicleSpeed+" km/h, HopCount = "+hopCount);
 						
 						emergencyService.computeData();
 					}else if(fromGroup.equals(brakeService.serviceGroup)){
-						System.out.println("+ Received *BrakeService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+strings[6]+"', BrakeAmount:'"+strings[7]+"', Direction:'"+direction+"', HopCount = "+hopCount);
-
 						int brakeAmount = Integer.parseInt(strings[9]);
+						System.out.println("+ Received *BrakeService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed: "+vehicleSpeed+" km/h, BrakeAmount: "+brakeAmount+"%, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Direction:'"+direction+"', HopCount = "+hopCount);
+
 						brakeService.computeData(direction, vehicleSpeed, vehicleLattitude, vehicleLongitude, brakeAmount);
 					}else if(fromGroup.equals(generalInfoService.serviceGroup)){
-						System.out.println("+ Received *GeneralInfoService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+strings[6]+"', Lattitude:'"+strings[7]+"' Longitude:'"+strings[8]+"', Direction:'"+direction+"', HopCount = "+hopCount);
+						System.out.println("+ Received *GeneralInfoService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+vehicleSpeed+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Direction:'"+direction+"', HopCount = "+hopCount);
 												
 						generalInfoService.computeData(direction, vehicleSpeed, vehicleLattitude, vehicleLongitude);
 					}else{
