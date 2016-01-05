@@ -5,16 +5,17 @@ import java.net.MulticastSocket;
 public class Receiver implements Runnable{
 	//Object
 	private Thread receiverThread;
-	private WaveManager waveManager;
 	private GeneralInfoService generalInfoService;
 	private BrakeService brakeService;
 	private EmergencyService emergencyService;
 	private MulticastSocket listener;
 	private MulticastSocket passAlongProcess;
+	public WaveManager waveManager;
 	
 	//Resources
 	public int timeout = 1;
 	private String currentGroup;
+	private String output;
 	private int maxHopCount = 5;
 	private int numGroupsToListenTo = 0;
 	private String[] groupsToListenTo={"230.0.0.1", "", "", "", ""};
@@ -93,31 +94,45 @@ public class Receiver implements Runnable{
 					//The order of these is where PRIORITIES take place
 					 if(fromGroup.equals(emergencyService.serviceGroup)){
 						System.out.println("+ Received *EmergencyService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Sirens 'On', Direction:'"+direction+"', Speed: "+vehicleSpeed+" km/h, HopCount = "+hopCount);
-						
+						output = "+ Received *EmergencyService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Sirens 'On', Direction:'"+direction+"', Speed: "+vehicleSpeed+" km/h, HopCount = "+hopCount;
+						waveManager.userInterface.output(output);
+								
 						emergencyService.computeData();
 					}else if(fromGroup.equals(brakeService.serviceGroup)){
 						int brakeAmount = Integer.parseInt(strings[9]);
+						
 						System.out.println("+ Received *BrakeService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed: "+vehicleSpeed+" km/h, BrakeAmount: "+brakeAmount+"%, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Direction:'"+direction+"', HopCount = "+hopCount);
-
+						output = "+ Received *BrakeService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed: "+vehicleSpeed+" km/h, BrakeAmount: "+brakeAmount+"%, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Direction:'"+direction+"', HopCount = "+hopCount;
+						waveManager.userInterface.output(output);
+						
 						brakeService.computeData(direction, vehicleSpeed, vehicleLattitude, vehicleLongitude, brakeAmount);
 					}else if(fromGroup.equals(generalInfoService.serviceGroup)){
 						System.out.println("+ Received *GeneralInfoService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+vehicleSpeed+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Direction:'"+direction+"', HopCount = "+hopCount);
-												
+						output = "+ Received *GeneralInfoService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+vehicleSpeed+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Direction:'"+direction+"', HopCount = "+hopCount;
+						waveManager.userInterface.output(output);
+											
 						generalInfoService.computeData(direction, vehicleSpeed, vehicleLattitude, vehicleLongitude);
 					}else{
 						System.out.println("+ Received *Control* message advertising '"+messageGroup+"' from CarID '"+fromCarID+"'");
+						output = "+ Received *Control* message advertising '"+messageGroup+"' from CarID '"+fromCarID+"'";
+						waveManager.userInterface.output(output);
 						
 						boolean alreadyListening = false;
 						for(int i=0; i<groupsToListenTo.length; i++){
 							if(groupsToListenTo[i].equals(messageGroup)){
 								System.out.println("Group '"+messageGroup+"' is already in groupsToListenTo");
+								output = "Group '"+messageGroup+"' is already in groupsToListenTo";
+								waveManager.userInterface.output(output);
 								alreadyListening = true;
 							}
 						}
 						if(!alreadyListening){
 							numGroupsToListenTo++;
 							groupsToListenTo[numGroupsToListenTo] = messageGroup;
+							
 							System.out.println("Added '"+messageGroup+"' to groupsToListenTo");
+							output = "Added '"+messageGroup+"' to groupsToListenTo";
+							waveManager.userInterface.output(output);
 						}
 					}
 
@@ -132,6 +147,8 @@ public class Receiver implements Runnable{
 				}
 			}else{
 				System.out.println("X Omitted own message");
+				output = "X Omitted own message";
+				waveManager.userInterface.output(output);
 			}
 		}catch(Exception e){ }		
 	}
@@ -161,6 +178,8 @@ public class Receiver implements Runnable{
 			passAlongProcess.send(packet);
 		
 			System.out.println("->-> Passed messageID '"+messageID+"' along on "+fromGroup+" with hopCount '"+hopCount+"': "+message);
+			output = "->-> Passed messageID '"+messageID+"' along on "+fromGroup+" with hopCount '"+hopCount+"': "+message;
+			waveManager.userInterface.output(output);
 		}catch(Exception e){ }
 	}
 	
@@ -168,6 +187,8 @@ public class Receiver implements Runnable{
 		for(int i=0; i<8; i++){
 			if(recentlyReceivedMessages[i][0].equals(fromCarID)&&recentlyReceivedMessages[i][1].equals(messageID)&&recentlyReceivedMessages[i][2].equals(fromGroup)){
 				System.out.println("X Recently received message '"+messageID+"' from carID '"+fromCarID+"' on service channel '"+fromGroup+"'. Omit message");
+				output = "X Recently received message '"+messageID+"' from carID '"+fromCarID+"' on service channel '"+fromGroup+"'. Omit message";
+				waveManager.userInterface.output(output);
 				return false;
 			}
 		}

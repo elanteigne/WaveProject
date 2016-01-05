@@ -8,6 +8,7 @@ public class GeneralInfoService extends Service implements Runnable{
 	public int delay = 1000;
 	public String serviceGroup = "230.0.0.2";
 	public int messageID = 0;
+	private String output;
 	
 	//Constructor
 	public GeneralInfoService(WaveManager waveManager){
@@ -63,8 +64,12 @@ public class GeneralInfoService extends Service implements Runnable{
 					waveManager.trafficAheadSlowerWarningLight = warningLevel;
 					
 					System.out.println("o Calculated: TrafficAheadSlower x"+warningLevel);
+					output = "o Calculated: TrafficAheadSlower x"+warningLevel;
+					waveManager.userInterface.output(output);
 				}else{
 					System.out.println("o Calculated: Vehicle is ahead but is faster so is not considered");
+					output = "o Calculated: Vehicle is ahead but is faster so is not considered";
+					waveManager.userInterface.output(output);
 				}
 			}else if(checkIfBehind(direction)){
 				if(vehicleSpeed>waveManager.speed){
@@ -73,14 +78,22 @@ public class GeneralInfoService extends Service implements Runnable{
 					waveManager.trafficBehindFasterWarningLight = warningLevel;
 					
 					System.out.println("o Calculated: TrafficBehindFaster x"+warningLevel);
+					output = "o Calculated: TrafficBehindFaster x"+warningLevel;
+					waveManager.userInterface.output(output);
 				}else{
 					System.out.println("o Calculated: Vehicle is behind but is slower so is not considered");
+					output = "o Calculated: Vehicle is behind but is slower so is not considered";
+					waveManager.userInterface.output(output);
 				}
 			}else{
 				System.out.println("o Calculated: Vehicle is not in critical area, therefore not considered");
+				output = "o Calculated: Vehicle is not in critical area, therefore not considered";
+				waveManager.userInterface.output(output);
 			}
 		}else{
 			System.out.println("o Calculated: Vehicle is too far ahead to be considered");
+			output = "o Calculated: Vehicle is too far ahead to be considered";
+			waveManager.userInterface.output(output);
 		}
 	}
 	
