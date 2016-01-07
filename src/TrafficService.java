@@ -50,15 +50,6 @@ public class TrafficService extends Service{
 	//Make decision about current route (change or stay)
 	//Includes speed up, slow down, emergency notification (simple)
 	
-	//2) Convenience 
-	
-	//Check surrounding vehicles lights
-	//Check time of day (compare to dusk, dawn, night times)
-	//Reuse speed/direction check
-	//Night time traffic (turn on headlights, high/low beam)
-	//Affects lights, signaling, etc.
-	
-	
 	/*1) TRAFFIC ROUTING ALOGORITHM*/
 	
 	public void routeTraffic(){
@@ -126,10 +117,18 @@ public class TrafficService extends Service{
 		//switch L:yes/no, switch road:yes/no, speedup (amount), slow down (amt), 
 	}
 
-	//2) CONVENIENCE ALGORITHM
+	//2) Convenience 
+	
+	//Check surrounding vehicles lights
+	//Check time of day (compare to dusk, dawn, night times)
+	//Reuse speed/direction check
+	//Night time traffic (turn on headlights, high/low beam)
+	//Affects lights, signaling, etc.
+	
+	/*2) CONVENIENCE ALGORITHM*/
 	
 public void enhanceConvenience(){
-	
+	//Speed, direction (int), lights, turn signals, emergency signal, vehicle type
 	int numVehicles = checkVehicles();
 //	int numEVehicles = checkLights();
 //	int numEmergencies = checkTurns();
@@ -161,16 +160,114 @@ public void enhanceConvenience(){
 		return count;
 	}
 	
-	//Lights Check
+	public static String getDateAndTime(){
+	
+		int dayNumb = 0;
+		int time = 0;
+	   	DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	   	//get current date time with Date()
+	   	Date date = new Date();
+	   	String[] temp = dateFormat.format(date).split(" ");
+	   	String[] d = temp[0].split("/");
+	   	int year = Integer.parseInt(d[0]);
+	   	int month = Integer.parseInt(d[1]);
+	   	int day = Integer.parseInt(d[2]);
+	   	
+	   	String[] t = temp[1].split(":");
+	   	int hr =  Integer.parseInt(t[0]);
+	   	int min = Integer.parseInt(t[1]);
+	   	time = hr*100 + min;
+	   	
+	   	for(int i = 0; i<month; i++){
+	   		if(i == 0 || i == 2 || i == 4 || i == 6 || i == 7 || i == 9 || i == 11){
+	   			dayNumb = dayNumb + 31;
+	   		}else{
+	   			if(i == 1){
+	   				if(year%100 == 0 || year%4 == 0){
+	   					dayNumb = dayNumb + 29;
+	   				}else{
+	   					dayNumb = dayNumb + 28;
+	   				}
+	   			}else{
+	   				dayNumb = dayNumb + 30;
+	   			}
+	   		}
+	   	}
+	   	dayNumb = dayNumb + day;
+	   	return dayNumb+"/"+time;
+	}
+	
+	//adjust lights
+	//checks time of day and date to determine darkness, adjusts lights accordingly
+	//checks for vehicles in opposite direction of vehicle. Adjusts lights accordingly
+	//Ie. if high beams are on, turn off if vehicle is approaching in other lane
+	//lights = 0,1,2,3 =  none, low, high, emergency
+	
+	public static int adjustLights(int dir[], int direction, int lights, int time, int date){
+		//Set default to current lights setting
+		int adj = lights;
+		
+		//Check for time of day and adjust accordingly
+		
+		//get date, get time (date in days (365), time in 24hr clock (ie 1200))
 
-		public static int checkLights(){
-			int count = vehicles.length;
-			return count;
+		//late autumn to early winter, dusk/dawn uses low beams, high otherwise
+		//if(date >=354 || date <= 82){
+		if(date >=309 || date <= 37){
+			if(time>=1630 || time <= 830){
+				if(time>=1730 || time <= 730){
+				adj = 2;
+				}else{
+				adj = 1;
+				}
+			}
+		}
+		//late winter to early spring & late summer to early autumn
+		//if( (date >=83 || date <= 171) || (date >=263 || date <= 353) ){
+		if( (date >=38 || date <= 126) || (date >=218 || date <= 308) ){
+			if(time>=1830 || time <= 630){
+				if(time>=1930 || time <= 530){
+				adj = 2;
+				}else{
+				adj = 1;
+				}
+			}
+		}
+		//late spring to early summer
+		//if(date >=172 || date <= 262){
+		if(date >=127 || date <= 217){
+			if(time>=2030 || time <= 430){
+				if(time>=2130 || time <= 330){
+				adj = 2;
+				}else{
+				adj = 1;
+				}
+			}
+		}
+		
+		//Check for on-coming traffic and adjust accordingly
+		if(lights == 2){
+			if(direction == dir[0]){
+				for(int i =0; i<vehicles.length; i++){
+						if(vehicles[i][1] == dir[1] || vehicles[i][1] == dir[1] + 1 || vehicles[i][1] == dir[1] - 1){
+						adj = 1;
+						}
+					}
+			}else{
+				for(int i =0; i<vehicles.length; i++){
+						if(vehicles[i][1] == dir[0] || vehicles[i][1] == dir[0] + 1 || vehicles[i][1] == dir[0] - 1){
+						adj = 1;
+						}
+					}
+				}
+		}
+		
+		return adj;
 	}
 		
 	//Turn Check
 
-	public static int checkTurns(){
+	public static int checkTurns(int dir[]){
 		int count = vehicles.length;
 		return count;
 	}

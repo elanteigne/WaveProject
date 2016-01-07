@@ -11,7 +11,7 @@ public class Service {
 	private WaveManager waveManager;
 	private MulticastSocket sendingProcess;
 	private int[] serviceVariables = new int[]{5,4,2,2,1,1,3,3,8,136}; 
-	//private int[] breakVariables = new int[]{0,1,2,3,4,5,6,7,8,9,10}; 
+	//private int[] brakeVariables = new int[]{0,1,2,3,4,5,6,7,8,9,10}; 
 	//private int[] serviceVariables = new int[]{0,1,2,3,4,5,6,7,8,9,10}; 
 	
 	//Constructor
@@ -32,12 +32,6 @@ public class Service {
 		try{ //waveManager.CarID+"/"+serviceGroup+"/"+direction+"/"+breakAmount
 			
 			String[] msg = message.split("/");
-			String[] mLength = new String[msg.length];
-			
-			for(int i = 0; i<msg.length; i++){	
-				 String[] a = msg[i].split("|");
-				 mLength[i] = a[0];				//get length of new variable
-			}
 			
 			List<Boolean> packetInfo =new ArrayList<Boolean>();
 			
