@@ -66,6 +66,9 @@ public class GeneralInfoService extends Service implements Runnable{
 					System.out.println("o Calculated: TrafficAheadSlower x"+warningLevel);
 					output = "o Calculated: TrafficAheadSlower x"+warningLevel;
 					waveManager.userInterface.output(output);
+					
+					output = "TrafficAheadSlower x"+warningLevel;
+					waveManager.userInterface.writeGeneralInfo(output);
 				}else{
 					System.out.println("o Calculated: Vehicle is ahead but is faster so is not considered");
 					output = "o Calculated: Vehicle is ahead but is faster so is not considered";
@@ -80,6 +83,9 @@ public class GeneralInfoService extends Service implements Runnable{
 					System.out.println("o Calculated: TrafficBehindFaster x"+warningLevel);
 					output = "o Calculated: TrafficBehindFaster x"+warningLevel;
 					waveManager.userInterface.output(output);
+					
+					output = "TrafficBehindFaster x"+warningLevel;
+					waveManager.userInterface.writeGeneralInfo(output);
 				}else{
 					System.out.println("o Calculated: Vehicle is behind but is slower so is not considered");
 					output = "o Calculated: Vehicle is behind but is slower so is not considered";
