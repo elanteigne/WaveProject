@@ -7,7 +7,8 @@ public class EmergencyService extends Service implements Runnable {
 	//Resources
 	public int delay = 500;
 	public int messageID = 0;
-	public String serviceGroup = "230.0.0.2";
+	public String serviceGroup = "230.0.0.4";
+	private String output;
 	
 	//Constructor
 	public EmergencyService(WaveManager waveManager){
@@ -23,7 +24,7 @@ public class EmergencyService extends Service implements Runnable {
 	}
 	
 	public void sendControlMessage(){
-		sendMessage("Control", messageID, waveManager.controlGroup, serviceGroup, "0/0");
+		sendMessage("Control", messageID, waveManager.controlGroup, serviceGroup, "");
 		 messageID++;
 	}
 	
@@ -60,6 +61,8 @@ public class EmergencyService extends Service implements Runnable {
 	
 	//Method to calculate speed adjustment based on received packets
 	public void computeData(){
-		System.out.println("There is an Emergency Vehicle approaching. Please be aware.");
+		System.out.println("o There is an Emergency Vehicle approaching. Please be aware.");
+		output = "o There is an Emergency Vehicle approaching. Please be aware.";
+		waveManager.userInterface.output(output);
 	}
 }
