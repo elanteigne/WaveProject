@@ -46,11 +46,13 @@ public class GeneralInfoService extends Service implements Runnable{
 	public void sendControlMessage(){
 		sendMessage(waveManager.controlGroup, serviceGroup, messageID, "");
 		 messageID++;
+		 waveManager.userInterface.updateGeneralInfoServicePacketsSent(messageID);
 	}
 	
 	public void sendServiceMessage(){
 		sendMessage(serviceGroup, serviceGroup, messageID, "");
 		messageID++;
+		waveManager.userInterface.updateGeneralInfoServicePacketsSent(messageID);
 	}
 	
 	//Method to calculate speed adjustment based on received packets

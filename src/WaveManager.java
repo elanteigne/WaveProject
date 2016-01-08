@@ -33,7 +33,7 @@ public class WaveManager {
 	
 	//Constructor
 	public WaveManager(){
-		userInterface = new UserInterface();
+		userInterface = new UserInterface(this);
 		userInterface.start();
 		
 		try{ TimeUnit.SECONDS.sleep(1); } catch(Exception e){ }

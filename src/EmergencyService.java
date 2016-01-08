@@ -26,11 +26,13 @@ public class EmergencyService extends Service implements Runnable {
 	public void sendControlMessage(){
 		sendMessage(waveManager.controlGroup, serviceGroup, messageID, "");
 		 messageID++;
+		 waveManager.userInterface.updateEmergencyServicePacketsSent(messageID);
 	}
 	
 	public void sendServiceMessage(){
 		sendMessage(serviceGroup, serviceGroup, messageID, "");
 		 messageID++;
+		 waveManager.userInterface.updateEmergencyServicePacketsSent(messageID);
 	}
 	
 	//The check to see if I send
@@ -60,9 +62,11 @@ public class EmergencyService extends Service implements Runnable {
 	}
 	
 	//Method to calculate speed adjustment based on received packets
-	public void computeData(){
-		System.out.println("o There is an Emergency Vehicle approaching. Please be aware.");
-		output = "o There is an Emergency Vehicle approaching. Please be aware.";
+	public void computeData(double vehicleLattitude, double vehicleLongitude){
+		double distance = calculateDistance(vehicleLattitude, vehicleLongitude);
+		
+		System.out.println("o Calculated: Emergency Vehicle approaching ("+distance+"m). Please be aware.");
+		output = "o Calculated: Emergency Vehicle approaching ("+distance+"m). Please be aware.";
 		waveManager.userInterface.output(output);
 	}
 }

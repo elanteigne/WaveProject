@@ -49,12 +49,12 @@ public class Service {
 	
 	public double calculateDistance(double lat1, double lon1) {
 		double theta = lon1 - waveManager.GPSlongitude;
-		double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(waveManager.GPSlattitude)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(waveManager.GPSlattitude)) * Math.cos(deg2rad(theta));
-		dist = Math.acos(dist);
-		dist = rad2deg(dist);
-		dist = dist * 1609.344;
+		double distance = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(waveManager.GPSlattitude)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(waveManager.GPSlattitude)) * Math.cos(deg2rad(theta));
+		distance = Math.acos(distance);
+		distance = rad2deg(distance);
+		distance = distance * 1609.344;
 
-		return (dist);
+		return distance;
 	}
 	
 	public double compareBearing(double lat1, double lon1) {

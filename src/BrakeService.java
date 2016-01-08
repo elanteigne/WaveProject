@@ -47,11 +47,13 @@ public class BrakeService extends Service implements Runnable{
 	public void sendControlMessage(){
 		sendMessage(waveManager.controlGroup, serviceGroup, messageID, "0");
 		 messageID++;
+		 waveManager.userInterface.updateBrakeServicePacketsSent(messageID);
 	}
 	
 	public void sendServiceMessage(){
 		sendMessage(serviceGroup, serviceGroup, messageID, ""+waveManager.brakeAmount);
 		messageID++;
+		waveManager.userInterface.updateBrakeServicePacketsSent(messageID);
 	}
 	
 	//The check to see if I send
