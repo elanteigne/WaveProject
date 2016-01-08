@@ -136,7 +136,7 @@ public class Receiver implements Runnable{
 						}
 					}
 
-					//DECIDE IF CONTROL MESSAGES SHOULD BE PASSED
+					//DECIDE IF CONTROL MESSAGES SHOULD BE PASSED HERE
 					if(hopCount < maxHopCount){
 						if(fromGroup.equals(brakeService.serviceGroup)){
 							passAlongMessage(fromCarID, fromGroup, messageID, hopCount, messageGroup, direction, vehicleSpeed, vehicleLattitude, vehicleLongitude, strings[9]);

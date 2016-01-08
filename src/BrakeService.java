@@ -45,12 +45,12 @@ public class BrakeService extends Service implements Runnable{
 	}
 	
 	public void sendControlMessage(){
-		sendMessage("Control", messageID, waveManager.controlGroup, serviceGroup, "0");
+		sendMessage(waveManager.controlGroup, serviceGroup, messageID, "0");
 		 messageID++;
 	}
 	
 	public void sendServiceMessage(){
-		sendMessage("Service", messageID, serviceGroup, serviceGroup, ""+waveManager.brakeAmount);
+		sendMessage(serviceGroup, serviceGroup, messageID, ""+waveManager.brakeAmount);
 		messageID++;
 	}
 	

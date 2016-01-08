@@ -8,6 +8,8 @@ public class GeneralInfoService extends Service implements Runnable{
 	public int delay = 1000;
 	public String serviceGroup = "230.0.0.2";
 	public int messageID = 0;
+	public int numClosebyVehicles;
+	private double closebyVehiclesTimestamp;
 	private String output;
 	
 	//Constructor
@@ -42,12 +44,12 @@ public class GeneralInfoService extends Service implements Runnable{
 	}
 	
 	public void sendControlMessage(){
-		sendMessage("Control", messageID, waveManager.controlGroup, serviceGroup, "");
+		sendMessage(waveManager.controlGroup, serviceGroup, messageID, "");
 		 messageID++;
 	}
 	
 	public void sendServiceMessage(){
-		sendMessage("Service", messageID, serviceGroup, serviceGroup, "");
+		sendMessage(serviceGroup, serviceGroup, messageID, "");
 		messageID++;
 	}
 	
@@ -55,23 +57,7 @@ public class GeneralInfoService extends Service implements Runnable{
 	public void computeData(String direction,  int vehicleSpeed, double vehicleLattitude, double vehicleLongitude){
 		double distanceBetweenVehicles = calculateDistance(vehicleLattitude, vehicleLongitude);
 		
-		if(distanceBetweenVehicles<0){
-			//Here is where we will decide if TrafficService should send a message
-			
-			/* 	//increment number of vehicles close-by
-			 * 	if(numVehicles>10){
-			 * 		if(speed<40){
-			 * 			//Very Slow traffic
-			 * 		}else if(speed<65){
-			 * 			//Slow traffic
-			 * 		}else{
-			 * 			//Traffic moving well
-			 * 		}
-			 * 		//sendTrafficServiceMessage with calculated info
-			 * 	}
-			 */
-			
-		}else if(distanceBetweenVehicles<150){
+		if(distanceBetweenVehicles<150){
 			//Only way to check ahead so far is checking the direction
 			if(checkIfAhead(vehicleLattitude, vehicleLongitude)){
 				if(vehicleSpeed<waveManager.speed){
@@ -111,6 +97,31 @@ public class GeneralInfoService extends Service implements Runnable{
 				System.out.println("o Calculated: Vehicle is not in critical area, therefore not considered");
 				output = "o Calculated: Vehicle is not in critical area, therefore not considered";
 				waveManager.userInterface.output(output);
+			}
+			
+			//Decide if trafficService should start sending
+			//Other solution. Vehicle would know how many vehicles around using sensors, can choose to send then, put code directly in service thread.
+			if(distanceBetweenVehicles<50){
+				//Here is where we will decide if TrafficService should send a message
+				numClosebyVehicles++;
+				if(numClosebyVehicles>10){
+					closebyVehiclesTimestamp = System.currentTimeMillis();
+					//advertiseTrafficInfo = true;
+					
+					if(vehicleSpeed<40){
+						//Very Slow traffic
+					}else if(vehicleSpeed<65){
+						//Slow traffic
+					}else{
+						//Traffic moving well
+					}
+					//sendTrafficServiceMessage with calculated info for limited time?
+				}
+				
+				if(System.currentTimeMillis()>closebyVehiclesTimestamp+5000){
+					numClosebyVehicles = 0;
+					//advertiseTrafficInfo = false;
+				}
 			}
 		}else{
 			System.out.println("o Calculated: Vehicle is too far ahead to be considered");

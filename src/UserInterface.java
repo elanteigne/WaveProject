@@ -21,7 +21,7 @@ public class UserInterface
     private JLabel rightPanelLabel;
     private JLabel carID;
     private JLabel gps;
-    private JLabel direction;
+    private JLabel bearing;
     private JLabel speed;
     private JLabel brakeAmount;
     private JLabel vehicleType;
@@ -54,12 +54,12 @@ public class UserInterface
        leftPanelLabel = new JLabel("<html><u>Vehicle Info</u></html>");
        centerPanelLabel = new JLabel("<html><u>Variable Data</u></html>");
        rightPanelLabel = new JLabel("<html><u>Calculated Info</u></html>");
-       carID = new JLabel("Car ID:");
-       gps = new JLabel("GPS:");
-       direction = new JLabel("Direction:");
-       speed = new JLabel("Speed:");
-       brakeAmount = new JLabel("Brake Amount:");
-       vehicleType = new JLabel("Vehicle Type:");
+       carID = new JLabel("Car ID: xxx-xxx-xxx-xxx");
+       gps = new JLabel("GPS: -, -");
+       bearing = new JLabel("Bearing: - degrees");
+       speed = new JLabel("Speed: -");
+       brakeAmount = new JLabel("Brake Amount: -");
+       vehicleType = new JLabel("Vehicle Type: -");
        generalInfo = new JLabel("General Info:");
        suggestedBrakeAmount = new JLabel("Speed Adjustment:");
        suggestedBrakeSpeed = new JLabel("Speed of Brake Applied:");
@@ -69,7 +69,7 @@ public class UserInterface
        rightPanelLabel.setHorizontalAlignment(JLabel.CENTER);
        carID.setHorizontalAlignment(JLabel.CENTER);
        gps.setHorizontalAlignment(JLabel.CENTER);
-       direction.setHorizontalAlignment(JLabel.CENTER);
+       bearing.setHorizontalAlignment(JLabel.CENTER);
        speed.setHorizontalAlignment(JLabel.CENTER);
        brakeAmount.setHorizontalAlignment(JLabel.CENTER);
        vehicleType.setHorizontalAlignment(JLabel.CENTER);
@@ -104,7 +104,7 @@ public class UserInterface
        leftPanel.add(vehicleType);
        centerPanel.add(centerPanelLabel);
        centerPanel.add(gps);
-       centerPanel.add(direction);
+       centerPanel.add(bearing);
        centerPanel.add(speed);
        centerPanel.add(brakeAmount);
        rightPanel.add(rightPanelLabel);
@@ -122,7 +122,7 @@ public class UserInterface
        mainFrame.add(mainPanel);
        
        mainFrame.setTitle("WAVE Interface");
-       mainFrame.setSize(1150,750);
+       mainFrame.setSize(1150,775);
        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
        mainFrame.setVisible(true);
     }
@@ -139,8 +139,8 @@ public class UserInterface
     	vehicleType.setText("Vehicle Type: "+outputText);
     }
     
-    public void writeDirection(String outputText){
-    	direction.setText("Direction: "+outputText);
+    public void writeBearing(int outputText){
+    	bearing.setText("Bearing: "+outputText+" degrees");
     }
     
     public void writeGPS(double lattitude, double longitude){

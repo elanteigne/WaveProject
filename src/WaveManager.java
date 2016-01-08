@@ -16,7 +16,7 @@ public class WaveManager {
 	public double GPSlongitude;
 	public int speed;
 	public int brakeAmount;
-	public String direction;
+	public int bearing;
 	public String vehicleType;
 	public boolean sirensOn;
 	
@@ -40,7 +40,7 @@ public class WaveManager {
 		vehicleType = checkVehicleType();
 		speed = checkSpeed();
 		brakeAmount = checkBrake();
-		direction = checkDirection();
+		bearing = checkBearing();
 		checkGPS();	
 		
 		generalInfoService = new GeneralInfoService(this);
@@ -78,10 +78,10 @@ public class WaveManager {
 		userInterface.writeGPS(GPSlattitude, GPSlongitude);
 	}
 	
-	public String checkDirection(){
-		String direction = "N";
-		userInterface.writeDirection(direction);
-		return direction;
+	public int checkBearing(){
+		int bearing = 0; //N
+		userInterface.writeBearing(bearing);
+		return bearing;
 	}
 	
 	public int checkSpeed(){

@@ -16,23 +16,25 @@ public class Service {
 	}
 	
 	//Class Methods
-	public void sendMessage(String packetType, int messageID, String fromGroup, String toGroup, String data){
+	public void sendMessage(String fromGroup, String toGroup, int messageID, String data){
 		try{
 			//Preparing packet envelope
 			InetAddress InetDestination = InetAddress.getByName(fromGroup);
 			
 			int hopCount = 0;
 			
-			//String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.direction+"/"+waveManager.speed+"/"+waveManager.GPSlattitude+"/"+waveManager.GPSlongitude+"/"+data;
-			
-			/**Testing**/
-			//General & Braking 
-			String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.direction+"/"+60+"/"+45.3476235+"/"+-73.6597858+"/"+data;
-			
+			String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.bearing+"/"+waveManager.speed+"/"+waveManager.GPSlattitude+"/"+waveManager.GPSlongitude+"/"+data;
 			DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetDestination, waveManager.port);
 			
 			//Send packet
 			sendingProcess.send(packet);
+			
+			String packetType = "";
+			if(fromGroup.equals(toGroup)){
+				packetType = "Service";
+			}else{
+				packetType = "Control";
+			}
 			
 			String output = "-> Sent "+packetType+" message to "+fromGroup+": "+message;
 			waveManager.userInterface.output(output);
@@ -70,6 +72,7 @@ public class Service {
 	}
 	
 	public boolean checkIfAhead(double lat1, double lon1) {
+		//Should ideally check if on the same road but can't without a maps API
 		double bearing = compareBearing(lat1, lon1);
 		if(bearing<10 && bearing>150){		
 			return true;
@@ -79,6 +82,7 @@ public class Service {
 	}
 	
 	public boolean checkIfBehind(double lat1, double lon1) {
+		//Should ideally check if on the same road but can't without a maps API
 		double bearing = compareBearing(lat1, lon1);
 		if(bearing>170 && bearing<190){		
 			return true;
