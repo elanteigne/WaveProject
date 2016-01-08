@@ -23,9 +23,14 @@ public class Service {
 			
 			int hopCount = 0;
 			
-			String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.bearing+"/"+waveManager.speed+"/"+waveManager.GPSlattitude+"/"+waveManager.GPSlongitude+"/"+data;
-			DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetDestination, waveManager.port);
+			//String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.bearing+"/"+waveManager.speed+"/"+waveManager.GPSlattitude+"/"+waveManager.GPSlongitude+"/"+data;
 			
+			/**Testing**/
+			//General & Braking 
+			String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.bearing+"/"+60+"/"+45.3476235+"/"+-73.6597858+"/"+data;
+			
+			DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetDestination, waveManager.port);
+						
 			//Send packet
 			sendingProcess.send(packet);
 			
@@ -59,7 +64,6 @@ public class Service {
 
 		double	bearing = rad2deg(Math.atan2(y, x));
 
-		System.out.println(""+bearing);
 		return bearing;
 	}
 

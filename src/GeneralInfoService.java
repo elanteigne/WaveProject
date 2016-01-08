@@ -67,14 +67,14 @@ public class GeneralInfoService extends Service implements Runnable{
 					
 					System.out.println("o Calculated: TrafficAheadSlower x"+warningLevel);
 					output = "o Calculated: TrafficAheadSlower x"+warningLevel;
-					waveManager.userInterface.output(output);
+					waveManager.userInterface.computedGeneralInfo(output);
 					
 					output = "TrafficAheadSlower x"+warningLevel;
 					waveManager.userInterface.writeGeneralInfo(output);
 				}else{
 					System.out.println("o Calculated: Vehicle is ahead but is faster so is not considered");
 					output = "o Calculated: Vehicle is ahead but is faster so is not considered";
-					waveManager.userInterface.output(output);
+					waveManager.userInterface.computedGeneralInfo(output);
 				}
 			}else if(checkIfBehind(vehicleLattitude, vehicleLongitude)){
 				if(vehicleSpeed>waveManager.speed){
@@ -84,19 +84,19 @@ public class GeneralInfoService extends Service implements Runnable{
 					
 					System.out.println("o Calculated: TrafficBehindFaster x"+warningLevel);
 					output = "o Calculated: TrafficBehindFaster x"+warningLevel;
-					waveManager.userInterface.output(output);
+					waveManager.userInterface.computedGeneralInfo(output);
 					
 					output = "TrafficBehindFaster x"+warningLevel;
 					waveManager.userInterface.writeGeneralInfo(output);
 				}else{
 					System.out.println("o Calculated: Vehicle is behind but is slower so is not considered");
 					output = "o Calculated: Vehicle is behind but is slower so is not considered";
-					waveManager.userInterface.output(output);
+					waveManager.userInterface.computedGeneralInfo(output);
 				}
 			}else{
 				System.out.println("o Calculated: Vehicle is not in critical area, therefore not considered");
 				output = "o Calculated: Vehicle is not in critical area, therefore not considered";
-				waveManager.userInterface.output(output);
+				waveManager.userInterface.computedGeneralInfo(output);
 			}
 			
 			//Decide if trafficService should start sending
@@ -126,7 +126,7 @@ public class GeneralInfoService extends Service implements Runnable{
 		}else{
 			System.out.println("o Calculated: Vehicle is too far ahead to be considered");
 			output = "o Calculated: Vehicle is too far ahead to be considered";
-			waveManager.userInterface.output(output);
+			waveManager.userInterface.computedGeneralInfo(output);
 		}
 	}
 	
