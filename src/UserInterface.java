@@ -49,8 +49,10 @@ public class UserInterface implements Runnable, ActionListener{
     private JLabel delay;
     private JLabel sirensLabel;
     
-    private JButton gasButton;
-    private JButton brakeButton;
+    private JButton speedUpButton;
+    private JButton speedDownButton;
+    private JButton brakeUpButton;
+    private JButton brakeDownButton;
     private JButton sirenButton;
     private JButton delayDownButton;
     private JButton delayUpButton;
@@ -88,15 +90,19 @@ public class UserInterface implements Runnable, ActionListener{
 	   rightComputedDataPanel = new JPanel();
 	   
 	   //Make buttons increase gas and brake
-	   gasButton = new JButton("  Gas  ");
-	   brakeButton = new JButton("Brake");
+	   speedUpButton = new JButton("Faster");
+	   speedDownButton = new JButton("Slower");
+	   brakeUpButton = new JButton("Brake More");
+	   brakeDownButton = new JButton("Brake Less");
 	   sirenButton = new JButton("Siren");
 	   delayDownButton = new JButton("Smaller");
 	   delayUpButton = new JButton("Larger");
 	   delayDownButton.addActionListener(this);
 	   delayUpButton.addActionListener(this);
-	   gasButton.addActionListener(this);
-	   brakeButton.addActionListener(this);
+	   speedUpButton.addActionListener(this);
+	   speedDownButton.addActionListener(this);
+	   brakeUpButton.addActionListener(this);
+	   brakeDownButton.addActionListener(this);
 	   sirenButton.addActionListener(this);
 	   
 	   //Labels
@@ -204,7 +210,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   leftPanel.setPreferredSize(new Dimension(700,150));
 	   centerPanel.setPreferredSize(new Dimension(700,150));
 	   rightPanel.setPreferredSize(new Dimension(700,150));
-	   buttonPanel.setPreferredSize(new Dimension(600,50));
+	   buttonPanel.setPreferredSize(new Dimension(1000,50));
 	   outputPanel.setPreferredSize(new Dimension(1125,750));
 	   packetInfoPanel.setPreferredSize(new Dimension(800,80));
 	   sentPacketInfoPanel.setPreferredSize(new Dimension(500,40));
@@ -233,8 +239,10 @@ public class UserInterface implements Runnable, ActionListener{
 	   rightPanel.add(suggestedBrakeSpeed);
 	   buttonPanel.add(delayPanel);
 	   buttonPanel.add(controlsPanel);
-	   controlsPanel.add(gasButton);
-	   controlsPanel.add(brakeButton);
+	   controlsPanel.add(speedUpButton);
+	   controlsPanel.add(speedDownButton);
+	   controlsPanel.add(brakeUpButton);
+	   controlsPanel.add(brakeDownButton);
 	   if(waveManager.vehicleType.equals("Emergency")){
 		   controlsPanel.add(sirenButton);
 		   controlsPanel.add(sirensLabel);
@@ -312,6 +320,10 @@ public class UserInterface implements Runnable, ActionListener{
     public void computedBrakeInfo(String outputText){
     	computedBrakeInfo.append(outputText+"\n");
     }
+
+    public void computedEmergencyInfo(String outputText){
+    	computedEmergencyInfo.append(outputText+"\n");
+    }
     
     public void writeCarID(String outputText){
     	carID.setText("CarID: "+outputText);
@@ -374,10 +386,22 @@ public class UserInterface implements Runnable, ActionListener{
     }
     
     public void actionPerformed(ActionEvent e) {
-    	if(e.getSource().equals(gasButton)){
-    		
-    	}else if(e.getSource().equals(brakeButton)){
-    		
+    	if(e.getSource().equals(speedUpButton)){
+    		if(waveManager.speed>=0&&waveManager.speed<100){
+        		waveManager.speed+=10;
+    		}
+    	}else if(e.getSource().equals(speedDownButton)){
+    		if(waveManager.speed>0&&waveManager.speed<=100){
+        		waveManager.speed-=10;
+    		}
+    	}else if(e.getSource().equals(brakeUpButton)){
+    		if(waveManager.brakeAmount>=0&&waveManager.brakeAmount<100){
+        		waveManager.brakeAmount+=10;
+    		}
+    	}else if(e.getSource().equals(brakeDownButton)){
+    		if(waveManager.brakeAmount>0&&waveManager.brakeAmount<=100){
+        		waveManager.brakeAmount-=10;
+    		}
     	}else if(e.getSource().equals(sirenButton)){
     		if(waveManager.sirensOn){
     			waveManager.sirensOn=false;

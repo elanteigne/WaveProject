@@ -86,7 +86,7 @@ public class WaveManager {
 	}
 	
 	public int checkSpeed(){
-		int speed = 20;
+		int speed = 0;
 		return speed;
 	}
 	

@@ -39,6 +39,7 @@ public class EmergencyService extends Service implements Runnable {
 	public void run(){
 		while(true){
 			delay = waveManager.delay;
+			System.out.println(""+waveManager.sirensOn);
 			if(waveManager.sirensOn){
 				sendControlMessage();
 				//Wait 
@@ -60,8 +61,8 @@ public class EmergencyService extends Service implements Runnable {
 	public void computeData(double vehicleLattitude, double vehicleLongitude){
 		double distance = calculateDistance(vehicleLattitude, vehicleLongitude);
 		
-		System.out.println("o Calculated: Emergency Vehicle approaching ("+distance+"m). Please be aware.");
-		output = "o Calculated: Emergency Vehicle approaching ("+distance+"m). Please be aware.";
-		waveManager.userInterface.output(output);
+		System.out.println("o Calculated: Emergency Vehicle approaching ("+(int)distance+"m). Please be aware.");
+		output = "o Calculated: Emergency Vehicle approaching ("+(int)distance+"m). Please be aware.";
+		waveManager.userInterface.computedEmergencyInfo(output);
 	}
 }
