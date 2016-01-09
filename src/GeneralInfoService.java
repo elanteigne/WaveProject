@@ -103,28 +103,29 @@ public class GeneralInfoService extends Service implements Runnable{
 			
 			//Decide if trafficService should start sending
 			//Other solution. Vehicle would know how many vehicles around using sensors, can choose to send then, put code directly in service thread.
-			if(distanceBetweenVehicles<50){
-				//Here is where we will decide if TrafficService should send a message
-				numClosebyVehicles++;
-				if(numClosebyVehicles>10){
-					closebyVehiclesTimestamp = System.currentTimeMillis();
-					//advertiseTrafficInfo = true;
+			//if(distanceBetweenVehicles<50){
+				////Here is where we will decide if TrafficService should send a message
+				//if(numClosebyVehicles>10){
+					//closebyVehiclesTimestamp = System.currentTimeMillis();
+					////advertiseTrafficInfo = true;
 					
-					if(vehicleSpeed<40){
-						//Very Slow traffic
-					}else if(vehicleSpeed<65){
-						//Slow traffic
-					}else{
-						//Traffic moving well
-					}
-					//sendTrafficServiceMessage with calculated info for limited time?
-				}
+					//if(vehicleSpeed<40){
+						//numClosebyVehicles++;
+						////Very Slow traffic
+					//}else if(vehicleSpeed<65){
+						//numClosebyVehicles++;
+						////Slow traffic
+					//}else{
+						////Traffic moving well
+					//}
+					////sendTrafficServiceMessage with calculated info for limited time?
+				//}
 				
-				if(System.currentTimeMillis()>closebyVehiclesTimestamp+5000){
-					numClosebyVehicles = 0;
-					//advertiseTrafficInfo = false;
-				}
-			}
+				//if(System.currentTimeMillis()>closebyVehiclesTimestamp+5000){
+					//numClosebyVehicles = 0;
+					////advertiseTrafficInfo = false;
+				//}
+			//}
 		}else{
 			System.out.println("o Calculated: Vehicle is too far ahead to be considered");
 			output = "o Calculated: Vehicle is too far ahead to be considered";

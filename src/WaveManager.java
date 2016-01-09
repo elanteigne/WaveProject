@@ -91,11 +91,13 @@ public class WaveManager {
 		userInterface.writeSpeed(speed);
 		return speed;
 	}
+	
 	public int checkBrake(){
 		int brakeAmount = 100;
 		userInterface.writeBrakeAmount(brakeAmount);
 		return brakeAmount;
 	}
+	
 	public String checkVehicleType(){
 		//String vehicleType = "Emergency";
 		String vehicleType = "Civillian";
