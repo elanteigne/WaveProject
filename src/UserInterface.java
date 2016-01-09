@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class UserInterface implements Runnable{
+public class UserInterface implements Runnable, ActionListener{
 	//Objects
 	public WaveManager waveManager;
 	private Thread userInterfaceThread;    
@@ -18,9 +18,11 @@ public class UserInterface implements Runnable{
     private JPanel buttonPanel;
     private JPanel outputPanel;
     private JPanel packetInfoPanel;
+    private JPanel delayPanel;
+    private JPanel controlsPanel;
     private JPanel sentPacketInfoPanel;
     private JPanel receivedPacketInfoPanel;
-    private JPanel topComputedDataPanel;
+    private JPanel computedDataPanel;
     private JPanel leftComputedDataPanel;
     private JPanel rightComputedDataPanel;
     
@@ -44,13 +46,17 @@ public class UserInterface implements Runnable{
     private JLabel numPacketsOmitted;
     private JLabel sender;
     private JLabel receiver;
+    private JLabel delay;
+    private JLabel sirensLabel;
     
-    private JButton button1;
-    private JButton button2;
-    private JButton button3;
+    private JButton gasButton;
+    private JButton brakeButton;
+    private JButton sirenButton;
+    private JButton delayDownButton;
+    private JButton delayUpButton;
 
     private JTextArea output;
-    private JScrollPane scroll;
+    private JScrollPane consoleScroll;
     
     private JTextArea computedGeneralInfo;
     private JScrollPane computedGeneralInfoScroll;
@@ -61,7 +67,7 @@ public class UserInterface implements Runnable{
 
 	//Class Methods
     public UserInterface(WaveManager waveManager){
-    	this.waveManager=waveManager;
+       this.waveManager=waveManager;
 	   mainFrame = new JFrame();
 	   
 	   mainPanel = new JPanel();
@@ -73,16 +79,25 @@ public class UserInterface implements Runnable{
 	   outputPanel = new JPanel();
 	   outputPanel = new JPanel();       
 	   packetInfoPanel = new JPanel();
+	   controlsPanel = new JPanel();
+	   delayPanel = new JPanel();
 	   sentPacketInfoPanel = new JPanel();
 	   receivedPacketInfoPanel = new JPanel();
-	   topComputedDataPanel = new JPanel();
+	   computedDataPanel = new JPanel();
 	   leftComputedDataPanel = new JPanel();
 	   rightComputedDataPanel = new JPanel();
 	   
 	   //Make buttons increase gas and brake
-	   button1 = new JButton("  Gas  ");
-	   button2 = new JButton("Brake");
-	   button3 = new JButton("Siren");
+	   gasButton = new JButton("  Gas  ");
+	   brakeButton = new JButton("Brake");
+	   sirenButton = new JButton("Siren");
+	   delayDownButton = new JButton("Smaller");
+	   delayUpButton = new JButton("Larger");
+	   delayDownButton.addActionListener(this);
+	   delayUpButton.addActionListener(this);
+	   gasButton.addActionListener(this);
+	   brakeButton.addActionListener(this);
+	   sirenButton.addActionListener(this);
 	   
 	   //Labels
 	   leftPanelLabel = new JLabel("<html><u>Vehicle Info</u></html>");
@@ -105,6 +120,8 @@ public class UserInterface implements Runnable{
 	   numPacketsReceived = new JLabel("Received Packets: 0 ");
 	   numPacketsPassed = new JLabel("Packets Passed: 0 ");
 	   numPacketsOmitted = new JLabel("Omitted Packets: 0 ");
+	   delay = new JLabel("Smallest Delay = "+waveManager.delay);
+	   sirensLabel = new JLabel("OFF");
 	
 	   leftPanelLabel.setHorizontalAlignment(JLabel.CENTER);
 	   centerPanelLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -140,15 +157,17 @@ public class UserInterface implements Runnable{
 	   numPacketsPassed.setHorizontalAlignment(JLabel.CENTER);   
 	   numPacketsPassed.setFont(new Font("Open Sans", Font.BOLD, 13)); 
 	   numPacketsOmitted.setHorizontalAlignment(JLabel.CENTER);    
-	   numPacketsOmitted.setFont(new Font("Open Sans", Font.BOLD, 13));       
+	   numPacketsOmitted.setFont(new Font("Open Sans", Font.BOLD, 13)); 
+	   delay.setHorizontalAlignment(JLabel.CENTER);          
 	   
 	   //Output boxes
 	   JLabel outputLabel = new JLabel("<html><u>Sending/Receiving</u></html>");
+	   outputLabel.setHorizontalAlignment(JLabel.CENTER);     
 	   output = new JTextArea();
 	   output.setFont(new Font("Open Sans", Font.PLAIN, 12));
 	   output.setEditable(false);
-	   scroll = new JScrollPane (output, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-	   scroll.setPreferredSize(new Dimension(1100,200));
+	   consoleScroll = new JScrollPane (output, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	   consoleScroll.setPreferredSize(new Dimension(1100,200));
 	
 	   JLabel generalInfoServiceOutputLabel = new JLabel("<html><u>General Info Service Computed Information</u></html>");
 	   computedGeneralInfo = new JTextArea();
@@ -175,23 +194,26 @@ public class UserInterface implements Runnable{
 	   leftPanel.setLayout(new GridLayout(6,1));
 	   centerPanel.setLayout(new GridLayout(6,1));
 	   rightPanel.setLayout(new GridLayout(6,1));
+	   buttonPanel.setLayout(new GridLayout(1,2));
 	   packetInfoPanel.setLayout(new GridLayout(1,2));
 	   sentPacketInfoPanel.setLayout(new GridLayout(4,1));
 	   receivedPacketInfoPanel.setLayout(new GridLayout(4,1));
-	   topComputedDataPanel.setLayout(new GridLayout(1,2));
+	   computedDataPanel.setLayout(new GridLayout(1,2));
 	   
 	   topPanel.setPreferredSize(new Dimension(700,150));
 	   leftPanel.setPreferredSize(new Dimension(700,150));
 	   centerPanel.setPreferredSize(new Dimension(700,150));
 	   rightPanel.setPreferredSize(new Dimension(700,150));
-	   buttonPanel.setPreferredSize(new Dimension(1100,50));
+	   buttonPanel.setPreferredSize(new Dimension(600,50));
 	   outputPanel.setPreferredSize(new Dimension(1125,750));
-	   packetInfoPanel.setPreferredSize(new Dimension(1125,80));
+	   packetInfoPanel.setPreferredSize(new Dimension(800,80));
 	   sentPacketInfoPanel.setPreferredSize(new Dimension(500,40));
 	   receivedPacketInfoPanel.setPreferredSize(new Dimension(500,100));
-	   topComputedDataPanel.setPreferredSize(new Dimension(1125,1000));
+	   computedDataPanel.setPreferredSize(new Dimension(1125,1000));
 	   leftComputedDataPanel.setPreferredSize(new Dimension(550,700));
 	   rightComputedDataPanel.setPreferredSize(new Dimension(550,700));
+	   delayPanel.setPreferredSize(new Dimension(50,100));
+	   outputLabel.setPreferredSize(new Dimension(1125,40));
 	   
 	   //Add components to panels
 	   topPanel.add(leftPanel);
@@ -209,15 +231,23 @@ public class UserInterface implements Runnable{
 	   rightPanel.add(generalInfo);
 	   rightPanel.add(suggestedBrakeAmount);
 	   rightPanel.add(suggestedBrakeSpeed);
-	   buttonPanel.add(button1);
-	   buttonPanel.add(button2);
-	   buttonPanel.add(button3);
+	   buttonPanel.add(delayPanel);
+	   buttonPanel.add(controlsPanel);
+	   controlsPanel.add(gasButton);
+	   controlsPanel.add(brakeButton);
+	   if(waveManager.vehicleType.equals("Emergency")){
+		   controlsPanel.add(sirenButton);
+		   controlsPanel.add(sirensLabel);
+	   }
 	   outputPanel.add(packetInfoPanel);
 	   outputPanel.add(outputLabel);
-	   outputPanel.add(scroll);
-	   outputPanel.add(topComputedDataPanel);
+	   outputPanel.add(consoleScroll);
+	   outputPanel.add(computedDataPanel);
 	   packetInfoPanel.add(sentPacketInfoPanel);
 	   packetInfoPanel.add(receivedPacketInfoPanel);
+	   delayPanel.add(delay);
+	   delayPanel.add(delayDownButton);
+	   delayPanel.add(delayUpButton);
 	   sentPacketInfoPanel.add(sender);
 	   sentPacketInfoPanel.add(generalInfoPacketsSent);
 	   sentPacketInfoPanel.add(brakeServicePacketsSent);
@@ -226,8 +256,8 @@ public class UserInterface implements Runnable{
 	   receivedPacketInfoPanel.add(numPacketsReceived);
 	   receivedPacketInfoPanel.add(numPacketsOmitted);
 	   receivedPacketInfoPanel.add(numPacketsPassed);
-	   topComputedDataPanel.add(leftComputedDataPanel);
-	   topComputedDataPanel.add(rightComputedDataPanel);
+	   computedDataPanel.add(leftComputedDataPanel);
+	   computedDataPanel.add(rightComputedDataPanel);
 	   leftComputedDataPanel.add(generalInfoServiceOutputLabel);
 	   leftComputedDataPanel.add(computedGeneralInfoScroll);
 	   rightComputedDataPanel.add(brakeServiceOutputLabel);
@@ -260,11 +290,13 @@ public class UserInterface implements Runnable{
     			 computedGeneralInfo.setCaretPosition(computedGeneralInfo.getDocument().getLength());
     			 computedBrakeInfo.setCaretPosition(computedBrakeInfo.getDocument().getLength());
     			 computedEmergencyInfo.setCaretPosition(computedEmergencyInfo.getDocument().getLength());
-    			 
-    			 waveManager.checkSpeed();
-    			 waveManager.checkBearing();
-    			 waveManager.checkBrake();
-    			 waveManager.checkGPS();
+
+    			 writeCarID(waveManager.CarID);
+    			 writeSpeed(waveManager.speed);
+    			 writeBrakeAmount(waveManager.brakeAmount);
+    			 writeBearing(waveManager.bearing);
+    			 writeGPS(waveManager.GPSlattitude, waveManager.GPSlongitude);
+    			 writeVehicleType(waveManager.vehicleType);
     		 }catch(Exception e){ }
     	}
     }
@@ -338,11 +370,29 @@ public class UserInterface implements Runnable{
     }
     
     public void updateEmergencyServicePacketsSent(int output){
-    	numPacketsPassed.setText("EmergencyService Packets Sent: "+output+"");
+    	emergencyServicePacketsSent.setText("EmergencyService Packets Sent: "+output+"");
     }
     
     public void actionPerformed(ActionEvent e) {
+    	if(e.getSource().equals(gasButton)){
     		
+    	}else if(e.getSource().equals(brakeButton)){
+    		
+    	}else if(e.getSource().equals(sirenButton)){
+    		if(waveManager.sirensOn){
+    			waveManager.sirensOn=false;
+    			sirensLabel.setText("OFF");
+    		}else{
+    			waveManager.sirensOn=true;
+    			sirensLabel.setText("ON");
+    		}
+    	}else if(e.getSource().equals(delayDownButton)){
+    		waveManager.delay*=0.5;
+			delay.setText("Smallest Delay = "+waveManager.delay);
+    	}else if(e.getSource().equals(delayUpButton)){
+    		waveManager.delay*=1.5;
+			delay.setText("Smallest Delay = "+waveManager.delay);
+    	}
     }
     
 }

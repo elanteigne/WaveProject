@@ -5,7 +5,7 @@ public class BrakeService extends Service implements Runnable{
 	private Thread brakeServiceThread;
 	
 	//Resources
-	public int delay = 500;
+	public int delay;
 	public String serviceGroup = "230.0.0.3";
 	public int messageID = 0;
 	private String output;
@@ -13,6 +13,7 @@ public class BrakeService extends Service implements Runnable{
 	//Constructor
 	public BrakeService(WaveManager waveManager){
 		super(waveManager);
+		delay = waveManager.delay;
 	}
 
 	//Class Methods
@@ -24,21 +25,24 @@ public class BrakeService extends Service implements Runnable{
 	}
 	
 	public void run(){
-		while(waveManager.speed>10){
-			if(checkBrake()){				
-				sendControlMessage();
-				//Wait
-				try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
-
-				
-				int count = 0;
-				while(count<5){
-					sendServiceMessage();
-					
+		while(true){
+			delay = waveManager.delay;
+			if(waveManager.speed>10){
+				if(checkBrake()){				
+					sendControlMessage();
 					//Wait
 					try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
-
-					count++;
+	
+					
+					int count = 0;
+					while(count<5){
+						sendServiceMessage();
+						
+						//Wait
+						try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
+	
+						count++;
+					}
 				}
 			}
 		}

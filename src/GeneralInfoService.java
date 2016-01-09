@@ -5,16 +5,17 @@ public class GeneralInfoService extends Service implements Runnable{
 	private Thread generalInfoServiceThread;
 	
 	//Resources
-	public int delay = 1000;
+	public int delay;
 	public String serviceGroup = "230.0.0.2";
 	public int messageID = 0;
 	public int numClosebyVehicles;
-	private double closebyVehiclesTimestamp;
+	//private double closebyVehiclesTimestamp;
 	private String output;
 	
 	//Constructor
 	public GeneralInfoService(WaveManager waveManager){
 		super(waveManager);
+		delay = waveManager.delay*2;
 	}
 
 	//Class Methods
@@ -27,6 +28,8 @@ public class GeneralInfoService extends Service implements Runnable{
 	
 	public void run(){
 		while(true){
+			delay = waveManager.delay*2;
+			
 			sendControlMessage();
 			//Wait
 			try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
