@@ -5,7 +5,7 @@ public class EmergencyService extends Service implements Runnable {
 	private Thread emergencyServiceThread;
 	
 	//Resources
-	public int delay = 500;
+	public int delay;
 	public int messageID = 0;
 	public String serviceGroup = "230.0.0.4";
 	private String output;
@@ -13,6 +13,7 @@ public class EmergencyService extends Service implements Runnable {
 	//Constructor
 	public EmergencyService(WaveManager waveManager){
 		super(waveManager);
+		delay = waveManager.delay;
 	}
 	
 	//Class Methods
@@ -24,45 +25,45 @@ public class EmergencyService extends Service implements Runnable {
 	}
 	
 	public void sendControlMessage(){
-		sendMessage("Control", messageID, waveManager.controlGroup, serviceGroup, "");
+		sendMessage(waveManager.controlGroup, serviceGroup, messageID, "");
 		 messageID++;
+		 waveManager.userInterface.updateEmergencyServicePacketsSent(messageID);
 	}
 	
 	public void sendServiceMessage(){
-		sendMessage("Service", messageID, serviceGroup, serviceGroup, "");
+		sendMessage(serviceGroup, serviceGroup, messageID, "");
 		 messageID++;
+		 waveManager.userInterface.updateEmergencyServicePacketsSent(messageID);
 	}
-	
-	//The check to see if I send
-	public boolean checkSiren(){
-		if(waveManager.sirensOn){
-			return true;
-		}else{
-			return false;
-		}
-	}
-	
+		
 	public void run(){
-		while(checkSiren()){
-			sendControlMessage();
-			//Wait 
-			try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
-			
-			int count = 0;
-			while(count<5){
-				sendServiceMessage();
-				
-				//Wait
+		while(true){
+			delay = waveManager.delay;
+			System.out.println(""+waveManager.sirensOn);
+			if(waveManager.sirensOn){
+				sendControlMessage();
+				//Wait 
 				try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
-				count++;
+				
+				int count = 0;
+				while(count<5){
+					sendServiceMessage();
+
+					delay = waveManager.delay;
+					//Wait
+					try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
+					count++;
+				}
 			}
 		}
 	}
 	
 	//Method to calculate speed adjustment based on received packets
-	public void computeData(){
-		System.out.println("o There is an Emergency Vehicle approaching. Please be aware.");
-		output = "o There is an Emergency Vehicle approaching. Please be aware.";
-		waveManager.userInterface.output(output);
+	public void computeData(double vehicleLattitude, double vehicleLongitude){
+		double distance = calculateDistance(vehicleLattitude, vehicleLongitude);
+		
+		System.out.println("o Calculated: Emergency Vehicle approaching ("+(int)distance+"m). Please be aware.");
+		output = "o Calculated: Emergency Vehicle approaching ("+(int)distance+"m). Please be aware.";
+		waveManager.userInterface.computedEmergencyInfo(output);
 	}
 }

@@ -14,6 +14,9 @@ public class Receiver implements Runnable{
 	public WaveManager waveManager;
 	
 	//Resources
+	public int numPacketsReceived;
+	public int numPacketsPassed;
+	public int numPacketsOmitted;
 	public int timeout = 1;
 	private String currentGroup;
 	private String output;
@@ -31,6 +34,10 @@ public class Receiver implements Runnable{
 		this.generalInfoService=generalInfoService;
 		this.brakeService=brakeService;
 		this.emergencyService=emergencyService;
+		numPacketsReceived = 0;
+		numPacketsPassed = 0;
+		numPacketsOmitted = 0;
+		
 		try{
 			listener = new MulticastSocket(waveManager.port);			
 			listener.joinGroup(InetAddress.getByName(waveManager.controlGroup));
@@ -69,6 +76,8 @@ public class Receiver implements Runnable{
 			try{
 				listener.setSoTimeout(timeout);
 				listener.receive(packet);
+				numPacketsReceived++;
+				waveManager.userInterface.updateNumPacketsReceived(numPacketsReceived);
 			}catch(Exception e){ }
 			
 			byte[] message = packet.getData();
@@ -88,17 +97,17 @@ public class Receiver implements Runnable{
 			double vehicleLongitude = Double.parseDouble(strings[8]);
 			
 			//Commented for testing purposes
-			//if(!(strings[0].equals(waveManager.CarID))){
+			//   if(!(strings[0].equals(waveManager.CarID))){
 			if(fromCarID.equals(waveManager.CarID)){
 				if(receivedMessagePreviously(fromCarID, messageID, messageGroup)){
 					
 					//The order of these is where PRIORITIES take place
-					 if(fromGroup.equals(emergencyService.serviceGroup)){
+					if(fromGroup.equals(emergencyService.serviceGroup)){
 						System.out.println("+ Received *EmergencyService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Sirens 'On', Direction:'"+direction+"', Speed: "+vehicleSpeed+" km/h, HopCount = "+hopCount);
 						output = "+ Received *EmergencyService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Sirens 'On', Direction:'"+direction+"', Speed: "+vehicleSpeed+" km/h, HopCount = "+hopCount;
 						waveManager.userInterface.output(output);
 								
-						emergencyService.computeData();
+						emergencyService.computeData(vehicleLattitude, vehicleLongitude);
 					}else if(fromGroup.equals(brakeService.serviceGroup)){
 						int brakeAmount = Integer.parseInt(strings[9]);
 						
@@ -137,7 +146,7 @@ public class Receiver implements Runnable{
 						}
 					}
 
-					//DECIDE IF CONTROL MESSAGES SHOULD BE PASSED
+					//DECIDE IF CONTROL MESSAGES SHOULD BE PASSED HERE
 					if(hopCount < maxHopCount){
 						if(fromGroup.equals(brakeService.serviceGroup)){
 							passAlongMessage(fromCarID, fromGroup, messageID, hopCount, messageGroup, direction, vehicleSpeed, vehicleLattitude, vehicleLongitude, strings[9]);
@@ -147,6 +156,9 @@ public class Receiver implements Runnable{
 					}
 				}
 			}else{
+				numPacketsOmitted++;
+				waveManager.userInterface.updateNumPacketsOmitted(numPacketsOmitted);
+				
 				System.out.println("X Omitted own message");
 				output = "X Omitted own message";
 				waveManager.userInterface.output(output);
@@ -177,7 +189,10 @@ public class Receiver implements Runnable{
 			
 			//Send packet
 			passAlongProcess.send(packet);
-		
+
+			numPacketsPassed++;
+			waveManager.userInterface.updateNumPacketsPassed(numPacketsPassed);
+			
 			System.out.println("->-> Passed messageID '"+messageID+"' along on "+fromGroup+" with hopCount '"+hopCount+"': "+message);
 			output = "->-> Passed messageID '"+messageID+"' along on "+fromGroup+" with hopCount '"+hopCount+"': "+message;
 			waveManager.userInterface.output(output);
@@ -187,6 +202,9 @@ public class Receiver implements Runnable{
 	private boolean receivedMessagePreviously(String fromCarID, String messageID, String fromGroup){
 		for(int i=0; i<8; i++){
 			if(recentlyReceivedMessages[i][0].equals(fromCarID)&&recentlyReceivedMessages[i][1].equals(messageID)&&recentlyReceivedMessages[i][2].equals(fromGroup)){
+				numPacketsOmitted++;
+				waveManager.userInterface.updateNumPacketsOmitted(numPacketsOmitted);
+				
 				System.out.println("X Recently received message '"+messageID+"' from carID '"+fromCarID+"' on service channel '"+fromGroup+"'. Omit message");
 				output = "X Recently received message '"+messageID+"' from carID '"+fromCarID+"' on service channel '"+fromGroup+"'. Omit message";
 				waveManager.userInterface.output(output);
