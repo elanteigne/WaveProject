@@ -8,13 +8,10 @@ public class Receiver implements Runnable{
 	private GeneralInfoService generalInfoService;
 	private BrakeService brakeService;
 	private EmergencyService emergencyService;
+	
 	private MulticastSocket listener;
-<<<<<<< HEAD
-	//private TrafficService TrafficService;
-=======
 	private MulticastSocket passAlongProcess;
 	public WaveManager waveManager;
->>>>>>> refs/remotes/origin/master
 	
 	//Resources
 	public int timeout = 1;
@@ -31,14 +28,9 @@ public class Receiver implements Runnable{
 	//Constructor
 	public Receiver(WaveManager waveManager, GeneralInfoService generalInfoService, BrakeService brakeService, EmergencyService emergencyService){
 		this.waveManager=waveManager;
-<<<<<<< HEAD
-		this.breakService=breakService;
-		//this.TrafficService = TrafficService;
-=======
 		this.generalInfoService=generalInfoService;
 		this.brakeService=brakeService;
 		this.emergencyService=emergencyService;
->>>>>>> refs/remotes/origin/master
 		try{
 			listener = new MulticastSocket(waveManager.port);			
 			listener.joinGroup(InetAddress.getByName(waveManager.controlGroup));

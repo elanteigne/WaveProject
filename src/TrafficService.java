@@ -35,13 +35,12 @@ public class TrafficService extends Service{
 
 	//Class Methods
 	public void sendControlMessage(String serviceGroup){
-		sendMessage("Control", controlGroup, "message");
+		sendMessage(controlGroup, serviceGroup, "");
 		this.serviceGroup = serviceGroup;
 	}
 	
 	public void sendServiceMessage(int breakAmount, String direction){
-		//sendMessage("Service", serviceGroup, waveManager.CarID+"/"+serviceGroup+"/"+direction+"/"+breakAmount);
-		sendMessage("Service", serviceGroup, "message");
+		sendMessage(serviceGroup, serviceGroup, "");
 	}
 	
 	//Traffic functions
