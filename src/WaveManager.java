@@ -37,6 +37,7 @@ public class WaveManager {
 		CarID = checkVinNumber();
 		vehicleType = checkVehicleType();
 		speed = checkSpeed();
+		speed = 0;
 		brakeAmount = checkBrake();
 		bearing = checkBearing();
 		checkGPS();	
@@ -86,7 +87,6 @@ public class WaveManager {
 	}
 	
 	public int checkSpeed(){
-		int speed = 0;
 		return speed;
 	}
 	

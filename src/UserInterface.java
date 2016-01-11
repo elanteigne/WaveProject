@@ -126,7 +126,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   numPacketsReceived = new JLabel("Received Packets: 0 ");
 	   numPacketsPassed = new JLabel("Packets Passed: 0 ");
 	   numPacketsOmitted = new JLabel("Omitted Packets: 0 ");
-	   delay = new JLabel("Smallest Delay = "+waveManager.delay);
+	   delay = new JLabel("Smallest Delay = "+waveManager.delay+"ms");
 	   sirensLabel = new JLabel("OFF");
 	
 	   leftPanelLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -412,10 +412,10 @@ public class UserInterface implements Runnable, ActionListener{
     		}
     	}else if(e.getSource().equals(delayDownButton)){
     		waveManager.delay*=0.5;
-			delay.setText("Smallest Delay = "+waveManager.delay);
+			delay.setText("Smallest Delay = "+waveManager.delay+"ms");
     	}else if(e.getSource().equals(delayUpButton)){
     		waveManager.delay*=1.5;
-			delay.setText("Smallest Delay = "+waveManager.delay);
+			delay.setText("Smallest Delay = "+waveManager.delay+"ms");
     	}
     }
     

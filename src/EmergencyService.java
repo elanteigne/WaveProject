@@ -48,7 +48,8 @@ public class EmergencyService extends Service implements Runnable {
 				int count = 0;
 				while(count<5){
 					sendServiceMessage();
-					
+
+					delay = waveManager.delay;
 					//Wait
 					try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
 					count++;
