@@ -41,6 +41,7 @@ public class UserInterface implements Runnable, ActionListener{
     private JLabel generalInfoPacketsSent;
     private JLabel brakeServicePacketsSent;
     private JLabel emergencyServicePacketsSent;
+    private JLabel trafficServicePacketsSent;
     private JLabel numPacketsReceived;
     private JLabel numPacketsPassed;
     private JLabel numPacketsOmitted;
@@ -66,6 +67,8 @@ public class UserInterface implements Runnable, ActionListener{
     private JScrollPane computedBrakeInfoScroll;
     private JTextArea computedEmergencyInfo;
     private JScrollPane computedEmergencyInfoScroll;
+    private JTextArea computedTrafficInfo;
+    private JScrollPane computedTrafficInfoScroll;
 
 	//Class Methods
     public UserInterface(WaveManager waveManager){
@@ -122,6 +125,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   generalInfoPacketsSent = new JLabel("GeneralInfoService Packets Sent: 0 ");
 	   brakeServicePacketsSent = new JLabel("BreakService Packets Sent: 0 ");
 	   emergencyServicePacketsSent = new JLabel("EmergencyService Packets Sent: 0 ");
+	   trafficServicePacketsSent = new JLabel("TrafficService Packets Sent: 0 ");
 	   receiver = new JLabel("<html><u>Receiver</u></html>");
 	   numPacketsReceived = new JLabel("Received Packets: 0 ");
 	   numPacketsPassed = new JLabel("Packets Passed: 0 ");
@@ -158,6 +162,8 @@ public class UserInterface implements Runnable, ActionListener{
 	   brakeServicePacketsSent.setFont(new Font("Open Sans", Font.BOLD, 13)); 
 	   emergencyServicePacketsSent.setHorizontalAlignment(JLabel.CENTER);   
 	   emergencyServicePacketsSent.setFont(new Font("Open Sans", Font.BOLD, 13));  
+	   trafficServicePacketsSent.setHorizontalAlignment(JLabel.CENTER);   
+	   trafficServicePacketsSent.setFont(new Font("Open Sans", Font.BOLD, 13));  
 	   numPacketsReceived.setHorizontalAlignment(JLabel.CENTER);   
 	   numPacketsReceived.setFont(new Font("Open Sans", Font.BOLD, 13));  
 	   numPacketsPassed.setHorizontalAlignment(JLabel.CENTER);   
@@ -195,6 +201,13 @@ public class UserInterface implements Runnable, ActionListener{
 	   computedEmergencyInfo.setEditable(false);
 	   computedEmergencyInfoScroll = new JScrollPane (computedEmergencyInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	   computedEmergencyInfoScroll.setPreferredSize(new Dimension(540,150));
+
+	   JLabel trafficServiceOutputLabel = new JLabel("<html><u>Traffic Service Computed Information</u></html>");
+	   computedTrafficInfo = new JTextArea();
+	   computedTrafficInfo.setFont(new Font("Open Sans", Font.PLAIN, 12));
+	   computedTrafficInfo.setEditable(false);
+	   computedTrafficInfoScroll = new JScrollPane (computedTrafficInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	   computedTrafficInfoScroll.setPreferredSize(new Dimension(540,150));
 	   
 	   topPanel.setLayout(new GridLayout(1,3));
 	   leftPanel.setLayout(new GridLayout(6,1));
@@ -202,7 +215,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   rightPanel.setLayout(new GridLayout(6,1));
 	   buttonPanel.setLayout(new GridLayout(1,2));
 	   packetInfoPanel.setLayout(new GridLayout(1,2));
-	   sentPacketInfoPanel.setLayout(new GridLayout(4,1));
+	   sentPacketInfoPanel.setLayout(new GridLayout(5,1));
 	   receivedPacketInfoPanel.setLayout(new GridLayout(4,1));
 	   computedDataPanel.setLayout(new GridLayout(1,2));
 	   
@@ -260,6 +273,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   sentPacketInfoPanel.add(generalInfoPacketsSent);
 	   sentPacketInfoPanel.add(brakeServicePacketsSent);
 	   sentPacketInfoPanel.add(emergencyServicePacketsSent);
+	   sentPacketInfoPanel.add(trafficServicePacketsSent);
 	   receivedPacketInfoPanel.add(receiver);
 	   receivedPacketInfoPanel.add(numPacketsReceived);
 	   receivedPacketInfoPanel.add(numPacketsOmitted);
@@ -272,6 +286,8 @@ public class UserInterface implements Runnable, ActionListener{
 	   rightComputedDataPanel.add(computedBrakeInfoScroll);
 	   leftComputedDataPanel.add(emergencyServiceOutputLabel);
 	   leftComputedDataPanel.add(computedEmergencyInfoScroll);
+	   rightComputedDataPanel.add(trafficServiceOutputLabel);
+	   rightComputedDataPanel.add(computedTrafficInfoScroll);
 	   
 	   mainPanel.add(topPanel);
 	   mainPanel.add(buttonPanel);
@@ -298,6 +314,7 @@ public class UserInterface implements Runnable, ActionListener{
     			 computedGeneralInfo.setCaretPosition(computedGeneralInfo.getDocument().getLength());
     			 computedBrakeInfo.setCaretPosition(computedBrakeInfo.getDocument().getLength());
     			 computedEmergencyInfo.setCaretPosition(computedEmergencyInfo.getDocument().getLength());
+    			 computedTrafficInfo.setCaretPosition(computedTrafficInfo.getDocument().getLength());
 
     			 writeCarID(waveManager.CarID);
     			 writeSpeed(waveManager.speed);
@@ -323,6 +340,10 @@ public class UserInterface implements Runnable, ActionListener{
 
     public void computedEmergencyInfo(String outputText){
     	computedEmergencyInfo.append(outputText+"\n");
+    }
+
+    public void computedTrafficInfo(String outputText){
+    	computedTrafficInfo.append(outputText+"\n");
     }
     
     public void writeCarID(String outputText){
@@ -383,6 +404,10 @@ public class UserInterface implements Runnable, ActionListener{
     
     public void updateEmergencyServicePacketsSent(int output){
     	emergencyServicePacketsSent.setText("EmergencyService Packets Sent: "+output+"");
+    }
+
+    public void updateTrafficServicePacketsSent(int output){
+    	trafficServicePacketsSent.setText("TrafficService Packets Sent: "+output+"");
     }
     
     public void actionPerformed(ActionEvent e) {
