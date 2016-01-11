@@ -1,3 +1,6 @@
+import java.text.*;
+import java.util.*;
+
 public class TrafficService extends Service{
 	//Class Variables
 	private WaveManager waveManager;
@@ -6,16 +9,18 @@ public class TrafficService extends Service{
 	private String controlGroup;
 	private String serviceGroup;
 	
-	//Speed, direction (int), lights, turn signals, emergency signal, vehicle type
+	//Speed, direction (int), lights, turn signals, emergency signal, vehicle type, gps coord [x,y,z] 
 	/*private static int[][] vehicles = new int[][] {
 												  { 90, 5, 0, 0, 0, 1 },
-												  { 45, 1, 0, 0, 0, 0 },
+												  { 45, 1, 0, 0, 0, 0 }, 
 												  { 39, 1, 0, 0, 0, 0 },
 												  { 66, 6, 0, 0, 0, 0 },
 												  { 0, 1, 0, 0, 1, 0 }
-												};*/
-	private static int[][] vehicles = new int[][]{
-												  { 47, 3, 1, 0, 0, 1 },
+												};*/				
+												
+												
+	private static double[][] vehicles = new double[][]{
+												  { 47, 3, 1, 0, 0, 1 },//99.137
 												  { 55, 3, 1, 0, 0, 0 },
 												  { 43, 3, 0, 0, 0, 0 },
 												  { 5, 3, 1, 0, 0, 0 },
@@ -160,13 +165,16 @@ public void enhanceConvenience(){
 		return count;
 	}
 	
+	//Date and Time
+	
 	public static String getDateAndTime(){
 	
 		int dayNumb = 0;
 		int time = 0;
 	   	DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-	   	//get current date time with Date()
+	   	Calendar cal = Calendar.getInstance();
 	   	Date date = new Date();
+	   
 	   	String[] temp = dateFormat.format(date).split(" ");
 	   	String[] d = temp[0].split("/");
 	   	int year = Integer.parseInt(d[0]);
@@ -179,17 +187,19 @@ public void enhanceConvenience(){
 	   	time = hr*100 + min;
 	   	
 	   	for(int i = 0; i<month; i++){
-	   		if(i == 0 || i == 2 || i == 4 || i == 6 || i == 7 || i == 9 || i == 11){
+	   		if(i == 1 || i == 3 || i == 5 || i == 7 || i == 8 || i == 10 || i == 12){
 	   			dayNumb = dayNumb + 31;
 	   		}else{
-	   			if(i == 1){
+	   			if(i == 2){
 	   				if(year%100 == 0 || year%4 == 0){
 	   					dayNumb = dayNumb + 29;
 	   				}else{
 	   					dayNumb = dayNumb + 28;
 	   				}
 	   			}else{
-	   				dayNumb = dayNumb + 30;
+	   				if(i != 0){
+	   					dayNumb = dayNumb + 30;	
+	   				}
 	   			}
 	   		}
 	   	}
@@ -197,11 +207,11 @@ public void enhanceConvenience(){
 	   	return dayNumb+"/"+time;
 	}
 	
-	//adjust lights
-	//checks time of day and date to determine darkness, adjusts lights accordingly
-	//checks for vehicles in opposite direction of vehicle. Adjusts lights accordingly
-	//Ie. if high beams are on, turn off if vehicle is approaching in other lane
-	//lights = 0,1,2,3 =  none, low, high, emergency
+	//Adjust lights
+	/*checks time of day and date to determine darkness, adjusts lights accordingly
+	checks for vehicles in opposite direction of vehicle. Adjusts lights accordingly
+	Ie. if high beams are on, turn off if vehicle is approaching in other lane
+	lights = 0,1,2,3 =  none, low, high, emergency*/
 	
 	public static int adjustLights(int dir[], int direction, int lights, int time, int date){
 		//Set default to current lights setting
@@ -279,6 +289,7 @@ public void enhanceConvenience(){
 	To do: add two other directions for cross-traffic.*/
 	
 	public static String getAvgDir(){
+		
 		int[] direction = new int[vehicles.length];
 		int[] prevalence = new int[]{0,0,0,0,0,0,0,0};
 		int[] dir = new int[]{0,0};
@@ -354,6 +365,32 @@ public void enhanceConvenience(){
 		
 		return spd[0]+"/"+spd[1];
 	}
+	
+	//Longitutde to meters
+	
+	public static double lngToMeters(double lat, double lng){
+		
+		if(lat < 0){ lat = lat*(-1);};
+		
+		return 22.22;
+	}
+	
+	//Latitude to meters
+	
+	public static double latToMeters(){
+		
+		return 22.22;
+	}
+	
+	
+	
+	//Traffic Density
+	
+	public static int calcTrafficDensity(){
+		
+		return 1;
+	}
+	
 	
 	//Emergency Vehicles number
 	
