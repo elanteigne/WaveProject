@@ -8,6 +8,7 @@ public class Receiver implements Runnable{
 	private GeneralInfoService generalInfoService;
 	private BrakeService brakeService;
 	private EmergencyService emergencyService;
+	
 	private MulticastSocket listener;
 	private MulticastSocket passAlongProcess;
 	public WaveManager waveManager;
