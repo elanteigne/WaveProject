@@ -5,14 +5,17 @@ public class GeneralInfoService extends Service implements Runnable{
 	private Thread generalInfoServiceThread;
 	
 	//Resources
-	public int delay = 1000;
+	public int delay;
 	public String serviceGroup = "230.0.0.2";
 	public int messageID = 0;
+	public int numClosebyVehicles;
+	//private double closebyVehiclesTimestamp;
 	private String output;
 	
 	//Constructor
 	public GeneralInfoService(WaveManager waveManager){
 		super(waveManager);
+		delay = waveManager.delay*2;
 	}
 
 	//Class Methods
@@ -25,6 +28,8 @@ public class GeneralInfoService extends Service implements Runnable{
 	
 	public void run(){
 		while(true){
+			delay = waveManager.delay*2;
+			
 			sendControlMessage();
 			//Wait
 			try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
@@ -32,7 +37,8 @@ public class GeneralInfoService extends Service implements Runnable{
 			int count = 0;
 			while(count<5){
 				sendServiceMessage();
-				
+
+				delay = waveManager.delay;
 				//Wait
 				try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
 
@@ -42,22 +48,24 @@ public class GeneralInfoService extends Service implements Runnable{
 	}
 	
 	public void sendControlMessage(){
-		sendMessage("Control", messageID, waveManager.controlGroup, serviceGroup, "");
+		sendMessage(waveManager.controlGroup, serviceGroup, messageID, "");
 		 messageID++;
+		 waveManager.userInterface.updateGeneralInfoServicePacketsSent(messageID);
 	}
 	
 	public void sendServiceMessage(){
-		sendMessage("Service", messageID, serviceGroup, serviceGroup, "");
+		sendMessage(serviceGroup, serviceGroup, messageID, "");
 		messageID++;
+		waveManager.userInterface.updateGeneralInfoServicePacketsSent(messageID);
 	}
 	
 	//Method to calculate speed adjustment based on received packets
 	public void computeData(String direction,  int vehicleSpeed, double vehicleLattitude, double vehicleLongitude){
-		double distanceBetweenVehicles = calculateDistance(vehicleLattitude, vehicleLongitude, waveManager.GPSlattitude, waveManager.GPSlongitude);
-
+		double distanceBetweenVehicles = calculateDistance(vehicleLattitude, vehicleLongitude);
+		
 		if(distanceBetweenVehicles<150){
 			//Only way to check ahead so far is checking the direction
-			if(checkIfAhead(direction)){
+			if(checkIfAhead(vehicleLattitude, vehicleLongitude)){
 				if(vehicleSpeed<waveManager.speed){
 					int speedDifference = waveManager.speed - vehicleSpeed;
 					int warningLevel = outputWarningLights(speedDifference);
@@ -65,16 +73,16 @@ public class GeneralInfoService extends Service implements Runnable{
 					
 					System.out.println("o Calculated: TrafficAheadSlower x"+warningLevel);
 					output = "o Calculated: TrafficAheadSlower x"+warningLevel;
-					waveManager.userInterface.output(output);
+					waveManager.userInterface.computedGeneralInfo(output);
 					
 					output = "TrafficAheadSlower x"+warningLevel;
 					waveManager.userInterface.writeGeneralInfo(output);
 				}else{
 					System.out.println("o Calculated: Vehicle is ahead but is faster so is not considered");
 					output = "o Calculated: Vehicle is ahead but is faster so is not considered";
-					waveManager.userInterface.output(output);
+					waveManager.userInterface.computedGeneralInfo(output);
 				}
-			}else if(checkIfBehind(direction)){
+			}else if(checkIfBehind(vehicleLattitude, vehicleLongitude)){
 				if(vehicleSpeed>waveManager.speed){
 					int speedDifference = vehicleSpeed - waveManager.speed;
 					int warningLevel = outputWarningLights(speedDifference);
@@ -82,24 +90,50 @@ public class GeneralInfoService extends Service implements Runnable{
 					
 					System.out.println("o Calculated: TrafficBehindFaster x"+warningLevel);
 					output = "o Calculated: TrafficBehindFaster x"+warningLevel;
-					waveManager.userInterface.output(output);
+					waveManager.userInterface.computedGeneralInfo(output);
 					
 					output = "TrafficBehindFaster x"+warningLevel;
 					waveManager.userInterface.writeGeneralInfo(output);
 				}else{
 					System.out.println("o Calculated: Vehicle is behind but is slower so is not considered");
 					output = "o Calculated: Vehicle is behind but is slower so is not considered";
-					waveManager.userInterface.output(output);
+					waveManager.userInterface.computedGeneralInfo(output);
 				}
 			}else{
 				System.out.println("o Calculated: Vehicle is not in critical area, therefore not considered");
 				output = "o Calculated: Vehicle is not in critical area, therefore not considered";
-				waveManager.userInterface.output(output);
+				waveManager.userInterface.computedGeneralInfo(output);
 			}
+			
+			//Decide if trafficService should start sending
+			//Other solution. Vehicle would know how many vehicles around using sensors, can choose to send then, put code directly in service thread.
+			//if(distanceBetweenVehicles<50){
+				////Here is where we will decide if TrafficService should send a message
+				//if(numClosebyVehicles>10){
+					//closebyVehiclesTimestamp = System.currentTimeMillis();
+					////advertiseTrafficInfo = true;
+					
+					//if(vehicleSpeed<40){
+						//numClosebyVehicles++;
+						////Very Slow traffic
+					//}else if(vehicleSpeed<65){
+						//numClosebyVehicles++;
+						////Slow traffic
+					//}else{
+						////Traffic moving well
+					//}
+					////sendTrafficServiceMessage with calculated info for limited time?
+				//}
+				
+				//if(System.currentTimeMillis()>closebyVehiclesTimestamp+5000){
+					//numClosebyVehicles = 0;
+					////advertiseTrafficInfo = false;
+				//}
+			//}
 		}else{
 			System.out.println("o Calculated: Vehicle is too far ahead to be considered");
 			output = "o Calculated: Vehicle is too far ahead to be considered";
-			waveManager.userInterface.output(output);
+			waveManager.userInterface.computedGeneralInfo(output);
 		}
 	}
 	

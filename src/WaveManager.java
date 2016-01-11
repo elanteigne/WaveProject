@@ -16,7 +16,7 @@ public class WaveManager {
 	public double GPSlongitude;
 	public int speed;
 	public int brakeAmount;
-	public String direction;
+	public int bearing;
 	public String vehicleType;
 	public boolean sirensOn;
 	
@@ -29,27 +29,32 @@ public class WaveManager {
 
 	//Resources
 	public int port = 2222;
+	public int delay;
 	public String controlGroup = "230.0.0.1";
 	
 	//Constructor
 	public WaveManager(){
-		userInterface = new UserInterface();
-		try{ TimeUnit.SECONDS.sleep(1); } catch(Exception e){ }
-		
 		CarID = checkVinNumber();
 		vehicleType = checkVehicleType();
 		speed = checkSpeed();
+		speed = 0;
 		brakeAmount = checkBrake();
-		direction = checkDirection();
+		bearing = checkBearing();
 		checkGPS();	
+		delay=500;
+		
+		userInterface = new UserInterface(this);
+		userInterface.start();
+		
+		try{ TimeUnit.SECONDS.sleep(1); } catch(Exception e){ }
 		
 		generalInfoService = new GeneralInfoService(this);
 		brakeService = new BrakeService(this);
 
-		emergencyService = new EmergencyService(this);
 		if(vehicleType.equals("Emergency")){
-			sirensOn = false;
+			sirensOn = checkSirens();
 		}
+		emergencyService = new EmergencyService(this);
 		
 		receiver = new Receiver(this,generalInfoService, brakeService, emergencyService);
 		
@@ -67,7 +72,6 @@ public class WaveManager {
 	
 	public String checkVinNumber(){
 		String vinNum = "000-000-000-001";
-		userInterface.writeCarID(vinNum);
 		return vinNum;
 	}
 	
@@ -75,30 +79,30 @@ public class WaveManager {
 	public void checkGPS(){
 		GPSlattitude = 45.3496235;
 		GPSlongitude = -73.7597858;
-		userInterface.writeGPS(GPSlattitude, GPSlongitude);
 	}
 	
-	public String checkDirection(){
-		String direction = "N";
-		userInterface.writeDirection(direction);
-		return direction;
+	public int checkBearing(){
+		int bearing = 0; //N
+		return bearing;
 	}
 	
 	public int checkSpeed(){
-		int speed = 20;
-		userInterface.writeSpeed(speed);
 		return speed;
 	}
+	
 	public int checkBrake(){
 		int brakeAmount = 100;
-		userInterface.writeBrakeAmount(brakeAmount);
 		return brakeAmount;
 	}
+	
 	public String checkVehicleType(){
-		//String vehicleType = "Emergency";
-		String vehicleType = "Civillian";
-		userInterface.writeVehicleType(vehicleType);
+		String vehicleType = "Emergency";
+		//String vehicleType = "Civillian";
 		return vehicleType;
+	}
+	
+	public boolean checkSirens(){
+		return false;
 	}
 	
 	
