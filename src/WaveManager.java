@@ -26,7 +26,7 @@ public class WaveManager {
 	public int suggestedBrakeSpeed; //Speed at which brake should be applied, dependent on distance between vehicles
 	public int trafficAheadSlowerWarningLight; 
 	public int trafficBehindFasterWarningLight;
-	
+
 	//Resources
 	public int port = 2222;
 	public int delay;
