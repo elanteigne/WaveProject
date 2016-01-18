@@ -79,7 +79,7 @@ public class Service {
 	public boolean checkIfAhead(double lat1, double lon1) {
 		//Should ideally check if on the same road but can't without a maps API
 		double bearing = compareBearing(lat1, lon1);
-		if(bearing<10 && bearing>150){		
+		if(bearing<10 && bearing>350){		
 			return true;
 		}else{		
 			return false;
@@ -95,4 +95,6 @@ public class Service {
 			return false;
 		}
 	}
+	
+	
 }

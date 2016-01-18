@@ -8,6 +8,7 @@ public class Receiver implements Runnable{
 	private GeneralInfoService generalInfoService;
 	private BrakeService brakeService;
 	private EmergencyService emergencyService;
+	private TrafficService trafficService;
 	
 	private MulticastSocket listener;
 	private MulticastSocket passAlongProcess;
@@ -29,11 +30,13 @@ public class Receiver implements Runnable{
 												{"", "", ""}, {"", "", ""}, {"", "", ""}, {"", "", ""}};
 	
 	//Constructor
-	public Receiver(WaveManager waveManager, GeneralInfoService generalInfoService, BrakeService brakeService, EmergencyService emergencyService){
+	public Receiver(WaveManager waveManager, GeneralInfoService generalInfoService, BrakeService brakeService, EmergencyService emergencyService, TrafficService trafficService){
 		this.waveManager=waveManager;
 		this.generalInfoService=generalInfoService;
 		this.brakeService=brakeService;
 		this.emergencyService=emergencyService;
+		this.trafficService=trafficService;
+		
 		numPacketsReceived = 0;
 		numPacketsPassed = 0;
 		numPacketsOmitted = 0;
@@ -122,6 +125,14 @@ public class Receiver implements Runnable{
 						waveManager.userInterface.output(output);
 											
 						generalInfoService.computeData(direction, vehicleSpeed, vehicleLattitude, vehicleLongitude);
+						
+					}else if(fromGroup.equals(trafficService.serviceGroup)){
+						System.out.println("+ Received *TrafficService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': TrafficLevel:'"+trafficLevel+"': Speed:'"+vehicleSpeed+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Direction:'"+direction+"', HopCount = "+hopCount);
+						output = "+ Received *TrafficService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': TrafficLevel:'"+trafficLevel+"': Speed:'"+vehicleSpeed+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Direction:'"+direction+"', HopCount = "+hopCount;
+						waveManager.userInterface.output(output);
+											
+						trafficService.computeData(vehicles);
+						
 					}else{
 						System.out.println("+ Received *Control* message advertising '"+messageGroup+"' from CarID '"+fromCarID+"'");
 						output = "+ Received *Control* message advertising '"+messageGroup+"' from CarID '"+fromCarID+"'";

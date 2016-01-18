@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class GeneralInfoService extends Service implements Runnable{
@@ -12,6 +13,9 @@ public class GeneralInfoService extends Service implements Runnable{
 	//private double closebyVehiclesTimestamp;
 	private String output;
 	
+	//Exterior info
+	public static List<Vehicle> vehicles;
+
 	//Constructor
 	public GeneralInfoService(WaveManager waveManager){
 		super(waveManager);
@@ -107,9 +111,11 @@ public class GeneralInfoService extends Service implements Runnable{
 			
 			//Decide if trafficService should start sending
 			//Other solution. Vehicle would know how many vehicles around using sensors, can choose to send then, put code directly in service thread.
-			//if(distanceBetweenVehicles<50){
+			if(distanceBetweenVehicles<50){
+				// addVehicle("0",0.0,0.0,0,0,0,"0",true);
+				
 				////Here is where we will decide if TrafficService should send a message
-				//if(numClosebyVehicles>10){
+			//	if( vehicles.size()>5){}}
 					//closebyVehiclesTimestamp = System.currentTimeMillis();
 					////advertiseTrafficInfo = true;
 					
@@ -145,6 +151,25 @@ public class GeneralInfoService extends Service implements Runnable{
 		}else{
 			return 3; //Turn on third warning light
 		}		
+	}
+	
+	public static void addVehicle(String CarID, double GPSlattitude, double GPSlongitude, int speed, int brakeAmount, int bearing, String vehicleType, boolean sirensOn){
+		
+		Vehicle v = new Vehicle(CarID, GPSlattitude, GPSlongitude, speed, brakeAmount, bearing, vehicleType, sirensOn);
+		boolean isDuplicate = false;
+		
+		//check for duplicate (is this fully handled by the receiver?)
+		for(int i = 0; i<vehicles.size(); i++){
+			if(vehicles.get(i).CarID != CarID){
+				isDuplicate = true;
+			}
+		}
+		//remove the oldest vehicle in the list if there are ten in the list
+		if(isDuplicate = false){
+			if(vehicles.size() > 9){ vehicles.remove(0);};
+			vehicles.add(v);
+		}
+		
 	}
 	
 }
