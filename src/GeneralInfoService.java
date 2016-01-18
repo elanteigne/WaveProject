@@ -123,8 +123,8 @@ public class GeneralInfoService extends Service implements Runnable{
 				waveManager.inTraffic = true;
 				}
 			*/
-			}
-			}
+			
+			
 					//closebyVehiclesTimestamp = System.currentTimeMillis();
 					//advertiseTrafficInfo = true;
 					
