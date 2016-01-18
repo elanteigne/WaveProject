@@ -125,6 +125,9 @@ public class Receiver implements Runnable{
 						waveManager.userInterface.output(output);
 											
 						generalInfoService.computeData(direction, vehicleSpeed, vehicleLattitude, vehicleLongitude);
+						//generalInfoService.computeData(vehicle);
+						//Add make vehicle to receiver?? each service could use it, or just general > better way to encapsulate all data
+						
 						
 					}else if(fromGroup.equals(trafficService.serviceGroup)){
 						System.out.println("+ Received *TrafficService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': TrafficLevel:'"+trafficLevel+"': Speed:'"+vehicleSpeed+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Direction:'"+direction+"', HopCount = "+hopCount);
@@ -132,6 +135,7 @@ public class Receiver implements Runnable{
 						waveManager.userInterface.output(output);
 											
 						trafficService.computeData(vehicles);
+						//Need: carID, bearing, speed, may be extended to gps coor for distance to traffic calculation
 						
 					}else{
 						System.out.println("+ Received *Control* message advertising '"+messageGroup+"' from CarID '"+fromCarID+"'");

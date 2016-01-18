@@ -72,10 +72,10 @@ public class TrafficService extends Service implements Runnable {
 	
 	//TRAFFIC ROUTING ALOGORITHM*/
 	
-	public void computeData(List<Vehicle> vehicles){	
+	public void computeData(List<VehicleInfo> vehicles){	
 		
 		String[] trafficWords = {"Low", "Limited", "Moderate","Mild", "Heavy", "Severe"};
-		String[] directionWords = {"N","NNE", "NE", "NEE", "E", "SEE", "SE", "SEE", "S","SSW", "SW", "SWW","W", "NWW", "NW", "NNW"};
+		String[] directionWords = {"N","NNE", "NE", "NEE", "E", "SEE", "SE", "SSE", "S","SSW", "SW", "SWW","W", "NWW", "NW", "NNW"};
 		int direction = waveManager.bearing;
 		int speed = waveManager.speed;
 		double speedDiff = 0;
@@ -200,6 +200,9 @@ public class TrafficService extends Service implements Runnable {
 	
 	waveManager.userInterface.userInfo(userMessage);
 		
+	/*	To do: 	Distance to traffic cluster calc. -> perhaps handled by general info service?
+				Possible convenience algorithm implementation -> general or traffic?					*/
+	
 	}
 
 //METHODS
@@ -217,7 +220,7 @@ public class TrafficService extends Service implements Runnable {
 	Average Vehicle direction in two directions
 	To do: add two other directions for cross-traffic.*/
 	
-	public static String getAvgDir(List<Vehicle> vehicles, int vLength){
+	public static String getAvgDir(List<VehicleInfo> vehicles, int vLength){
 		int[] direction = new int[vLength];
 		int[] prevalence = new int[16];
 		Arrays.fill(prevalence, 0);
@@ -258,7 +261,7 @@ public class TrafficService extends Service implements Runnable {
 	//Average Vehicle Speed in two directions
 	//To do: add two other directions for cross-traffic.
 	
-	public static String getAvgSpd(List<Vehicle> vehicles, int vLength, int laneDir[]){
+	public static String getAvgSpd(List<VehicleInfo> vehicles, int vLength, int laneDir[]){
 		int speed = 0;
 		int direction;
 		int[] spd = new int[]{0,0};

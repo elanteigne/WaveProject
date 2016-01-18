@@ -14,7 +14,7 @@ public class GeneralInfoService extends Service implements Runnable{
 	private String output;
 	
 	//Exterior info
-	public static List<Vehicle> vehicles;
+	public static List<VehicleInfo> vehicles;
 
 	//Constructor
 	public GeneralInfoService(WaveManager waveManager){
@@ -111,23 +111,24 @@ public class GeneralInfoService extends Service implements Runnable{
 			
 			//Decide if trafficService should start sending
 			//Other solution. Vehicle would know how many vehicles around using sensors, can choose to send then, put code directly in service thread.
-			if(distanceBetweenVehicles<50){
-				// addVehicle("0",0.0,0.0,0,0,0,"0",true);
+			/*if(distanceBetweenVehicles<50){
+				addVehicle(CarID, GPSlattitude, GPSlongitude, speed, bearing){
+				addVehicle("0",0.0,0.0,0,0);
+				//addVehicles(CarID, GPSlattitude, GPSlongitude, speed, brakeAmount, bearing, vehicleType, sirensOn.
+				//addVehicles(direction, vehicleSpeed)
 				
-				////Here is where we will decide if TrafficService should send a message
-			//	if( vehicles.size()>5){}}
+			//Here is where we will decide if TrafficService should send a message
+				
+			if( vehicles.size()>5){
+				waveManager.inTraffic = true;
+				}
+			*/
+			}
+			}
 					//closebyVehiclesTimestamp = System.currentTimeMillis();
-					////advertiseTrafficInfo = true;
+					//advertiseTrafficInfo = true;
 					
-					//if(vehicleSpeed<40){
-						//numClosebyVehicles++;
-						////Very Slow traffic
-					//}else if(vehicleSpeed<65){
-						//numClosebyVehicles++;
-						////Slow traffic
-					//}else{
-						////Traffic moving well
-					//}
+				
 					////sendTrafficServiceMessage with calculated info for limited time?
 				//}
 				
@@ -152,25 +153,44 @@ public class GeneralInfoService extends Service implements Runnable{
 			return 3; //Turn on third warning light
 		}		
 	}
-	
-	public static void addVehicle(String CarID, double GPSlattitude, double GPSlongitude, int speed, int brakeAmount, int bearing, String vehicleType, boolean sirensOn){
+}
+	/*public static void addVehicle(String CarID, double GPSlattitude, double GPSlongitude, int speed, int bearing){
 		
-		Vehicle v = new Vehicle(CarID, GPSlattitude, GPSlongitude, speed, brakeAmount, bearing, vehicleType, sirensOn);
+		VehicleInfo v = new VehicleInfo(CarID, GPSlattitude, GPSlongitude, speed, bearing);
 		boolean isDuplicate = false;
 		
-		//check for duplicate (is this fully handled by the receiver?)
+		//check for duplicate ID (is this fully handled by the receiver?)
 		for(int i = 0; i<vehicles.size(); i++){
 			if(vehicles.get(i).CarID != CarID){
 				isDuplicate = true;
 			}
 		}
 		//remove the oldest vehicle in the list if there are ten in the list
-		if(isDuplicate = false){
+		if(isDuplicate == false){
 			if(vehicles.size() > 9){ vehicles.remove(0);};
 			vehicles.add(v);
 		}
 		
 	}
 	
+*/
+
+/*class VehicleInfo extends Thread{
+	
+	public String CarID;
+	public double GPSlattitude;
+	public double GPSlongitude;
+	public int speed;
+	public int bearing;
+	
+	public VehicleInfo(String CarID, double GPSlattitude, double GPSlongitude, int speed, int bearing) {
+		 
+			this.CarID = CarID;
+			this.GPSlattitude = GPSlattitude;
+			this.GPSlongitude = GPSlongitude;
+			this.speed = speed;
+			this.bearing = bearing;
+	}
 }
+*/
 
