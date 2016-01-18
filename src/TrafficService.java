@@ -2,28 +2,8 @@ import java.text.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-/*Traffic functions
-
-
-	1)Traffic routing
-	Check number of vehicles in vicinity
-	Check speed, direction of vehicles in vicinity 
-	Check for emergency vehicles
-	Check for accidents
-	Make decision about current route (change or stay)
-	Includes speed up, slow down, emergency notification (simple)*/
-
-/*2) Convenience Functions
-
-	Check surrounding vehicles lights
-	Check time of day (compare to dusk, dawn, night times)
-	Reuse speed/direction check
-	Night time traffic (turn on headlights, high/low beam)
-	Affects lights, signaling, etc.*/
-	
 public class TrafficService extends Service implements Runnable {
 	//Class Variables
-	
 	private Thread trafficServiceThread;
 	
 	//Resources
@@ -32,24 +12,6 @@ public class TrafficService extends Service implements Runnable {
 	public String serviceGroup = "230.0.0.5";
 	private String output;
 	
-	//Speed, direction (int), lights, turn signals, emergency signal, vehicle type, gps coord [x,y,z] 
-	
-/*private static int[][] vehicles = new int[][] {
-												  { 90, 5, 0, 0, 0, 1 },
-												  { 45, 1, 0, 0, 0, 0 }, 
-												  { 39, 1, 0, 0, 0, 0 },
-												  { 66, 6, 0, 0, 0, 0 },
-												  { 0, 1, 0, 0, 1, 0 }
-												};*/				
-												
-	private static double[][] vehicles = new double[][]{
-												  { 47, 3, 1, 0, 0, 1 },//99.137
-												  { 55, 3, 1, 0, 0, 0 },
-												  { 43, 3, 0, 0, 0, 0 },
-												  { 5, 3, 1, 0, 0, 0 },
-												  { 0, 1, 2, 0, 1, 0 }
-												};										
-
 	//Constructor
 	public TrafficService(WaveManager waveManager){
 		super(waveManager);
@@ -66,68 +28,83 @@ public class TrafficService extends Service implements Runnable {
 	
 	public void sendControlMessage(){
 		sendMessage(waveManager.controlGroup, serviceGroup, messageID, "");
-		 messageID++;
-		// waveManager.userInterface.updateEmergencyServicePacketsSent(messageID);
+		messageID++;
+		waveManager.userInterface.updateTrafficServicePacketsSent(messageID);
 	}
 	
 	public void sendServiceMessage(){
-		sendMessage(serviceGroup, serviceGroup, messageID, "");
-		 messageID++;
-		// waveManager.userInterface.updateEmergencyServicePacketsSent(messageID);
+		sendMessage(serviceGroup, serviceGroup, messageID, ""+waveManager.trafficLevel);
+		messageID++;
+		waveManager.userInterface.updateTrafficServicePacketsSent(messageID);
 	}
 		
 	public void run(){
 		while(true){
 			delay = waveManager.delay;
-			System.out.println(""+waveManager.sirensOn);
-			if(waveManager.sirensOn){
-				sendControlMessage();
-				//Wait 
-				try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
-				
-				int count = 0;
-				while(count<5){
-					sendServiceMessage();
-
-					delay = waveManager.delay;
-					//Wait
+			System.out.println(""+waveManager.inTraffic);
+			if(waveManager.inTraffic = true){
+				if(checkTraffic()){
+					
+					sendControlMessage();
+					//Wait 
 					try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
-					count++;
+					
+					int count = 0;
+					while(count<5){
+						sendServiceMessage();
+	
+						delay = waveManager.delay;
+						//Wait
+						try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
+						count++;
+					}
 				}
 			}
 		}
 	}
+
+	public boolean checkTraffic(){
+		if(waveManager.trafficLevel>2){			
+			return true;
+		}
+		return false;
+	}
 	
-	/*1) TRAFFIC ROUTING ALOGORITHM*/
+	//TRAFFIC ROUTING ALOGORITHM*/
 	
-	public void routeTraffic(){
+	public void computeData(List<VehicleInfo> vehicles){	
 		
-		//Get relevant variables (# vehicles, # emergency vehicles, # emergencies,
+		String[] trafficWords = {"Low", "Limited", "Moderate","Mild", "Heavy", "Severe"};
+		String[] directionWords = {"N","NNE", "NE", "NEE", "E", "SEE", "SE", "SSE", "S","SSW", "SW", "SWW","W", "NWW", "NW", "NNW"};
+		int direction = waveManager.bearing;
+		int speed = waveManager.speed;
+		double speedDiff = 0;
+		int trafficLevel = 0;
+		String userMessage = "";
 		
-		int numVehicles = checkVehicles();
-		int numEVehicles = checkEVehicles();
-		int numEmergencies = checkEmergency();
+		int numVehicles = vehicles.size();
 		int[] dir = new int[2];
 		int[] dirPrv = new int[2];
 		int[] spd = new int[2];
 		
-		String[] dirString = getAvgDir().split("/"); 
+		String[] dirString = getAvgDir(vehicles, numVehicles).split("/"); 
 		dir[0] = Integer.parseInt(dirString[0]);
 		dir[1] = Integer.parseInt(dirString[1]);
 		dirPrv[0] = Integer.parseInt(dirString[2]);			
-		dirPrv[1] = Integer.parseInt(dirString[3]);		
-		String[] spdString = getAvgSpd(dir).split("/");
+		dirPrv[1] = Integer.parseInt(dirString[3]);
+	
+		String[] spdString = getAvgSpd(vehicles, numVehicles, dir).split("/");
 		spd[0] = Integer.parseInt(spdString[0]);
 		spd[1] = Integer.parseInt(spdString[1]);
 		
-		int direction = directionStoI(waveManager.bearing);
-		
-		boolean switchRoad = false;
-		boolean switchLane = false;
-		String caution = "";
+		for(int out = 0; out<2; out++){
+			System.out.println("o Calculated: There are " + dirPrv[out] + " vehicles travelling at " +spd[out]+ "km/h in the " + directionWords[dir[out]] + " direction");
+			output = "o Calculated: There are " + dirPrv[out] + " vehicles travelling at " +spd[out]+ "km/h in the " + directionWords[dir[out]] + " direction";
+			waveManager.userInterface.computedTrafficInfo(output);
+		}
 		
 		//Approximate this vehicles direction
-			
+		
 		if(direction != dir[0] && direction != dir[1]){
 			if(direction-dir[1] > direction-dir[0]){direction = 0;
 			}else{
@@ -135,106 +112,105 @@ public class TrafficService extends Service implements Runnable {
 				}
 		}
 		
-		//Algorithm
+		speedDiff = speedDifference(speed, spd[direction]);
+	
+		//ALGORITHM
 		
-		if(numEVehicles > 1){
-			switchLane = true;
-			caution = caution + "Warning: " + numEVehicles + "(s) emergency vehicles in area. Proceed with caution. ";
-		}
-		if(numEmergencies > 1){
-			switchLane = true;
-			caution = caution + "Warning: " + numEmergencies + "(s) emergencies in area. Proceed with caution. ";
-		}
-		
-		if(dirPrv[direction] > 2){
-			switchRoad = true;
-			caution = caution + "Heavy Traffic ahead. Please find an alternative route. ";
+		if(speed < spd[direction]){
+				trafficLevel = 0;	
+		}else{	
+
+		if(dirPrv[direction]>9){
+			
+			if(speedDiff > 40){
+				trafficLevel = 5;
+			}else if(speedDiff > 30){
+				trafficLevel = 5;
+			}else if(speedDiff > 20){
+				trafficLevel = 4;
+			}else if(speedDiff > 10){
+				trafficLevel = 3;
+			}else{
+				trafficLevel = 2;
+			}
+				
+		}else if( dirPrv[direction]>7){
+			
+			if(speedDiff > 40){
+				trafficLevel = 5;
+			}else if(speedDiff > 30){
+				trafficLevel = 4;
+			}else if(speedDiff > 20){
+				trafficLevel = 3;
+			}else if(speedDiff > 10){
+				trafficLevel = 2;
+			}else{
+				trafficLevel = 1;
 			}
 		
-		double comparitor = waveManager.speed - spd[direction];
-		if(comparitor<0){
-			//waveManager.speedAdjustment = (int)(comparitor*(-1));
-			//add to waveManager			
-		}else{
-			/*To do: increase speed */
-		}
-		System.out.println("Traffic:");
-		System.out.println(caution);
-		//switch lanes, switch road, speed up, slow down, maintain, maintain with caution (for each previous)
-		//switch L:yes/no, switch road:yes/no, speedup (amount), slow down (amt), 
-	}
-
-	/*2) CONVENIENCE ALGORITHM*/
-	
-	public void enhanceConvenience(){
-		//Speed, direction (int), lights, turn signals, emergency signal, vehicle type
-		int numVehicles = checkVehicles();
-	//	int numEVehicles = checkLights();
-	//	int numEmergencies = checkTurns();
-		int[] dir = new int[2];
-		int[] dirPrv = new int[2];
-		int[] spd = new int[2];
-		
-			String[] dirString = getAvgDir().split("/"); 
-			dir[0] = Integer.parseInt(dirString[0]);
-			dir[1] = Integer.parseInt(dirString[1]);
-			dirPrv[0] = Integer.parseInt(dirString[2]);
-			dirPrv[1] = Integer.parseInt(dirString[3]);
-			String[] spdString = getAvgSpd(dir).split("/");
-			spd[0] = Integer.parseInt(spdString[0]);
-			spd[1] = Integer.parseInt(spdString[1]);
-		
-		int direction = directionStoI(waveManager.direction);
-		boolean switchRoad = false;
-		boolean switchLane = false;
-		String caution = "";
-		
-	}
-		//Vehicle Check
-	
-		public static int checkVehicles(){
-			int count = vehicles.length;
-			return count;
-		}
-		
-	
-	
-	//Adjust lights
-		
-	/*checks time of day and date to determine darkness, adjusts lights accordingly
-	checks for vehicles in opposite direction of vehicle. Adjusts lights accordingly
-	Ie. if high beams are on, turn off if vehicle is approaching in other lane
-	lights = 0,1,2,3 =  none, low, high, emergency*/
-	
-	public static int adjustLights(int dir[], int direction, int lights, int time, int date){
-		//Set default to current lights setting
-		int adj = lights;
-		
-		//Check for on-coming traffic and adjust accordingly
-		if(lights == 2){
-			if(direction == dir[0]){
-				for(int i =0; i<vehicles.length; i++){
-						if(vehicles[i][1] == dir[1] || vehicles[i][1] == dir[1] + 1 || vehicles[i][1] == dir[1] - 1){
-						adj = 1;
-						}
-					}
+		}else if( dirPrv[direction]>5){
+			
+			if(speedDiff > 40){
+				trafficLevel = 4;
+			}else if(speedDiff > 30){
+				trafficLevel = 3;
+			}else if(speedDiff > 20){
+				trafficLevel = 2;
+			}else if(speedDiff > 10){
+				trafficLevel = 1;
 			}else{
-				for(int i =0; i<vehicles.length; i++){
-						if(vehicles[i][1] == dir[0] || vehicles[i][1] == dir[0] + 1 || vehicles[i][1] == dir[0] - 1){
-						adj = 1;
-						}
-					}
-				}
+				trafficLevel = 0;
+			}
+
+		}else if( dirPrv[direction]>3){
+			
+			if(speedDiff > 40){
+				trafficLevel = 3;
+			}else if(speedDiff > 30){
+				trafficLevel = 2;
+			}else if(speedDiff > 20){
+				trafficLevel = 1;
+			}else{
+				trafficLevel = 0;
+			}
+
+		}else{
+			
+			if(speedDiff > 40){
+				trafficLevel = 2;
+			}else if(speedDiff > 30){
+				trafficLevel = 1;
+			}else{
+				trafficLevel = 0;
+			}
 		}
-		
-		return adj;
 	}
 		
-	//Turn Check
+		System.out.println("o Calculated: Traffic ahead is: " + trafficWords[trafficLevel]);
+		output = "o Calculated: Traffic ahead is: " + trafficWords[trafficLevel];
+		waveManager.userInterface.computedTrafficInfo(output);
+		
+	if(trafficLevel > 3){
+		userMessage = trafficWords[trafficLevel] + " traffic ahead. Please find an alternative route.";
+	}else if(trafficLevel > 1){
+		userMessage = trafficWords[trafficLevel] + " traffic ahead. Please excercise caution.";
+	}else{
+		userMessage = trafficWords[trafficLevel] + " traffic ahead.";
+	}
+	
+	waveManager.userInterface.userInfo(userMessage);
+		
+	/*	To do: 	Distance to traffic cluster calc. -> perhaps handled by general info service?
+				Possible convenience algorithm implementation -> general or traffic?					*/
+	
+	}
 
-	public static int checkTurns(int dir[]){
-		int count = vehicles.length;
-		return count;
+//METHODS
+	
+	public static double speedDifference(int s1,int s2){
+		double d = (s1 - s2)/s1;
+		d = d*100;
+		return d;
 	}
 	
 	/*return average flow of traffic in two directions
@@ -244,17 +220,21 @@ public class TrafficService extends Service implements Runnable {
 	Average Vehicle direction in two directions
 	To do: add two other directions for cross-traffic.*/
 	
-	public static String getAvgDir(){
-		
-		int[] direction = new int[vehicles.length];
-		int[] prevalence = new int[]{0,0,0,0,0,0,0,0};
-		int[] dir = new int[]{0,0};
+	public static String getAvgDir(List<VehicleInfo> vehicles, int vLength){
+		int[] direction = new int[vLength];
+		int[] prevalence = new int[16];
+		Arrays.fill(prevalence, 0);
+		int[] laneDir = new int[]{0,0};
 		int[] dirPrv = new int[]{0,0};
 
-		for(int i = 0; i<vehicles.length; i++){
-			direction[i] = vehicles[i][1];
-			for(int j = 0; j<8; j++){
-				if(direction[i] == j){
+		for(int i = 0; i<vLength; i++){
+			direction[i] = vehicles.get(i).bearing;
+			
+			int j =0;
+			if(direction[i] < 11.25 || direction[i] > 348.75){prevalence[0]++;}
+			
+			for(j = 1; j<16; j++){
+				if(direction[i] < j*22.5 + 11.25 && direction[i] > j*22.5 - 11.25){
 					prevalence[j]++;
 					}
 				}
@@ -264,50 +244,44 @@ public class TrafficService extends Service implements Runnable {
 		
 		int top_count = 0;
 		for(int w = 0; w<2; w++){
-			for(int k = 0; k<8; k++){
+			for(int k = 0; k<16; k++){
 				
 				if(prevalence[k] >= top_count){
 					top_count = prevalence[k];
-					dir[w] = k;
+					laneDir[w] = k;
 					dirPrv[w] = prevalence[k];
 				}
 			}
-			//System.out.println("Chun: " + Arrays.toString(prevalence));
-			prevalence[dir[0]] = 0;
+			prevalence[laneDir[0]] = 0;
 			top_count = 0;
 		}
-		return dir[0]+"/"+dir[1]+"/"+dirPrv[0]+"/"+dirPrv[1];
+		return laneDir[0]+"/"+laneDir[1]+"/"+dirPrv[0]+"/"+dirPrv[1];
 	}
 	
 	//Average Vehicle Speed in two directions
 	//To do: add two other directions for cross-traffic.
 	
-	public static String getAvgSpd(int dir[]){
-		 
+	public static String getAvgSpd(List<VehicleInfo> vehicles, int vLength, int laneDir[]){
 		int speed = 0;
 		int direction;
 		int[] spd = new int[]{0,0};
 		int[] count = new int[]{0,0};
 		
-		//Replaced re-running of getAvgDir to input of dir[0],dir[1], more efficient
-		
-		/*String avgDir = getAvgDir();
-		String[] dirString = avgDir.split("/"); 
-		dir[0] = Integer.parseInt(dirString[0]);
-		dir[1] = Integer.parseInt(dirString[1]);*/
-		
-		for(int i = 0; i<vehicles.length; i++){
+		for(int i = 0; i<vLength; i++){
 			
-			speed = vehicles[i][0];
-			direction = vehicles[i][1];
+			speed = vehicles.get(i).speed;
+			direction = vehicles.get(i).bearing;
 			
-			if(direction != dir[0] && direction != dir[1]){
-				if(direction-dir[1] > direction-dir[0]){direction = dir[0];
+			//Approx. direction of current vehicle to two lane directions
+			if(direction != laneDir[0] && direction != laneDir[1]){
+				if(direction-laneDir[1] > direction-laneDir[0]){direction = laneDir[0];
 				}else{
-					direction = dir[1];
+					direction = laneDir[1];
 					}
 			}
-			if(direction == dir[0]){
+			
+			//Compare to the lanes (add to respective lane speed)
+			if(direction == laneDir[0]){
 				spd[0] = spd[0] + speed;
 				count[0]++;
 			}else{
@@ -321,32 +295,4 @@ public class TrafficService extends Service implements Runnable {
 		return spd[0]+"/"+spd[1];
 	}
 	
-	//Traffic Density
-	
-	public static int calcTrafficDensity(){
-		
-		return 1;
-	}
-	
-	//Emergency Vehicles number
-	
-	public static int checkEVehicles(){
-		int count = 0;
-		for(int i = 0; i<vehicles.length; i++){
-			
-			if(vehicles[i][5] == 1){ count++;}
-		}
-		return count;
-	}
-	
-	//Emergency amount (crashes, etc.)
-	
-	public static int checkEmergency(){
-		int count = 0;
-		for(int i = 0; i<vehicles.length; i++){
-			
-			if(vehicles[i][4] == 1){ count++;}
-		}
-		return count;
-	}
 }
