@@ -124,17 +124,19 @@ public class Receiver implements Runnable{
 						output = "+ Received *GeneralInfoService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+vehicleSpeed+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Direction:'"+direction+"', HopCount = "+hopCount;
 						waveManager.userInterface.output(output);
 											
-						generalInfoService.computeData(direction, vehicleSpeed, vehicleLattitude, vehicleLongitude);
+						generalInfoService.computeData(fromCarID, direction, vehicleSpeed, vehicleLattitude, vehicleLongitude);
 						//generalInfoService.computeData(vehicle);
 						//Add make vehicle to receiver?? each service could use it, or just general > better way to encapsulate all data
 						
 						
 					}else if(fromGroup.equals(trafficService.serviceGroup)){
+						int trafficLevel = Integer.parseInt(strings[9]);
+						
 						System.out.println("+ Received *TrafficService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': TrafficLevel:'"+trafficLevel+"': Speed:'"+vehicleSpeed+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Direction:'"+direction+"', HopCount = "+hopCount);
 						output = "+ Received *TrafficService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': TrafficLevel:'"+trafficLevel+"': Speed:'"+vehicleSpeed+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Direction:'"+direction+"', HopCount = "+hopCount;
 						waveManager.userInterface.output(output);
 											
-						trafficService.computeData(vehicles);
+						//trafficService.computeData(trafficLevel);
 						//Need: carID, bearing, speed, may be extended to gps coor for distance to traffic calculation
 						
 					}else{
