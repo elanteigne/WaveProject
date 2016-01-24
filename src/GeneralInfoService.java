@@ -125,7 +125,7 @@ public class GeneralInfoService extends Service implements Runnable{
 					}
 				}
 				output = "xxx Num Vehicles Accounted For: "+numVehiclesAccountedFor;
-				waveManager.userInterface.computedTrafficInfo(output);
+				waveManager.userInterface.computedGeneralInfo(output);
 				
 				if(numVehiclesAccountedFor==0){
 					closebyVehiclesTimestamp = System.currentTimeMillis();
