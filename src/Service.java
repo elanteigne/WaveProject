@@ -24,7 +24,7 @@ public class Service {
 			
 			int hopCount = 0;
 			
-			String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.bearing+"/"+waveManager.speed+"/"+waveManager.GPSlattitude+"/"+waveManager.GPSlongitude+"/"+data;
+			String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.heading+"/"+waveManager.speed+"/"+waveManager.GPSlattitude+"/"+waveManager.GPSlongitude+"/"+data;
 			
 			/**Testing**/
 			//General & Braking 
@@ -76,21 +76,29 @@ public class Service {
 		return (rad * 180 / Math.PI);
 	}
 	
-	public boolean checkIfAhead(double lat1, double lon1) {
+	public boolean checkIfAhead(int heading, double lat1, double lon1) {
 		//Should ideally check if on the same road but can't without a maps API
 		double bearing = compareBearing(lat1, lon1);
 		if(bearing<10 && bearing>350){		
-			return true;
+			if(heading<waveManager.heading+10 && heading>waveManager.heading-10){
+				return true;
+			}else{
+				return false;
+			}
 		}else{		
 			return false;
 		}
 	}
 	
-	public boolean checkIfBehind(double lat1, double lon1) {
+	public boolean checkIfBehind(int heading, double lat1, double lon1) {
 		//Should ideally check if on the same road but can't without a maps API
 		double bearing = compareBearing(lat1, lon1);
 		if(bearing>170 && bearing<190){		
-			return true;
+			if(heading<waveManager.heading+10 && heading>waveManager.heading-10){
+				return true;
+			}else{
+				return false;
+			}
 		}else{		
 			return false;
 		}

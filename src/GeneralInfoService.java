@@ -69,12 +69,12 @@ public class GeneralInfoService extends Service implements Runnable{
 	}
 	
 	//Method to calculate speed adjustment based on received packets
-	public void computeData(String fromCarID, String direction,  int vehicleSpeed, double vehicleLattitude, double vehicleLongitude){
+	public void computeData(String fromCarID, int heading,  int vehicleSpeed, double vehicleLattitude, double vehicleLongitude){
 		double distanceBetweenVehicles = calculateDistance(vehicleLattitude, vehicleLongitude);
 		
 		if(distanceBetweenVehicles<150){
 			//Only way to check ahead so far is checking the direction
-			if(checkIfAhead(vehicleLattitude, vehicleLongitude)){
+			if(checkIfAhead(heading, vehicleLattitude, vehicleLongitude)){
 				if(vehicleSpeed<waveManager.speed){
 					int speedDifference = waveManager.speed - vehicleSpeed;
 					int warningLevel = outputWarningLights(speedDifference);
@@ -91,7 +91,7 @@ public class GeneralInfoService extends Service implements Runnable{
 					output = "o Calculated: Vehicle is ahead but is faster so is not considered";
 					waveManager.userInterface.computedGeneralInfo(output);
 				}
-			}else if(checkIfBehind(vehicleLattitude, vehicleLongitude)){
+			}else if(checkIfBehind(heading, vehicleLattitude, vehicleLongitude)){
 				if(vehicleSpeed>waveManager.speed){
 					int speedDifference = vehicleSpeed - waveManager.speed;
 					int warningLevel = outputWarningLights(speedDifference);
