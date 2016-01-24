@@ -1,3 +1,4 @@
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 @SuppressWarnings("unused")
 
@@ -7,6 +8,7 @@ public class WaveManager {
 	private GeneralInfoService generalInfoService;
 	private BrakeService brakeService;
 	private EmergencyService emergencyService;
+	private TrafficService trafficService;
 	private Receiver receiver;
 	public UserInterface userInterface;
 	
@@ -17,6 +19,7 @@ public class WaveManager {
 	public int speed;
 	public int brakeAmount;
 	public int bearing;
+	//public int direction;
 	public String vehicleType;
 	public boolean sirensOn;
 	
@@ -26,6 +29,8 @@ public class WaveManager {
 	public int suggestedBrakeSpeed; //Speed at which brake should be applied, dependent on distance between vehicles
 	public int trafficAheadSlowerWarningLight; 
 	public int trafficBehindFasterWarningLight;
+	public boolean inTraffic;
+	public int trafficLevel;
 
 	//Resources
 	public int port = 2222;
@@ -50,18 +55,24 @@ public class WaveManager {
 		
 		generalInfoService = new GeneralInfoService(this);
 		brakeService = new BrakeService(this);
-
+		emergencyService = new EmergencyService(this);
+		trafficService = new TrafficService(this);
+		
+		//Emergency Service
 		if(vehicleType.equals("Emergency")){
 			sirensOn = checkSirens();
 		}
-		emergencyService = new EmergencyService(this);
+	
+		//Traffic Service
+		//
 		
-		receiver = new Receiver(this,generalInfoService, brakeService, emergencyService);
+		receiver = new Receiver(this,generalInfoService, brakeService, emergencyService, trafficService);
 		
 		receiver.start();
 		generalInfoService.start();
 		brakeService.start();
 		emergencyService.start();
+		trafficService.start();
 		
 	}
 	
@@ -97,13 +108,12 @@ public class WaveManager {
 	
 	public String checkVehicleType(){
 		String vehicleType = "Emergency";
-		//String vehicleType = "Civillian";
+		//String vehicleType = "Civilian";
 		return vehicleType;
 	}
 	
 	public boolean checkSirens(){
 		return false;
 	}
-	
 	
 }
