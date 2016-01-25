@@ -31,7 +31,7 @@ public class UserInterface implements Runnable, ActionListener{
     private JLabel rightPanelLabel;
     private JLabel carID;
     private JLabel gps;
-    private JLabel bearing;
+    private JLabel heading;
     private JLabel speed;
     private JLabel brakeAmount;
     private JLabel vehicleType;
@@ -114,7 +114,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   rightPanelLabel = new JLabel("<html><u>Calculated Info</u></html>");
 	   carID = new JLabel("Car ID: xxx-xxx-xxx-xxx");
 	   gps = new JLabel("GPS: -, -");
-	   bearing = new JLabel("Bearing: - degrees");
+	   heading = new JLabel("Heading: - degrees");
 	   speed = new JLabel("Speed: -");
 	   brakeAmount = new JLabel("Brake Amount: -");
 	   vehicleType = new JLabel("Vehicle Type: -");
@@ -140,8 +140,8 @@ public class UserInterface implements Runnable, ActionListener{
 	   carID.setFont(new Font("Open Sans", Font.BOLD, 13));
 	   gps.setHorizontalAlignment(JLabel.CENTER);
 	   gps.setFont(new Font("Open Sans", Font.BOLD, 13));
-	   bearing.setHorizontalAlignment(JLabel.CENTER);
-	   bearing.setFont(new Font("Open Sans", Font.BOLD, 13));
+	   heading.setHorizontalAlignment(JLabel.CENTER);
+	   heading.setFont(new Font("Open Sans", Font.BOLD, 13));
 	   speed.setHorizontalAlignment(JLabel.CENTER);
 	   speed.setFont(new Font("Open Sans", Font.BOLD, 13));
 	   brakeAmount.setHorizontalAlignment(JLabel.CENTER);
@@ -243,7 +243,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   leftPanel.add(vehicleType);
 	   centerPanel.add(centerPanelLabel);
 	   centerPanel.add(gps);
-	   centerPanel.add(bearing);
+	   centerPanel.add(heading);
 	   centerPanel.add(speed);
 	   centerPanel.add(brakeAmount);
 	   rightPanel.add(rightPanelLabel);
@@ -319,7 +319,7 @@ public class UserInterface implements Runnable, ActionListener{
     			 writeCarID(waveManager.CarID);
     			 writeSpeed(waveManager.speed);
     			 writeBrakeAmount(waveManager.brakeAmount);
-    			 writeBearing(waveManager.bearing);
+    			 writeHeading(waveManager.heading);
     			 writeGPS(waveManager.GPSlattitude, waveManager.GPSlongitude);
     			 writeVehicleType(waveManager.vehicleType);
     		 }catch(Exception e){ }
@@ -354,8 +354,8 @@ public class UserInterface implements Runnable, ActionListener{
     	vehicleType.setText("Vehicle Type: "+outputText);
     }
     
-    public void writeBearing(int outputText){
-    	bearing.setText("Bearing: "+outputText+" degrees");
+    public void writeHeading(int outputText){
+    	heading.setText("Heading: "+outputText+" degrees");
     }
     
     public void writeGPS(double lattitude, double longitude){

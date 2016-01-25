@@ -18,8 +18,7 @@ public class WaveManager {
 	public double GPSlongitude;
 	public int speed;
 	public int brakeAmount;
-	public int bearing;
-	//public int direction;
+	public int heading;
 	public String vehicleType;
 	public boolean sirensOn;
 	
@@ -44,7 +43,7 @@ public class WaveManager {
 		speed = checkSpeed();
 		speed = 0;
 		brakeAmount = checkBrake();
-		bearing = checkBearing();
+		heading = checkHeading();
 		checkGPS();	
 		delay=500;
 		
@@ -91,10 +90,10 @@ public class WaveManager {
 		GPSlattitude = 45.3496235;
 		GPSlongitude = -73.7597858;
 	}
-	
-	public int checkBearing(){
-		int bearing = 0; //N
-		return bearing;
+
+	public int checkHeading(){
+		int heading = 0; //N
+		return heading;
 	}
 	
 	public int checkSpeed(){

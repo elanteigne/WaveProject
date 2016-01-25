@@ -71,9 +71,9 @@ public class BrakeService extends Service implements Runnable{
 	}
 	
 	//Method to calculate speed adjustment based on received packets
-	public void computeData(String direction, int speed, double vehicleLattitude, double vehicleLongitude, int brakeAmount){
+	public void computeData(int heading, int speed, double vehicleLattitude, double vehicleLongitude, int brakeAmount){
 		//This should check if it is ahead on the SAME ROAD if possible
-		if(checkIfAhead(vehicleLattitude, vehicleLongitude)){
+		if(checkIfAhead(heading, vehicleLattitude, vehicleLongitude)){
 			//Distance away affect speed at which you get to desired amount
 			//Speed difference affects the amount of brake that should be pressed
 			//The amount others ahead are breaking should influence how much you need to break
