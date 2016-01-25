@@ -125,10 +125,6 @@ public class Receiver implements Runnable{
 						waveManager.userInterface.output(output);
 											
 						generalInfoService.computeData(fromCarID, heading, vehicleSpeed, vehicleLattitude, vehicleLongitude);
-						//generalInfoService.computeData(vehicle);
-						//Add make vehicle to receiver?? each service could use it, or just general > better way to encapsulate all data
-						
-						
 					}else if(fromGroup.equals(trafficService.serviceGroup)){
 						int trafficLevel = Integer.parseInt(strings[9]);
 						
