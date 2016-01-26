@@ -31,7 +31,7 @@ public class UserInterface implements Runnable, ActionListener{
     private JLabel rightPanelLabel;
     private JLabel carID;
     private JLabel gps;
-    private JLabel bearing;
+    private JLabel heading;
     private JLabel speed;
     private JLabel brakeAmount;
     private JLabel vehicleType;
@@ -41,6 +41,7 @@ public class UserInterface implements Runnable, ActionListener{
     private JLabel generalInfoPacketsSent;
     private JLabel brakeServicePacketsSent;
     private JLabel emergencyServicePacketsSent;
+    private JLabel trafficServicePacketsSent;
     private JLabel numPacketsReceived;
     private JLabel numPacketsPassed;
     private JLabel numPacketsOmitted;
@@ -66,6 +67,8 @@ public class UserInterface implements Runnable, ActionListener{
     private JScrollPane computedBrakeInfoScroll;
     private JTextArea computedEmergencyInfo;
     private JScrollPane computedEmergencyInfoScroll;
+    private JTextArea computedTrafficInfo;
+    private JScrollPane computedTrafficInfoScroll;
 
 	//Class Methods
     public UserInterface(WaveManager waveManager){
@@ -111,7 +114,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   rightPanelLabel = new JLabel("<html><u>Calculated Info</u></html>");
 	   carID = new JLabel("Car ID: xxx-xxx-xxx-xxx");
 	   gps = new JLabel("GPS: -, -");
-	   bearing = new JLabel("Bearing: - degrees");
+	   heading = new JLabel("Heading: - degrees");
 	   speed = new JLabel("Speed: -");
 	   brakeAmount = new JLabel("Brake Amount: -");
 	   vehicleType = new JLabel("Vehicle Type: -");
@@ -122,6 +125,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   generalInfoPacketsSent = new JLabel("GeneralInfoService Packets Sent: 0 ");
 	   brakeServicePacketsSent = new JLabel("BreakService Packets Sent: 0 ");
 	   emergencyServicePacketsSent = new JLabel("EmergencyService Packets Sent: 0 ");
+	   trafficServicePacketsSent = new JLabel("TrafficService Packets Sent: 0 ");
 	   receiver = new JLabel("<html><u>Receiver</u></html>");
 	   numPacketsReceived = new JLabel("Received Packets: 0 ");
 	   numPacketsPassed = new JLabel("Packets Passed: 0 ");
@@ -136,8 +140,8 @@ public class UserInterface implements Runnable, ActionListener{
 	   carID.setFont(new Font("Open Sans", Font.BOLD, 13));
 	   gps.setHorizontalAlignment(JLabel.CENTER);
 	   gps.setFont(new Font("Open Sans", Font.BOLD, 13));
-	   bearing.setHorizontalAlignment(JLabel.CENTER);
-	   bearing.setFont(new Font("Open Sans", Font.BOLD, 13));
+	   heading.setHorizontalAlignment(JLabel.CENTER);
+	   heading.setFont(new Font("Open Sans", Font.BOLD, 13));
 	   speed.setHorizontalAlignment(JLabel.CENTER);
 	   speed.setFont(new Font("Open Sans", Font.BOLD, 13));
 	   brakeAmount.setHorizontalAlignment(JLabel.CENTER);
@@ -158,6 +162,8 @@ public class UserInterface implements Runnable, ActionListener{
 	   brakeServicePacketsSent.setFont(new Font("Open Sans", Font.BOLD, 13)); 
 	   emergencyServicePacketsSent.setHorizontalAlignment(JLabel.CENTER);   
 	   emergencyServicePacketsSent.setFont(new Font("Open Sans", Font.BOLD, 13));  
+	   trafficServicePacketsSent.setHorizontalAlignment(JLabel.CENTER);   
+	   trafficServicePacketsSent.setFont(new Font("Open Sans", Font.BOLD, 13));  
 	   numPacketsReceived.setHorizontalAlignment(JLabel.CENTER);   
 	   numPacketsReceived.setFont(new Font("Open Sans", Font.BOLD, 13));  
 	   numPacketsPassed.setHorizontalAlignment(JLabel.CENTER);   
@@ -195,6 +201,13 @@ public class UserInterface implements Runnable, ActionListener{
 	   computedEmergencyInfo.setEditable(false);
 	   computedEmergencyInfoScroll = new JScrollPane (computedEmergencyInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	   computedEmergencyInfoScroll.setPreferredSize(new Dimension(540,150));
+
+	   JLabel trafficServiceOutputLabel = new JLabel("<html><u>Traffic Service Computed Information</u></html>");
+	   computedTrafficInfo = new JTextArea();
+	   computedTrafficInfo.setFont(new Font("Open Sans", Font.PLAIN, 12));
+	   computedTrafficInfo.setEditable(false);
+	   computedTrafficInfoScroll = new JScrollPane (computedTrafficInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	   computedTrafficInfoScroll.setPreferredSize(new Dimension(540,150));
 	   
 	   topPanel.setLayout(new GridLayout(1,3));
 	   leftPanel.setLayout(new GridLayout(6,1));
@@ -202,7 +215,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   rightPanel.setLayout(new GridLayout(6,1));
 	   buttonPanel.setLayout(new GridLayout(1,2));
 	   packetInfoPanel.setLayout(new GridLayout(1,2));
-	   sentPacketInfoPanel.setLayout(new GridLayout(4,1));
+	   sentPacketInfoPanel.setLayout(new GridLayout(5,1));
 	   receivedPacketInfoPanel.setLayout(new GridLayout(4,1));
 	   computedDataPanel.setLayout(new GridLayout(1,2));
 	   
@@ -230,7 +243,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   leftPanel.add(vehicleType);
 	   centerPanel.add(centerPanelLabel);
 	   centerPanel.add(gps);
-	   centerPanel.add(bearing);
+	   centerPanel.add(heading);
 	   centerPanel.add(speed);
 	   centerPanel.add(brakeAmount);
 	   rightPanel.add(rightPanelLabel);
@@ -260,6 +273,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   sentPacketInfoPanel.add(generalInfoPacketsSent);
 	   sentPacketInfoPanel.add(brakeServicePacketsSent);
 	   sentPacketInfoPanel.add(emergencyServicePacketsSent);
+	   sentPacketInfoPanel.add(trafficServicePacketsSent);
 	   receivedPacketInfoPanel.add(receiver);
 	   receivedPacketInfoPanel.add(numPacketsReceived);
 	   receivedPacketInfoPanel.add(numPacketsOmitted);
@@ -272,6 +286,8 @@ public class UserInterface implements Runnable, ActionListener{
 	   rightComputedDataPanel.add(computedBrakeInfoScroll);
 	   leftComputedDataPanel.add(emergencyServiceOutputLabel);
 	   leftComputedDataPanel.add(computedEmergencyInfoScroll);
+	   rightComputedDataPanel.add(trafficServiceOutputLabel);
+	   rightComputedDataPanel.add(computedTrafficInfoScroll);
 	   
 	   mainPanel.add(topPanel);
 	   mainPanel.add(buttonPanel);
@@ -298,11 +314,12 @@ public class UserInterface implements Runnable, ActionListener{
     			 computedGeneralInfo.setCaretPosition(computedGeneralInfo.getDocument().getLength());
     			 computedBrakeInfo.setCaretPosition(computedBrakeInfo.getDocument().getLength());
     			 computedEmergencyInfo.setCaretPosition(computedEmergencyInfo.getDocument().getLength());
+    			 computedTrafficInfo.setCaretPosition(computedTrafficInfo.getDocument().getLength());
 
     			 writeCarID(waveManager.CarID);
     			 writeSpeed(waveManager.speed);
     			 writeBrakeAmount(waveManager.brakeAmount);
-    			 writeBearing(waveManager.bearing);
+    			 writeHeading(waveManager.heading);
     			 writeGPS(waveManager.GPSlattitude, waveManager.GPSlongitude);
     			 writeVehicleType(waveManager.vehicleType);
     		 }catch(Exception e){ }
@@ -324,6 +341,10 @@ public class UserInterface implements Runnable, ActionListener{
     public void computedEmergencyInfo(String outputText){
     	computedEmergencyInfo.append(outputText+"\n");
     }
+
+    public void computedTrafficInfo(String outputText){
+    	computedTrafficInfo.append(outputText+"\n");
+    }
     
     public void writeCarID(String outputText){
     	carID.setText("CarID: "+outputText);
@@ -333,8 +354,8 @@ public class UserInterface implements Runnable, ActionListener{
     	vehicleType.setText("Vehicle Type: "+outputText);
     }
     
-    public void writeBearing(int outputText){
-    	bearing.setText("Bearing: "+outputText+" degrees");
+    public void writeHeading(int outputText){
+    	heading.setText("Heading: "+outputText+" degrees");
     }
     
     public void writeGPS(double lattitude, double longitude){
@@ -383,6 +404,10 @@ public class UserInterface implements Runnable, ActionListener{
     
     public void updateEmergencyServicePacketsSent(int output){
     	emergencyServicePacketsSent.setText("EmergencyService Packets Sent: "+output+"");
+    }
+
+    public void updateTrafficServicePacketsSent(int output){
+    	trafficServicePacketsSent.setText("TrafficService Packets Sent: "+output+"");
     }
     
     public void actionPerformed(ActionEvent e) {
