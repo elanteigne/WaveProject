@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+@SuppressWarnings("unused")
 
 public class GeneralInfoService extends Service implements Runnable{
 	//Objects
@@ -14,7 +15,11 @@ public class GeneralInfoService extends Service implements Runnable{
 	private String output;
 	
 	//Exterior info
-	public static List<VehicleInfo> vehicles;
+	//public static List<VehicleInfo> vehicles;
+	private String[] vehiclesAccountedFor = {"", "", "", "", "", "", "", "" ,"", ""};
+	private long closebyVehiclesTimestamp;
+
+	private int numVehiclesAccountedFor;
 
 	//Constructor
 	public GeneralInfoService(WaveManager waveManager){
@@ -64,12 +69,12 @@ public class GeneralInfoService extends Service implements Runnable{
 	}
 	
 	//Method to calculate speed adjustment based on received packets
-	public void computeData(String direction,  int vehicleSpeed, double vehicleLattitude, double vehicleLongitude){
+	public void computeData(String fromCarID, int heading,  int vehicleSpeed, double vehicleLattitude, double vehicleLongitude){
 		double distanceBetweenVehicles = calculateDistance(vehicleLattitude, vehicleLongitude);
 		
 		if(distanceBetweenVehicles<150){
 			//Only way to check ahead so far is checking the direction
-			if(checkIfAhead(vehicleLattitude, vehicleLongitude)){
+			if(checkIfAhead(heading, vehicleLattitude, vehicleLongitude)){
 				if(vehicleSpeed<waveManager.speed){
 					int speedDifference = waveManager.speed - vehicleSpeed;
 					int warningLevel = outputWarningLights(speedDifference);
@@ -86,7 +91,7 @@ public class GeneralInfoService extends Service implements Runnable{
 					output = "o Calculated: Vehicle is ahead but is faster so is not considered";
 					waveManager.userInterface.computedGeneralInfo(output);
 				}
-			}else if(checkIfBehind(vehicleLattitude, vehicleLongitude)){
+			}else if(checkIfBehind(heading, vehicleLattitude, vehicleLongitude)){
 				if(vehicleSpeed>waveManager.speed){
 					int speedDifference = vehicleSpeed - waveManager.speed;
 					int warningLevel = outputWarningLights(speedDifference);
@@ -110,33 +115,36 @@ public class GeneralInfoService extends Service implements Runnable{
 			}
 			
 			//Decide if trafficService should start sending
-			//Other solution. Vehicle would know how many vehicles around using sensors, can choose to send then, put code directly in service thread.
-			/*if(distanceBetweenVehicles<50){
-				addVehicle(CarID, GPSlattitude, GPSlongitude, speed, bearing){
-				addVehicle("0",0.0,0.0,0,0);
-				//addVehicles(CarID, GPSlattitude, GPSlongitude, speed, brakeAmount, bearing, vehicleType, sirensOn.
-				//addVehicles(direction, vehicleSpeed)
+			if(distanceBetweenVehicles<15){
+				//addVehicle(CarID, GPSlattitude, GPSlongitude, speed, bearing);
+				//addVehicles(direction, vehicleSpeed);
 				
-			//Here is where we will decide if TrafficService should send a message
-				
-			if( vehicles.size()>5){
-				waveManager.inTraffic = true;
+				for(int i=0; i<9; i++){
+					if(!vehiclesAccountedFor[i].equals("")){
+						numVehiclesAccountedFor++;
+					}
 				}
-			*/
-			}
-			}
-					//closebyVehiclesTimestamp = System.currentTimeMillis();
-					//advertiseTrafficInfo = true;
-					
+				output = "xxx Num Vehicles Accounted For: "+numVehiclesAccountedFor;
+				waveManager.userInterface.computedGeneralInfo(output);
 				
-					////sendTrafficServiceMessage with calculated info for limited time?
-				//}
+				if(numVehiclesAccountedFor==0){
+					closebyVehiclesTimestamp = System.currentTimeMillis();
+				}
 				
-				//if(System.currentTimeMillis()>closebyVehiclesTimestamp+5000){
-					//numClosebyVehicles = 0;
-					////advertiseTrafficInfo = false;
-				//}
-			//}
+				listVehicle(fromCarID);
+				
+				if(System.currentTimeMillis()<closebyVehiclesTimestamp+5000){
+					if(vehiclesAccountedFor.length>5){
+						waveManager.inTraffic = true;
+					}
+				}else{
+					for(int i=0; i<9; i++){
+						vehiclesAccountedFor[i]="";
+					}
+				}
+				
+				numVehiclesAccountedFor=0;
+			}
 		}else{
 			System.out.println("o Calculated: Vehicle is too far ahead to be considered");
 			output = "o Calculated: Vehicle is too far ahead to be considered";
@@ -153,8 +161,29 @@ public class GeneralInfoService extends Service implements Runnable{
 			return 3; //Turn on third warning light
 		}		
 	}
+	
+	private void listVehicle(String fromCarID){
+		boolean updateList = false;
+		boolean emptyList = false;
+		for(int i=0; i<10; i++){
+			if(!vehiclesAccountedFor[i].equals("")){
+				if(!vehiclesAccountedFor[i].equals(fromCarID)){
+					updateList = true;
+				}
+			}
+		}
+		if(vehiclesAccountedFor[0].equals("")){
+			emptyList=true;
+		}
+		if(updateList||emptyList){
+			for(int i=9; i>0; i--){
+				vehiclesAccountedFor[i] = vehiclesAccountedFor[i-1];
+			}
+			vehiclesAccountedFor[0] = fromCarID;	
+		}
+	}
 }
-	/*public static void addVehicle(String CarID, double GPSlattitude, double GPSlongitude, int speed, int bearing){
+	/*public void addVehicle(String CarID, double GPSlattitude, double GPSlongitude, int speed, int bearing){
 		
 		VehicleInfo v = new VehicleInfo(CarID, GPSlattitude, GPSlongitude, speed, bearing);
 		boolean isDuplicate = false;
@@ -174,23 +203,3 @@ public class GeneralInfoService extends Service implements Runnable{
 	}
 	
 */
-
-/*class VehicleInfo extends Thread{
-	
-	public String CarID;
-	public double GPSlattitude;
-	public double GPSlongitude;
-	public int speed;
-	public int bearing;
-	
-	public VehicleInfo(String CarID, double GPSlattitude, double GPSlongitude, int speed, int bearing) {
-		 
-			this.CarID = CarID;
-			this.GPSlattitude = GPSlattitude;
-			this.GPSlongitude = GPSlongitude;
-			this.speed = speed;
-			this.bearing = bearing;
-	}
-}
-*/
-
