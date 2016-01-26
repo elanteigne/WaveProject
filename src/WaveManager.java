@@ -11,6 +11,7 @@ public class WaveManager {
 	private TrafficService trafficService;
 	private Receiver receiver;
 	public UserInterface userInterface;
+	public Display display;
 	
 	//MyInfo
 	public String CarID;
@@ -50,6 +51,9 @@ public class WaveManager {
 		
 		userInterface = new UserInterface(this);
 		userInterface.start();
+		
+		display = new Display(this);
+		display.start();
 		
 		try{ TimeUnit.SECONDS.sleep(1); } catch(Exception e){ }
 		
