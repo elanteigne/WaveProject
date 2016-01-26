@@ -11,7 +11,6 @@ public class WaveManager {
 	private TrafficService trafficService;
 	private Receiver receiver;
 	public UserInterface userInterface;
-	public Display display;
 	
 	//MyInfo
 	public String CarID;
