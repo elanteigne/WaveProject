@@ -51,9 +51,6 @@ public class WaveManager {
 		userInterface = new UserInterface(this);
 		userInterface.start();
 		
-		display = new Display(this);
-		display.start();
-		
 		try{ TimeUnit.SECONDS.sleep(1); } catch(Exception e){ }
 		
 		generalInfoService = new GeneralInfoService(this);
