@@ -1,6 +1,7 @@
 import java.text.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+@SuppressWarnings("unused")
 
 public class TrafficService extends Service implements Runnable {
 	//Class Variables
@@ -37,7 +38,7 @@ public class TrafficService extends Service implements Runnable {
 		messageID++;
 		waveManager.userInterface.updateTrafficServicePacketsSent(messageID);
 	}
-		
+	
 	public void run(){
 		while(true){
 			delay = waveManager.delay;
@@ -72,22 +73,24 @@ public class TrafficService extends Service implements Runnable {
 	
 	//TRAFFIC ROUTING ALOGORITHM*/
 	
-	public void computeData(List<VehicleInfo> vehicles){	
+	public void computeData(){
 		
 		String[] trafficWords = {"Low", "Limited", "Moderate","Mild", "Heavy", "Severe"};
 		String[] directionWords = {"N","NNE", "NE", "NEE", "E", "SEE", "SE", "SSE", "S","SSW", "SW", "SWW","W", "NWW", "NW", "NNW"};
-		int direction = waveManager.bearing;
+		int direction = waveManager.heading;
 		int speed = waveManager.speed;
 		double speedDiff = 0;
 		int trafficLevel = 0;
 		String userMessage = "";
 		
-		int numVehicles = vehicles.size();
+		int numVehicles = waveManager.vehiclesAccountedFor.size();
+		ArrayList<ArrayList<Object>> vehicles = waveManager.vehiclesAccountedFor;
+		
 		int[] dir = new int[2];
 		int[] dirPrv = new int[2];
 		int[] spd = new int[2];
 		
-		String[] dirString = getAvgDir(vehicles, numVehicles).split("/"); 
+		String[] dirString = getAvgDir(vehicles, numVehicles).split("/");
 		dir[0] = Integer.parseInt(dirString[0]);
 		dir[1] = Integer.parseInt(dirString[1]);
 		dirPrv[0] = Integer.parseInt(dirString[2]);			
@@ -198,7 +201,9 @@ public class TrafficService extends Service implements Runnable {
 		userMessage = trafficWords[trafficLevel] + " traffic ahead.";
 	}
 	
-	waveManager.userInterface.userInfo(userMessage);
+	//waveManager.userInterface.userInfo(userMessage);
+	System.out.println(userMessage);
+	waveManager.userInterface.computedTrafficInfo(userMessage);
 		
 	/*	To do: 	Distance to traffic cluster calc. -> perhaps handled by general info service?
 				Possible convenience algorithm implementation -> general or traffic?					*/
@@ -220,15 +225,21 @@ public class TrafficService extends Service implements Runnable {
 	Average Vehicle direction in two directions
 	To do: add two other directions for cross-traffic.*/
 	
-	public static String getAvgDir(List<VehicleInfo> vehicles, int vLength){
+	public static String getAvgDir(ArrayList<ArrayList<Object>> vehicles, int vLength ){
+		
+		//int vLength = waveManager.vehiclesAccountedFor.size();
 		int[] direction = new int[vLength];
 		int[] prevalence = new int[16];
 		Arrays.fill(prevalence, 0);
 		int[] laneDir = new int[]{0,0};
 		int[] dirPrv = new int[]{0,0};
-
+		
+		ArrayList<Object> v = new ArrayList<Object>();
+		
 		for(int i = 0; i<vLength; i++){
-			direction[i] = vehicles.get(i).bearing;
+			//String fromCarID, int heading,  int vehicleSpeed, double vehicleLattitude, double vehicleLongitude
+			v = vehicles.get(i);
+			direction[i] = (int)v.get(1);
 			
 			int j =0;
 			if(direction[i] < 11.25 || direction[i] > 348.75){prevalence[0]++;}
@@ -261,16 +272,19 @@ public class TrafficService extends Service implements Runnable {
 	//Average Vehicle Speed in two directions
 	//To do: add two other directions for cross-traffic.
 	
-	public static String getAvgSpd(List<VehicleInfo> vehicles, int vLength, int laneDir[]){
+	public static String getAvgSpd(ArrayList<ArrayList<Object>> vehicles, int vLength, int laneDir[]){
 		int speed = 0;
 		int direction;
 		int[] spd = new int[]{0,0};
 		int[] count = new int[]{0,0};
 		
+		ArrayList<Object> v = new ArrayList<Object>();
+		
 		for(int i = 0; i<vLength; i++){
 			
-			speed = vehicles.get(i).speed;
-			direction = vehicles.get(i).bearing;
+			v = vehicles.get(i);
+			speed = (int)v.get(2);
+			direction = (int)v.get(1);
 			
 			//Approx. direction of current vehicle to two lane directions
 			if(direction != laneDir[0] && direction != laneDir[1]){

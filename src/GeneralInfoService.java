@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.*;
 @SuppressWarnings("unused")
 
 public class GeneralInfoService extends Service implements Runnable{
@@ -15,8 +16,9 @@ public class GeneralInfoService extends Service implements Runnable{
 	private String output;
 	
 	//Exterior info
-	//public static List<VehicleInfo> vehicles;
-	private String[] vehiclesAccountedFor = {"", "", "", "", "", "", "", "" ,"", ""};
+	
+	//public static ArrayList<ArrayList<Object>> vehiclesAccountedFor = new ArrayList<ArrayList<Object>>();
+	
 	private long closebyVehiclesTimestamp;
 
 	private int numVehiclesAccountedFor;
@@ -115,31 +117,25 @@ public class GeneralInfoService extends Service implements Runnable{
 			}
 			
 			//Decide if trafficService should start sending
-			if(distanceBetweenVehicles<15){
-				//addVehicle(CarID, GPSlattitude, GPSlongitude, speed, bearing);
-				//addVehicles(direction, vehicleSpeed);
-				
-				for(int i=0; i<9; i++){
-					if(!vehiclesAccountedFor[i].equals("")){
-						numVehiclesAccountedFor++;
-					}
-				}
-				output = "xxx Num Vehicles Accounted For: "+numVehiclesAccountedFor;
+			if(distanceBetweenVehicles<25){
+
+				output = "xxx Num Vehicles Accounted For: "+waveManager.vehiclesAccountedFor.size();
 				waveManager.userInterface.computedGeneralInfo(output);
 				
-				if(numVehiclesAccountedFor==0){
+				if(waveManager.vehiclesAccountedFor.size()==0){
 					closebyVehiclesTimestamp = System.currentTimeMillis();
 				}
 				
-				listVehicle(fromCarID);
+				listVehicle(fromCarID, heading, vehicleSpeed, vehicleLattitude, vehicleLongitude);
 				
 				if(System.currentTimeMillis()<closebyVehiclesTimestamp+5000){
-					if(vehiclesAccountedFor.length>5){
+					if(waveManager.vehiclesAccountedFor.size()>5){
 						waveManager.inTraffic = true;
 					}
 				}else{
-					for(int i=0; i<9; i++){
-						vehiclesAccountedFor[i]="";
+					for(int i=0; i<waveManager.vehiclesAccountedFor.size(); i++){
+						waveManager.vehiclesAccountedFor.remove(0);
+						//only remove 0 since removing element(0) will make the second element element(0) on next iteration
 					}
 				}
 				
@@ -162,27 +158,25 @@ public class GeneralInfoService extends Service implements Runnable{
 		}		
 	}
 	
-	private void listVehicle(String fromCarID){
-		boolean updateList = false;
-		boolean emptyList = false;
-		for(int i=0; i<10; i++){
-			if(!vehiclesAccountedFor[i].equals("")){
-				if(!vehiclesAccountedFor[i].equals(fromCarID)){
-					updateList = true;
-				}
-			}
+	private void listVehicle(String fromCarID, int heading,  int vehicleSpeed, double vehicleLattitude, double vehicleLongitude){
+		
+		ArrayList<Object> vehicle = new ArrayList<Object>();
+
+		if(waveManager.vehiclesAccountedFor.size()> 9){
+			waveManager.vehiclesAccountedFor.remove(0);
 		}
-		if(vehiclesAccountedFor[0].equals("")){
-			emptyList=true;
-		}
-		if(updateList||emptyList){
-			for(int i=9; i>0; i--){
-				vehiclesAccountedFor[i] = vehiclesAccountedFor[i-1];
-			}
-			vehiclesAccountedFor[0] = fromCarID;	
-		}
+		
+		vehicle.add(fromCarID);
+		vehicle.add(heading);
+		vehicle.add(vehicleSpeed);
+		vehicle.add(vehicleLattitude);
+		vehicle.add(vehicleLongitude);
+		
+		waveManager.vehiclesAccountedFor.add(vehicle);
+		
 	}
 }
+
 	/*public void addVehicle(String CarID, double GPSlattitude, double GPSlongitude, int speed, int bearing){
 		
 		VehicleInfo v = new VehicleInfo(CarID, GPSlattitude, GPSlongitude, speed, bearing);
@@ -202,4 +196,33 @@ public class GeneralInfoService extends Service implements Runnable{
 		
 	}
 	
+*/
+
+/*for(int i=0; i<10; i++){
+if(!vehiclesAccountedFor[i].equals("")){
+	if(!vehiclesAccountedFor[i].equals(fromCarID)){
+		updateList = true;
+	}
+}
+}
+if(vehiclesAccountedFor[0].equals("")){
+emptyList=true;
+}
+
+if(updateList||emptyList){
+for(int i=9; i>0; i--){
+	vehiclesAccountedFor[i] = vehiclesAccountedFor[i-1];
+}
+vehiclesAccountedFor[0] = fromCarID;	
+}*/
+
+//addVehicle(CarID, GPSlattitude, GPSlongitude, speed, bearing);
+//addVehicles(direction, vehicleSpeed);
+/*
+numVehiclesAccountedFor = vehiclesAccountedFor.size();
+for(int i=0; i<9; i++){
+	if(!vehiclesAccountedFor[i].equals("")){
+		numVehiclesAccountedFor++;
+	}
+}
 */
