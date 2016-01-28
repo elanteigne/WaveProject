@@ -1,4 +1,5 @@
 import java.text.*;
+import java.math.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 @SuppressWarnings("unused")
@@ -79,6 +80,8 @@ public class TrafficService extends Service implements Runnable {
 		String[] directionWords = {"N","NNE", "NE", "NEE", "E", "SEE", "SE", "SSE", "S","SSW", "SW", "SWW","W", "NWW", "NW", "NNW"};
 		int direction = waveManager.heading;
 		int speed = waveManager.speed;
+		double longitude = waveManager.GPSlongitude;
+		double lattitude = waveManager.GPSlattitude;
 		double speedDiff = 0;
 		int trafficLevel = 0;
 		String userMessage = "";
@@ -100,9 +103,11 @@ public class TrafficService extends Service implements Runnable {
 		spd[0] = Integer.parseInt(spdString[0]);
 		spd[1] = Integer.parseInt(spdString[1]);
 		
+		double distToTraffic = getDistToTraffic(vehicles, numVehicles, direction, longitude,lattitude);
+		
 		for(int out = 0; out<2; out++){
-			System.out.println("o Calculated: There are " + dirPrv[out] + " vehicles travelling at " +spd[out]+ "km/h in the " + directionWords[dir[out]] + " direction");
-			output = "o Calculated: There are " + dirPrv[out] + " vehicles travelling at " +spd[out]+ "km/h in the " + directionWords[dir[out]] + " direction";
+			System.out.println("o Calculated: There are " + dirPrv[out] + " vehicles travelling at " +spd[out]+ "km/h, approximately " + distToTraffic + " km away in the " + directionWords[dir[out]] + " direction");
+			output = "o Calculated: There are " + dirPrv[out] + " vehicles travelling at " +spd[out]+ "km/h, approximately " + distToTraffic + " km away in the " + directionWords[dir[out]] + " direction";
 			waveManager.userInterface.computedTrafficInfo(output);
 		}
 		
@@ -194,20 +199,19 @@ public class TrafficService extends Service implements Runnable {
 		waveManager.userInterface.computedTrafficInfo(output);
 		
 	if(trafficLevel > 3){
-		userMessage = trafficWords[trafficLevel] + " traffic ahead. Please find an alternative route.";
+		userMessage = trafficWords[trafficLevel] + " traffic in " + distToTraffic + "km. Please find an alternative route.";
 	}else if(trafficLevel > 1){
-		userMessage = trafficWords[trafficLevel] + " traffic ahead. Please excercise caution.";
+		userMessage = trafficWords[trafficLevel] + " traffic in " + distToTraffic + "km. Please excercise caution.";
 	}else{
-		userMessage = trafficWords[trafficLevel] + " traffic ahead.";
+		userMessage = trafficWords[trafficLevel] + " traffic in " + distToTraffic + "km.";
 	}
 	
 	//waveManager.userInterface.userInfo(userMessage);
 	System.out.println(userMessage);
 	waveManager.userInterface.computedTrafficInfo(userMessage);
 		
-	/*	To do: 	Distance to traffic cluster calc. -> perhaps handled by general info service?
-				Possible convenience algorithm implementation -> general or traffic?					*/
-	
+	/*	To do: 	Possible convenience algorithm implementation -> general or traffic?					*/
+				
 	}
 
 //METHODS
@@ -306,7 +310,34 @@ public class TrafficService extends Service implements Runnable {
 		spd[0] = spd[0]/count[0];
 		spd[1] = spd[1]/count[1];
 		
-		return spd[0]+"/"+spd[1];
+		return spd[0]+"/"+spd[1];//+"/"+count[0]+"/"+count[1];
+	}
+	
+	public static double getDistToTraffic(ArrayList<ArrayList<Object>> vehicles, int vLength, int direction, double longitude, double lattitude){
+		double lng = 0;
+		double lat = 0;
+		double distance;
+		
+		int count = 0;
+		
+		ArrayList<Object> v = new ArrayList<Object>();
+		
+		for(int i = 0; i<vehicles.size(); i++){
+			v = vehicles.get(i);
+			
+			if(direction == (int)v.get(1) || direction == (int)v.get(1)+1 ||direction == (int)v.get(1)-1){
+				lat = lat + (double)v.get(3);
+				lng = lng + (double)v.get(4);
+				count++;
+			}
+		}
+		lat = lat/count;
+		lng = lng/count;
+		
+		distance = Math.sqrt(Math.pow((lng - longitude), 2) + Math.pow((lat - lattitude),2));
+		distance = 111*distance;
+		
+		return distance;
 	}
 	
 }
