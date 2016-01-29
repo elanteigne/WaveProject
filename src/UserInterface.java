@@ -69,6 +69,9 @@ public class UserInterface implements Runnable, ActionListener{
     private JScrollPane computedEmergencyInfoScroll;
     private JTextArea computedTrafficInfo;
     private JScrollPane computedTrafficInfoScroll;
+    
+    public int UIscale = 5;    
+    public int TextScale = UIscale+1;
 
 	//Class Methods
     public UserInterface(WaveManager waveManager){
@@ -176,38 +179,38 @@ public class UserInterface implements Runnable, ActionListener{
 	   JLabel outputLabel = new JLabel("<html><u>Sending/Receiving</u></html>");
 	   outputLabel.setHorizontalAlignment(JLabel.CENTER);     
 	   output = new JTextArea();
-	   output.setFont(new Font("Open Sans", Font.PLAIN, 12));
+	   output.setFont(new Font("Open Sans", Font.PLAIN, TextScale*2));
 	   output.setEditable(false);
 	   consoleScroll = new JScrollPane (output, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-	   consoleScroll.setPreferredSize(new Dimension(1100,200));
+	   consoleScroll.setPreferredSize(new Dimension(UIscale*220,UIscale*40));
 	
 	   JLabel generalInfoServiceOutputLabel = new JLabel("<html><u>General Info Service Computed Information</u></html>");
 	   computedGeneralInfo = new JTextArea();
-	   computedGeneralInfo.setFont(new Font("Open Sans", Font.PLAIN, 12));
+	   computedGeneralInfo.setFont(new Font("Open Sans", Font.PLAIN, TextScale*2));
 	   computedGeneralInfo.setEditable(false);
 	   computedGeneralInfoScroll = new JScrollPane (computedGeneralInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-	   computedGeneralInfoScroll.setPreferredSize(new Dimension(540,150));
+	   computedGeneralInfoScroll.setPreferredSize(new Dimension(UIscale*108,UIscale*30));
 	
 	   JLabel brakeServiceOutputLabel = new JLabel("<html><u>Brake Service Computed Information</u></html>");
 	   computedBrakeInfo = new JTextArea();
-	   computedBrakeInfo.setFont(new Font("Open Sans", Font.PLAIN, 12));
+	   computedBrakeInfo.setFont(new Font("Open Sans", Font.PLAIN, TextScale*2));
 	   computedBrakeInfo.setEditable(false);
 	   computedBrakeInfoScroll = new JScrollPane (computedBrakeInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-	   computedBrakeInfoScroll.setPreferredSize(new Dimension(540,150));
+	   computedBrakeInfoScroll.setPreferredSize(new Dimension(UIscale*108,UIscale*30));
 	   
 	   JLabel emergencyServiceOutputLabel = new JLabel("<html><u>Emergency Service Computed Information</u></html>");
 	   computedEmergencyInfo = new JTextArea();
-	   computedEmergencyInfo.setFont(new Font("Open Sans", Font.PLAIN, 12));
+	   computedEmergencyInfo.setFont(new Font("Open Sans", Font.PLAIN, TextScale*2));
 	   computedEmergencyInfo.setEditable(false);
 	   computedEmergencyInfoScroll = new JScrollPane (computedEmergencyInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-	   computedEmergencyInfoScroll.setPreferredSize(new Dimension(540,150));
+	   computedEmergencyInfoScroll.setPreferredSize(new Dimension(UIscale*108,UIscale*30));
 
 	   JLabel trafficServiceOutputLabel = new JLabel("<html><u>Traffic Service Computed Information</u></html>");
 	   computedTrafficInfo = new JTextArea();
-	   computedTrafficInfo.setFont(new Font("Open Sans", Font.PLAIN, 12));
+	   computedTrafficInfo.setFont(new Font("Open Sans", Font.PLAIN, TextScale*2));
 	   computedTrafficInfo.setEditable(false);
 	   computedTrafficInfoScroll = new JScrollPane (computedTrafficInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-	   computedTrafficInfoScroll.setPreferredSize(new Dimension(540,150));
+	   computedTrafficInfoScroll.setPreferredSize(new Dimension(UIscale*108,UIscale*30));
 	   
 	   topPanel.setLayout(new GridLayout(1,3));
 	   leftPanel.setLayout(new GridLayout(6,1));
@@ -219,20 +222,20 @@ public class UserInterface implements Runnable, ActionListener{
 	   receivedPacketInfoPanel.setLayout(new GridLayout(4,1));
 	   computedDataPanel.setLayout(new GridLayout(1,2));
 	   
-	   topPanel.setPreferredSize(new Dimension(700,150));
-	   leftPanel.setPreferredSize(new Dimension(700,150));
-	   centerPanel.setPreferredSize(new Dimension(700,150));
-	   rightPanel.setPreferredSize(new Dimension(700,150));
-	   buttonPanel.setPreferredSize(new Dimension(1000,50));
-	   outputPanel.setPreferredSize(new Dimension(1125,750));
-	   packetInfoPanel.setPreferredSize(new Dimension(800,80));
-	   sentPacketInfoPanel.setPreferredSize(new Dimension(500,40));
-	   receivedPacketInfoPanel.setPreferredSize(new Dimension(500,100));
-	   computedDataPanel.setPreferredSize(new Dimension(1125,1000));
-	   leftComputedDataPanel.setPreferredSize(new Dimension(550,700));
-	   rightComputedDataPanel.setPreferredSize(new Dimension(550,700));
-	   delayPanel.setPreferredSize(new Dimension(50,100));
-	   outputLabel.setPreferredSize(new Dimension(1125,40));
+	   topPanel.setPreferredSize(new Dimension(UIscale*140,UIscale*30));
+	   leftPanel.setPreferredSize(new Dimension(UIscale*140,UIscale*30));
+	   centerPanel.setPreferredSize(new Dimension(UIscale*140,UIscale*30));
+	   rightPanel.setPreferredSize(new Dimension(UIscale*140,UIscale*30));
+	   buttonPanel.setPreferredSize(new Dimension(UIscale*200,UIscale*10));
+	   outputPanel.setPreferredSize(new Dimension(UIscale*225,UIscale*150));
+	   packetInfoPanel.setPreferredSize(new Dimension(UIscale*160,UIscale*16));
+	   sentPacketInfoPanel.setPreferredSize(new Dimension(UIscale*100,UIscale*8));
+	   receivedPacketInfoPanel.setPreferredSize(new Dimension(UIscale*100,UIscale*20));
+	   computedDataPanel.setPreferredSize(new Dimension(UIscale*225,UIscale*200));
+	   leftComputedDataPanel.setPreferredSize(new Dimension(UIscale*110,UIscale*140));
+	   rightComputedDataPanel.setPreferredSize(new Dimension(UIscale*110,UIscale*140));
+	   delayPanel.setPreferredSize(new Dimension(UIscale*10,UIscale*20));
+	   outputLabel.setPreferredSize(new Dimension(UIscale*225,UIscale*8));
 	   
 	   //Add components to panels
 	   topPanel.add(leftPanel);
@@ -295,7 +298,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   
 	   mainFrame.add(mainPanel); 
 	   mainFrame.setTitle("WAVE Interface");
-	   mainFrame.setSize(1150,1000);
+	   mainFrame.setSize(UIscale*230,UIscale*200);
 	   mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	   mainFrame.setVisible(true);
     }
