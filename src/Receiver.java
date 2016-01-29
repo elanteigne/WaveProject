@@ -1,6 +1,7 @@
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.concurrent.TimeUnit;
 
 public class Receiver implements Runnable{
 	//Object
@@ -23,7 +24,7 @@ public class Receiver implements Runnable{
 	private String output;
 	private int maxHopCount = 5;
 	private int numGroupsToListenTo = 0;
-	private String[] groupsToListenTo={"230.0.0.1", "", "", "", ""};
+	private String[] groupsToListenTo={"230.0.0.1", "", "", "", "", ""};
 	private String[][] recentlyReceivedMessages={{"", "", ""}, {"", "", ""}, {"", "", ""}, {"", "", ""},
 												{"", "", ""}, {"", "", ""}, {"", "", ""}, {"", "", ""},
 												{"", "", ""}, {"", "", ""}, {"", "", ""}, {"", "", ""},
@@ -105,6 +106,7 @@ public class Receiver implements Runnable{
 				if(receivedMessagePreviously(fromCarID, messageID, messageGroup)){
 					
 					//The order of these is where PRIORITIES take place
+					
 					if(fromGroup.equals(emergencyService.serviceGroup)){
 						System.out.println("+ Received *EmergencyService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Sirens 'On', Heading:'"+heading+"', Speed: "+vehicleSpeed+" km/h, HopCount = "+hopCount);
 						output = "+ Received *EmergencyService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Sirens 'On', Heading:'"+heading+"', Speed: "+vehicleSpeed+" km/h, HopCount = "+hopCount;
@@ -123,17 +125,17 @@ public class Receiver implements Runnable{
 						System.out.println("+ Received *GeneralInfoService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+vehicleSpeed+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Heading:'"+heading+"', HopCount = "+hopCount);
 						output = "+ Received *GeneralInfoService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+vehicleSpeed+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Heading:'"+heading+"', HopCount = "+hopCount;
 						waveManager.userInterface.output(output);
-											
+										
 						generalInfoService.computeData(fromCarID, heading, vehicleSpeed, vehicleLattitude, vehicleLongitude);
 					}else if(fromGroup.equals(trafficService.serviceGroup)){
+						
 						int trafficLevel = Integer.parseInt(strings[9]);
 						
 						System.out.println("+ Received *TrafficService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': TrafficLevel:'"+trafficLevel+"': Speed:'"+vehicleSpeed+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Heading:'"+heading+"', HopCount = "+hopCount);
 						output = "+ Received *TrafficService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': TrafficLevel:'"+trafficLevel+"': Speed:'"+vehicleSpeed+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Heading:'"+heading+"', HopCount = "+hopCount;
 						waveManager.userInterface.output(output);
-											
-						//trafficService.computeData(trafficLevel);
-						//Need: carID, bearing, speed, may be extended to gps coor for distance to traffic calculation
+						
+						trafficService.computeData();
 						
 					}else{
 						System.out.println("+ Received *Control* message advertising '"+messageGroup+"' from CarID '"+fromCarID+"'");
@@ -216,6 +218,7 @@ public class Receiver implements Runnable{
 		for(int i=0; i<8; i++){
 			if(recentlyReceivedMessages[i][0].equals(fromCarID)&&recentlyReceivedMessages[i][1].equals(messageID)&&recentlyReceivedMessages[i][2].equals(fromGroup)){
 				numPacketsOmitted++;
+				//waveManager.userInterface.computedGeneralInfo(">>>>>> omitted traffic! ");
 				waveManager.userInterface.updateNumPacketsOmitted(numPacketsOmitted);
 				
 				System.out.println("X Recently received message '"+messageID+"' from carID '"+fromCarID+"' on service channel '"+fromGroup+"'. Omit message");

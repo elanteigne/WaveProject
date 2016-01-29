@@ -44,38 +44,43 @@ public class TrafficService extends Service implements Runnable {
 		while(true){
 			delay = waveManager.delay;
 			System.out.println(""+waveManager.inTraffic);
-			if(waveManager.inTraffic = true){
-				if(checkTraffic()){
-					
-					sendControlMessage();
+			
+			if(waveManager.inTraffic == true){
+				
+				sendControlMessage();
+				
+				try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
+				
+				//if(checkTraffic()){
 					//Wait 
-					try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
+					//try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
 					
 					int count = 0;
 					while(count<5){
 						sendServiceMessage();
-	
 						delay = waveManager.delay;
 						//Wait
 						try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
 						count++;
 					}
-				}
+				//}
 			}
 		}
 	}
 
+	/*
 	public boolean checkTraffic(){
 		if(waveManager.trafficLevel>2){			
 			return true;
 		}
 		return false;
 	}
+	*/
 	
 	//TRAFFIC ROUTING ALOGORITHM*/
 	
 	public void computeData(){
-		
+		//waveManager.userInterface.computedGeneralInfo(">>>>>> It's computing data!");
 		String[] trafficWords = {"Low", "Limited", "Moderate","Mild", "Heavy", "Severe"};
 		String[] directionWords = {"N","NNE", "NE", "NEE", "E", "SEE", "SE", "SSE", "S","SSW", "SW", "SWW","W", "NWW", "NW", "NNW"};
 		int direction = waveManager.heading;
@@ -89,6 +94,7 @@ public class TrafficService extends Service implements Runnable {
 		int numVehicles = waveManager.vehiclesAccountedFor.size();
 		ArrayList<ArrayList<Object>> vehicles = waveManager.vehiclesAccountedFor;
 		
+		
 		int[] dir = new int[2];
 		int[] dirPrv = new int[2];
 		int[] spd = new int[2];
@@ -98,17 +104,21 @@ public class TrafficService extends Service implements Runnable {
 		dir[1] = Integer.parseInt(dirString[1]);
 		dirPrv[0] = Integer.parseInt(dirString[2]);			
 		dirPrv[1] = Integer.parseInt(dirString[3]);
-	
+		
+
 		String[] spdString = getAvgSpd(vehicles, numVehicles, dir).split("/");
 		spd[0] = Integer.parseInt(spdString[0]);
 		spd[1] = Integer.parseInt(spdString[1]);
 		
-		double distToTraffic = getDistToTraffic(vehicles, numVehicles, direction, longitude,lattitude);
+	
+		double distToTraffic = getDistToTraffic(vehicles, numVehicles, direction, longitude, lattitude);
 		
 		for(int out = 0; out<2; out++){
 			System.out.println("o Calculated: There are " + dirPrv[out] + " vehicles travelling at " +spd[out]+ "km/h, approximately " + distToTraffic + " km away in the " + directionWords[dir[out]] + " direction");
 			output = "o Calculated: There are " + dirPrv[out] + " vehicles travelling at " +spd[out]+ "km/h, approximately " + distToTraffic + " km away in the " + directionWords[dir[out]] + " direction";
-			waveManager.userInterface.computedTrafficInfo(output);
+			//waveManager.userInterface.computedTrafficInfo(output);
+			waveManager.userInterface.computedGeneralInfo(output);
+			if(numVehicles <2){out++;};
 		}
 		
 		//Approximate this vehicles direction
@@ -196,7 +206,8 @@ public class TrafficService extends Service implements Runnable {
 		
 		System.out.println("o Calculated: Traffic ahead is: " + trafficWords[trafficLevel]);
 		output = "o Calculated: Traffic ahead is: " + trafficWords[trafficLevel];
-		waveManager.userInterface.computedTrafficInfo(output);
+		//waveManager.userInterface.computedTrafficInfo(output);
+		waveManager.userInterface.computedGeneralInfo(output);
 		
 	if(trafficLevel > 3){
 		userMessage = trafficWords[trafficLevel] + " traffic in " + distToTraffic + "km. Please find an alternative route.";
@@ -208,8 +219,8 @@ public class TrafficService extends Service implements Runnable {
 	
 	//waveManager.userInterface.userInfo(userMessage);
 	System.out.println(userMessage);
-	waveManager.userInterface.computedTrafficInfo(userMessage);
-		
+	//waveManager.userInterface.computedTrafficInfo(userMessage);
+	waveManager.userInterface.computedGeneralInfo(output);
 	/*	To do: 	Possible convenience algorithm implementation -> general or traffic?					*/
 				
 	}
@@ -284,31 +295,39 @@ public class TrafficService extends Service implements Runnable {
 		
 		ArrayList<Object> v = new ArrayList<Object>();
 		
-		for(int i = 0; i<vLength; i++){
+		if(vLength>1){
 			
-			v = vehicles.get(i);
-			speed = (int)v.get(2);
-			direction = (int)v.get(1);
-			
-			//Approx. direction of current vehicle to two lane directions
-			if(direction != laneDir[0] && direction != laneDir[1]){
-				if(direction-laneDir[1] > direction-laneDir[0]){direction = laneDir[0];
+			for(int i = 0; i<vLength; i++){
+				
+				v = vehicles.get(i);
+				speed = (int)v.get(2);
+				direction = (int)v.get(1);
+				
+				//Approx. direction of current vehicle to two lane directions
+				if(direction != laneDir[0] && direction != laneDir[1]){
+					if(direction-laneDir[1] > direction-laneDir[0]){direction = laneDir[0];
+					}else{
+						direction = laneDir[1];
+						}
+				}
+				
+				//Compare to the lanes (add to respective lane speed)
+				if(direction == laneDir[0]){
+					spd[0] = spd[0] + speed;
+					count[0]++;
 				}else{
-					direction = laneDir[1];
-					}
+					spd[1] = spd[1] + speed;
+					count[1]++;
+				}
 			}
-			
-			//Compare to the lanes (add to respective lane speed)
-			if(direction == laneDir[0]){
-				spd[0] = spd[0] + speed;
-				count[0]++;
-			}else{
-				spd[1] = spd[1] + speed;
-				count[1]++;
-			}
+			spd[0] = spd[0]/count[0];
+			spd[1] = spd[1]/count[1];
+		
+		}else{
+			v = vehicles.get(0);
+			spd[0] = (int)v.get(2);
+			spd[1] = 0;
 		}
-		spd[0] = spd[0]/count[0];
-		spd[1] = spd[1]/count[1];
 		
 		return spd[0]+"/"+spd[1];//+"/"+count[0]+"/"+count[1];
 	}

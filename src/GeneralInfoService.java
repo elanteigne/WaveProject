@@ -118,9 +118,6 @@ public class GeneralInfoService extends Service implements Runnable{
 			
 			//Decide if trafficService should start sending
 			if(distanceBetweenVehicles<25){
-
-				output = "xxx Num Vehicles Accounted For: "+waveManager.vehiclesAccountedFor.size();
-				waveManager.userInterface.computedGeneralInfo(output);
 				
 				if(waveManager.vehiclesAccountedFor.size()==0){
 					closebyVehiclesTimestamp = System.currentTimeMillis();
@@ -128,18 +125,26 @@ public class GeneralInfoService extends Service implements Runnable{
 				
 				listVehicle(fromCarID, heading, vehicleSpeed, vehicleLattitude, vehicleLongitude);
 				
+				output = "xxx Num Vehicles Accounted For: "+waveManager.vehiclesAccountedFor.size();
+				waveManager.userInterface.computedGeneralInfo(output);
+				
+				
 				if(System.currentTimeMillis()<closebyVehiclesTimestamp+5000){
-					if(waveManager.vehiclesAccountedFor.size()>5){
+					//if(waveManager.vehiclesAccountedFor.size()>5){
+					if(waveManager.vehiclesAccountedFor.size()>0){
 						waveManager.inTraffic = true;
+						waveManager.userInterface.computedGeneralInfo("In traffic: " + waveManager.inTraffic);
 					}
 				}else{
 					for(int i=0; i<waveManager.vehiclesAccountedFor.size(); i++){
 						waveManager.vehiclesAccountedFor.remove(0);
 						//only remove 0 since removing element(0) will make the second element element(0) on next iteration
 					}
+					waveManager.inTraffic = false;
+					//waveManager.userInterface.computedGeneralInfo(">>>Emptied vehicles list");
 				}
 				
-				numVehiclesAccountedFor=0;
+				//numVehiclesAccountedFor=0;
 			}
 		}else{
 			System.out.println("o Calculated: Vehicle is too far ahead to be considered");
@@ -160,6 +165,16 @@ public class GeneralInfoService extends Service implements Runnable{
 	
 	private void listVehicle(String fromCarID, int heading,  int vehicleSpeed, double vehicleLattitude, double vehicleLongitude){
 		
+		boolean isDuplicate = false;
+		
+		for(int i = 0; i < waveManager.vehiclesAccountedFor.size(); i++){
+			if(waveManager.vehiclesAccountedFor.get(i).get(0).equals(fromCarID)){
+				isDuplicate = true;
+			}	
+		}
+		
+		if(isDuplicate == false){
+			
 		ArrayList<Object> vehicle = new ArrayList<Object>();
 
 		if(waveManager.vehiclesAccountedFor.size()> 9){
@@ -174,6 +189,7 @@ public class GeneralInfoService extends Service implements Runnable{
 		
 		waveManager.vehiclesAccountedFor.add(vehicle);
 		
+		}
 	}
 }
 
