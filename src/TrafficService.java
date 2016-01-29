@@ -1,6 +1,8 @@
 import java.text.*;
+import java.math.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+@SuppressWarnings("unused")
 
 public class TrafficService extends Service implements Runnable {
 	//Class Variables
@@ -37,70 +39,86 @@ public class TrafficService extends Service implements Runnable {
 		messageID++;
 		waveManager.userInterface.updateTrafficServicePacketsSent(messageID);
 	}
-		
+	
 	public void run(){
 		while(true){
 			delay = waveManager.delay;
 			System.out.println(""+waveManager.inTraffic);
-			if(waveManager.inTraffic = true){
-				if(checkTraffic()){
-					
-					sendControlMessage();
+			
+			if(waveManager.inTraffic == true){
+				
+				sendControlMessage();
+				
+				try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
+				
+				//if(checkTraffic()){
 					//Wait 
-					try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
+					//try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
 					
 					int count = 0;
 					while(count<5){
 						sendServiceMessage();
-	
 						delay = waveManager.delay;
 						//Wait
 						try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
 						count++;
 					}
-				}
+				//}
 			}
 		}
 	}
 
+	/*
 	public boolean checkTraffic(){
 		if(waveManager.trafficLevel>2){			
 			return true;
 		}
 		return false;
 	}
+	*/
 	
 	//TRAFFIC ROUTING ALOGORITHM*/
 	
-	public void computeData(List<VehicleInfo> vehicles){	
-		
+	public void computeData(){
+		//waveManager.userInterface.computedGeneralInfo(">>>>>> It's computing data!");
 		String[] trafficWords = {"Low", "Limited", "Moderate","Mild", "Heavy", "Severe"};
 		String[] directionWords = {"N","NNE", "NE", "NEE", "E", "SEE", "SE", "SSE", "S","SSW", "SW", "SWW","W", "NWW", "NW", "NNW"};
-		int direction = waveManager.bearing;
+		int direction = waveManager.heading;
 		int speed = waveManager.speed;
+		double longitude = waveManager.GPSlongitude;
+		double lattitude = waveManager.GPSlattitude;
 		double speedDiff = 0;
 		int trafficLevel = 0;
 		String userMessage = "";
 		
-		int numVehicles = vehicles.size();
+		int numVehicles = waveManager.vehiclesAccountedFor.size();
+		ArrayList<ArrayList<Object>> vehicles = waveManager.vehiclesAccountedFor;
+		
+		
 		int[] dir = new int[2];
 		int[] dirPrv = new int[2];
 		int[] spd = new int[2];
 		
-		String[] dirString = getAvgDir(vehicles, numVehicles).split("/"); 
+		String[] dirString = getAvgDir(vehicles, numVehicles).split("/");
 		dir[0] = Integer.parseInt(dirString[0]);
 		dir[1] = Integer.parseInt(dirString[1]);
 		dirPrv[0] = Integer.parseInt(dirString[2]);			
 		dirPrv[1] = Integer.parseInt(dirString[3]);
-	
+		
+
 		String[] spdString = getAvgSpd(vehicles, numVehicles, dir).split("/");
 		spd[0] = Integer.parseInt(spdString[0]);
 		spd[1] = Integer.parseInt(spdString[1]);
 		
+	
+		double distToTraffic = getDistToTraffic(vehicles, numVehicles, direction, longitude, lattitude);
+		
 		for(int out = 0; out<2; out++){
-			System.out.println("o Calculated: There are " + dirPrv[out] + " vehicles travelling at " +spd[out]+ "km/h in the " + directionWords[dir[out]] + " direction");
-			output = "o Calculated: There are " + dirPrv[out] + " vehicles travelling at " +spd[out]+ "km/h in the " + directionWords[dir[out]] + " direction";
+			System.out.println("o Calculated: There are " + dirPrv[out] + " vehicles travelling at " +spd[out]+ "km/h, approximately " + distToTraffic + " km away in the " + directionWords[dir[out]] + " direction");
+			output = "o Calculated: There are " + dirPrv[out] + " vehicles travelling at " +spd[out]+ "km/h, approximately " + distToTraffic + " km away in the " + directionWords[dir[out]] + " direction";
+			//waveManager.userInterface.computedTrafficInfo(output);
 			waveManager.userInterface.computedTrafficInfo(output);
+			if(numVehicles <2){out++;};
 		}
 		
 		//Approximate this vehicles direction
@@ -188,21 +206,23 @@ public class TrafficService extends Service implements Runnable {
 		
 		System.out.println("o Calculated: Traffic ahead is: " + trafficWords[trafficLevel]);
 		output = "o Calculated: Traffic ahead is: " + trafficWords[trafficLevel];
+		//waveManager.userInterface.computedTrafficInfo(output);
 		waveManager.userInterface.computedTrafficInfo(output);
 		
 	if(trafficLevel > 3){
-		userMessage = trafficWords[trafficLevel] + " traffic ahead. Please find an alternative route.";
+		userMessage = trafficWords[trafficLevel] + " traffic in " + distToTraffic + "km. Please find an alternative route.";
 	}else if(trafficLevel > 1){
-		userMessage = trafficWords[trafficLevel] + " traffic ahead. Please excercise caution.";
+		userMessage = trafficWords[trafficLevel] + " traffic in " + distToTraffic + "km. Please excercise caution.";
 	}else{
-		userMessage = trafficWords[trafficLevel] + " traffic ahead.";
+		userMessage = trafficWords[trafficLevel] + " traffic in " + distToTraffic + "km.";
 	}
 	
-	waveManager.userInterface.userInfo(userMessage);
-		
-	/*	To do: 	Distance to traffic cluster calc. -> perhaps handled by general info service?
-				Possible convenience algorithm implementation -> general or traffic?					*/
-	
+	//waveManager.userInterface.userInfo(userMessage);
+	System.out.println(userMessage);
+	//waveManager.userInterface.computedTrafficInfo(userMessage);
+	waveManager.userInterface.computedTrafficInfo(output);
+	/*	To do: 	Possible convenience algorithm implementation -> general or traffic?					*/
+				
 	}
 
 //METHODS
@@ -220,15 +240,21 @@ public class TrafficService extends Service implements Runnable {
 	Average Vehicle direction in two directions
 	To do: add two other directions for cross-traffic.*/
 	
-	public static String getAvgDir(List<VehicleInfo> vehicles, int vLength){
+	public static String getAvgDir(ArrayList<ArrayList<Object>> vehicles, int vLength ){
+		
+		//int vLength = waveManager.vehiclesAccountedFor.size();
 		int[] direction = new int[vLength];
 		int[] prevalence = new int[16];
 		Arrays.fill(prevalence, 0);
 		int[] laneDir = new int[]{0,0};
 		int[] dirPrv = new int[]{0,0};
-
+		
+		ArrayList<Object> v = new ArrayList<Object>();
+		
 		for(int i = 0; i<vLength; i++){
-			direction[i] = vehicles.get(i).bearing;
+			//String fromCarID, int heading,  int vehicleSpeed, double vehicleLattitude, double vehicleLongitude
+			v = vehicles.get(i);
+			direction[i] = (int)v.get(1);
 			
 			int j =0;
 			if(direction[i] < 11.25 || direction[i] > 348.75){prevalence[0]++;}
@@ -261,38 +287,76 @@ public class TrafficService extends Service implements Runnable {
 	//Average Vehicle Speed in two directions
 	//To do: add two other directions for cross-traffic.
 	
-	public static String getAvgSpd(List<VehicleInfo> vehicles, int vLength, int laneDir[]){
+	public static String getAvgSpd(ArrayList<ArrayList<Object>> vehicles, int vLength, int laneDir[]){
 		int speed = 0;
 		int direction;
 		int[] spd = new int[]{0,0};
 		int[] count = new int[]{0,0};
 		
-		for(int i = 0; i<vLength; i++){
+		ArrayList<Object> v = new ArrayList<Object>();
+		
+		if(vLength>1){
 			
-			speed = vehicles.get(i).speed;
-			direction = vehicles.get(i).bearing;
-			
-			//Approx. direction of current vehicle to two lane directions
-			if(direction != laneDir[0] && direction != laneDir[1]){
-				if(direction-laneDir[1] > direction-laneDir[0]){direction = laneDir[0];
+			for(int i = 0; i<vLength; i++){
+				
+				v = vehicles.get(i);
+				speed = (int)v.get(2);
+				direction = (int)v.get(1);
+				
+				//Approx. direction of current vehicle to two lane directions
+				if(direction != laneDir[0] && direction != laneDir[1]){
+					if(direction-laneDir[1] > direction-laneDir[0]){direction = laneDir[0];
+					}else{
+						direction = laneDir[1];
+						}
+				}
+				
+				//Compare to the lanes (add to respective lane speed)
+				if(direction == laneDir[0]){
+					spd[0] = spd[0] + speed;
+					count[0]++;
 				}else{
-					direction = laneDir[1];
-					}
+					spd[1] = spd[1] + speed;
+					count[1]++;
+				}
 			}
+			spd[0] = spd[0]/count[0];
+			spd[1] = spd[1]/count[1];
+		
+		}else{
+			v = vehicles.get(0);
+			spd[0] = (int)v.get(2);
+			spd[1] = 0;
+		}
+		
+		return spd[0]+"/"+spd[1];//+"/"+count[0]+"/"+count[1];
+	}
+	
+	public static double getDistToTraffic(ArrayList<ArrayList<Object>> vehicles, int vLength, int direction, double longitude, double lattitude){
+		double lng = 0;
+		double lat = 0;
+		double distance;
+		
+		int count = 0;
+		
+		ArrayList<Object> v = new ArrayList<Object>();
+		
+		for(int i = 0; i<vehicles.size(); i++){
+			v = vehicles.get(i);
 			
-			//Compare to the lanes (add to respective lane speed)
-			if(direction == laneDir[0]){
-				spd[0] = spd[0] + speed;
-				count[0]++;
-			}else{
-				spd[1] = spd[1] + speed;
-				count[1]++;
+			if(direction == (int)v.get(1) || direction == (int)v.get(1)+1 ||direction == (int)v.get(1)-1){
+				lat = lat + (double)v.get(3);
+				lng = lng + (double)v.get(4);
+				count++;
 			}
 		}
-		spd[0] = spd[0]/count[0];
-		spd[1] = spd[1]/count[1];
+		lat = lat/count;
+		lng = lng/count;
 		
-		return spd[0]+"/"+spd[1];
+		distance = Math.sqrt(Math.pow((lng - longitude), 2) + Math.pow((lat - lattitude),2));
+		distance = 111*distance;
+		
+		return distance;
 	}
 	
 }
