@@ -100,8 +100,8 @@ public class Receiver implements Runnable{
 			double vehicleLongitude = Double.parseDouble(strings[8]);
 			
 			//Commented for testing purposes
-			if(!(strings[0].equals(waveManager.CarID))){
-			//if(fromCarID.equals(waveManager.CarID)){
+			//if(!(strings[0].equals(waveManager.CarID))){
+			if(fromCarID.equals(waveManager.CarID)){
 				if(receivedMessagePreviously(fromCarID, messageID, messageGroup)){
 					
 					//The order of these is where PRIORITIES take place
@@ -134,13 +134,7 @@ public class Receiver implements Runnable{
 						output = "+ Received *TrafficService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': TrafficLevel:'"+trafficLevel+"': Speed:'"+vehicleSpeed+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Heading:'"+heading+"', HopCount = "+hopCount;
 						waveManager.userInterface.output(output);
 						
-<<<<<<< HEAD
 						trafficService.computeData();
-=======
-						//trafficService.computeData(trafficLevel);
-						//Need: carID, bearing, speed, may be extended to gps coor for distance to traffic calculation
->>>>>>> refs/remotes/origin/Eric
-						
 					}else{
 						System.out.println("+ Received *Control* message advertising '"+messageGroup+"' from CarID '"+fromCarID+"'");
 						output = "+ Received *Control* message advertising '"+messageGroup+"' from CarID '"+fromCarID+"'";
