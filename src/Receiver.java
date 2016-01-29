@@ -1,7 +1,6 @@
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.concurrent.TimeUnit;
 
 public class Receiver implements Runnable{
 	//Object
