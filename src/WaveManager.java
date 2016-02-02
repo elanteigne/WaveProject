@@ -1,3 +1,4 @@
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 @SuppressWarnings("unused")
 
@@ -7,6 +8,7 @@ public class WaveManager {
 	private GeneralInfoService generalInfoService;
 	private BrakeService brakeService;
 	private EmergencyService emergencyService;
+	private TrafficService trafficService;
 	private Receiver receiver;
 	public UserInterface userInterface;
 	
@@ -16,7 +18,7 @@ public class WaveManager {
 	public double GPSlongitude;
 	public int speed;
 	public int brakeAmount;
-	public String direction;
+	public int heading;
 	public String vehicleType;
 	public boolean sirensOn;
 	
@@ -26,37 +28,51 @@ public class WaveManager {
 	public int suggestedBrakeSpeed; //Speed at which brake should be applied, dependent on distance between vehicles
 	public int trafficAheadSlowerWarningLight; 
 	public int trafficBehindFasterWarningLight;
+	public boolean inTraffic;
+	public int trafficLevel;
+	public ArrayList<ArrayList<Object>> vehiclesAccountedFor = new ArrayList<ArrayList<Object>>(); //static???
 	
 	//Resources
 	public int port = 2222;
+	public int delay;
 	public String controlGroup = "230.0.0.1";
 	
 	//Constructor
 	public WaveManager(){
-		userInterface = new UserInterface();
-		try{ TimeUnit.SECONDS.sleep(1); } catch(Exception e){ }
-		
 		CarID = checkVinNumber();
 		vehicleType = checkVehicleType();
 		speed = checkSpeed();
+		speed = 0;
 		brakeAmount = checkBrake();
-		direction = checkDirection();
+		heading = checkHeading();
 		checkGPS();	
+		delay=500;
+		
+		userInterface = new UserInterface(this);
+		userInterface.start();
+		
+		try{ TimeUnit.SECONDS.sleep(1); } catch(Exception e){ }
 		
 		generalInfoService = new GeneralInfoService(this);
 		brakeService = new BrakeService(this);
-
 		emergencyService = new EmergencyService(this);
-		if(vehicleType.equals("Emergency")){
-			sirensOn = false;
-		}
+		trafficService = new TrafficService(this);
 		
-		receiver = new Receiver(this,generalInfoService, brakeService, emergencyService);
+		//Emergency Service
+		if(vehicleType.equals("Emergency")){
+			sirensOn = checkSirens();
+		}
+	
+		//Traffic Service
+		//
+		
+		receiver = new Receiver(this,generalInfoService, brakeService, emergencyService, trafficService);
 		
 		receiver.start();
 		generalInfoService.start();
 		brakeService.start();
 		emergencyService.start();
+		trafficService.start();
 		
 	}
 	
@@ -66,8 +82,7 @@ public class WaveManager {
 	}
 	
 	public String checkVinNumber(){
-		String vinNum = "000-000-000-001";
-		userInterface.writeCarID(vinNum);
+		String vinNum = "111-111-111-111";
 		return vinNum;
 	}
 	
@@ -75,31 +90,30 @@ public class WaveManager {
 	public void checkGPS(){
 		GPSlattitude = 45.3496235;
 		GPSlongitude = -73.7597858;
-		userInterface.writeGPS(GPSlattitude, GPSlongitude);
 	}
-	
-	public String checkDirection(){
-		String direction = "N";
-		userInterface.writeDirection(direction);
-		return direction;
+
+	public int checkHeading(){
+		int heading = 0; //N
+		return heading;
 	}
 	
 	public int checkSpeed(){
-		int speed = 20;
-		userInterface.writeSpeed(speed);
 		return speed;
 	}
+	
 	public int checkBrake(){
 		int brakeAmount = 100;
-		userInterface.writeBrakeAmount(brakeAmount);
 		return brakeAmount;
 	}
+	
 	public String checkVehicleType(){
-		//String vehicleType = "Emergency";
-		String vehicleType = "Civillian";
-		userInterface.writeVehicleType(vehicleType);
+		String vehicleType = "Emergency";
+		//String vehicleType = "Civilian";
 		return vehicleType;
 	}
 	
+	public boolean checkSirens(){
+		return false;
+	}
 	
 }

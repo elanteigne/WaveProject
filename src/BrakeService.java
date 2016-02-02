@@ -5,7 +5,7 @@ public class BrakeService extends Service implements Runnable{
 	private Thread brakeServiceThread;
 	
 	//Resources
-	public int delay = 500;
+	public int delay;
 	public String serviceGroup = "230.0.0.3";
 	public int messageID = 0;
 	private String output;
@@ -13,6 +13,7 @@ public class BrakeService extends Service implements Runnable{
 	//Constructor
 	public BrakeService(WaveManager waveManager){
 		super(waveManager);
+		delay = waveManager.delay;
 	}
 
 	//Class Methods
@@ -24,34 +25,41 @@ public class BrakeService extends Service implements Runnable{
 	}
 	
 	public void run(){
-		while(waveManager.speed>10){
-			if(checkBrake()){				
-				sendControlMessage();
-				//Wait
-				try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
-
-				
-				int count = 0;
-				while(count<5){
-					sendServiceMessage();
-					
+		while(true){
+			delay = waveManager.delay;
+			System.out.println(""+waveManager.speed);
+			if(waveManager.speed>10){
+				if(checkBrake()){				
+					sendControlMessage();
 					//Wait
 					try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
+	
+					
+					int count = 0;
+					while(count<5){
+						sendServiceMessage();
 
-					count++;
+						delay = waveManager.delay;
+						//Wait
+						try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
+	
+						count++;
+					}
 				}
 			}
 		}
 	}
 	
 	public void sendControlMessage(){
-		sendMessage("Control", messageID, waveManager.controlGroup, serviceGroup, "0");
+		sendMessage(waveManager.controlGroup, serviceGroup, messageID, "0");
 		 messageID++;
+		 waveManager.userInterface.updateBrakeServicePacketsSent(messageID);
 	}
 	
 	public void sendServiceMessage(){
-		sendMessage("Service", messageID, serviceGroup, serviceGroup, ""+waveManager.brakeAmount);
+		sendMessage(serviceGroup, serviceGroup, messageID, ""+waveManager.brakeAmount);
 		messageID++;
+		waveManager.userInterface.updateBrakeServicePacketsSent(messageID);
 	}
 	
 	//The check to see if I send
@@ -63,15 +71,15 @@ public class BrakeService extends Service implements Runnable{
 	}
 	
 	//Method to calculate speed adjustment based on received packets
-	public void computeData(String direction, int speed, double vehicleLattitude, double vehicleLongitude, int brakeAmount){
+	public void computeData(int heading, int speed, double vehicleLattitude, double vehicleLongitude, int brakeAmount){
 		//This should check if it is ahead on the SAME ROAD if possible
-		if(checkIfAhead(direction)){
+		if(checkIfAhead(heading, vehicleLattitude, vehicleLongitude)){
 			//Distance away affect speed at which you get to desired amount
 			//Speed difference affects the amount of brake that should be pressed
 			//The amount others ahead are breaking should influence how much you need to break
 			//If there are weather conditions it should affect break amount by a certain percentage
 			
-			double distanceBetweenVehicles = calculateDistance(vehicleLattitude, vehicleLongitude, waveManager.GPSlattitude, waveManager.GPSlongitude);
+			double distanceBetweenVehicles = calculateDistance(vehicleLattitude, vehicleLongitude);
 			int speedDifference = waveManager.speed-speed;
 
 			//If vehicle ahead is going faster then there is no point in braking
@@ -109,16 +117,16 @@ public class BrakeService extends Service implements Runnable{
 				output = "o Calculated: SpeedDifference = "+speedDifference+" km/h, mySpeed = "+waveManager.speed+" km/h,"+""
 						+ " DistanceBetweenVehicles = "+distanceBetweenVehicles+" m, SuggestedBrakeAmount = "+waveManager.suggestedBrakeAmount+"%,"
 						+" AdditionalBrakeAmount = "+waveManager.additionalBrakeAmount+"%, SuggestedBrakeSpeed = '"+waveManager.suggestedBrakeSpeed+"'";
-				waveManager.userInterface.output(output);
+				waveManager.userInterface.computedBrakeInfo(output);
 			}else{
 				System.out.println("o Calculated: Vehicle ahead is going faster then you, therefore braking is not considered");
 				output = "o Calculated: Vehicle ahead is going faster then you, therefore braking is not considered";
-				waveManager.userInterface.output(output);
+				waveManager.userInterface.computedBrakeInfo(output);
 			}
 		}else{
 			System.out.println("o Calculated: Vehicle is not ahead, therefore braking is not considered");
 			output = "o Calculated: Vehicle is not ahead, therefore braking is not considered";
-			waveManager.userInterface.output(output);
+			waveManager.userInterface.computedBrakeInfo(output);
 		}
 	}
 }
