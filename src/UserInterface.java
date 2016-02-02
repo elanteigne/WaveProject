@@ -9,8 +9,10 @@ public class UserInterface implements Runnable, ActionListener{
 	
 	//UI Objects
 	private JFrame mainFrame;
+	private JFrame devFrame;
     
     private JPanel mainPanel;
+    private JPanel devPanel;
     private JPanel topPanel;
     private JPanel leftPanel;
     private JPanel centerPanel;
@@ -71,14 +73,17 @@ public class UserInterface implements Runnable, ActionListener{
     private JScrollPane computedTrafficInfoScroll;
     
     public int UIscale = 4;    
-    public int TextScale = UIscale+1;
-
+    public int InnerTextScale = UIscale+1;
+    public int OuterTextScale = InnerTextScale+1;
+    
 	//Class Methods
     public UserInterface(WaveManager waveManager){
        this.waveManager=waveManager;
 	   mainFrame = new JFrame();
+	   devFrame = new JFrame();
 	   
 	   mainPanel = new JPanel();
+	   devPanel = new JPanel();
 	   topPanel = new JPanel();
 	   leftPanel = new JPanel();
 	   centerPanel = new JPanel();
@@ -140,74 +145,74 @@ public class UserInterface implements Runnable, ActionListener{
 	   centerPanelLabel.setHorizontalAlignment(JLabel.CENTER);
 	   rightPanelLabel.setHorizontalAlignment(JLabel.CENTER);
 	   carID.setHorizontalAlignment(JLabel.CENTER);
-	   carID.setFont(new Font("Open Sans", Font.BOLD, 13));
+	   carID.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2));
 	   gps.setHorizontalAlignment(JLabel.CENTER);
-	   gps.setFont(new Font("Open Sans", Font.BOLD, 13));
+	   gps.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2));
 	   heading.setHorizontalAlignment(JLabel.CENTER);
-	   heading.setFont(new Font("Open Sans", Font.BOLD, 13));
+	   heading.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2));
 	   speed.setHorizontalAlignment(JLabel.CENTER);
-	   speed.setFont(new Font("Open Sans", Font.BOLD, 13));
+	   speed.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2));
 	   brakeAmount.setHorizontalAlignment(JLabel.CENTER);
-	   brakeAmount.setFont(new Font("Open Sans", Font.BOLD, 13));
+	   brakeAmount.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2));
 	   vehicleType.setHorizontalAlignment(JLabel.CENTER);
-	   vehicleType.setFont(new Font("Open Sans", Font.BOLD, 13)); 
+	   vehicleType.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2)); 
 	   generalInfo.setHorizontalAlignment(JLabel.CENTER);
-	   generalInfo.setFont(new Font("Open Sans", Font.BOLD, 13)); 
+	   generalInfo.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2)); 
 	   suggestedBrakeAmount.setHorizontalAlignment(JLabel.CENTER);
-	   suggestedBrakeAmount.setFont(new Font("Open Sans", Font.BOLD, 13)); 
+	   suggestedBrakeAmount.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2)); 
 	   suggestedBrakeSpeed.setHorizontalAlignment(JLabel.CENTER);   
-	   suggestedBrakeSpeed.setFont(new Font("Open Sans", Font.BOLD, 13)); 
+	   suggestedBrakeSpeed.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2)); 
 	   sender.setHorizontalAlignment(JLabel.CENTER);  
 	   receiver.setHorizontalAlignment(JLabel.CENTER);  
 	   generalInfoPacketsSent.setHorizontalAlignment(JLabel.CENTER);   
-	   generalInfoPacketsSent.setFont(new Font("Open Sans", Font.BOLD, 13));
+	   generalInfoPacketsSent.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2));
 	   brakeServicePacketsSent.setHorizontalAlignment(JLabel.CENTER);   
-	   brakeServicePacketsSent.setFont(new Font("Open Sans", Font.BOLD, 13)); 
+	   brakeServicePacketsSent.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2)); 
 	   emergencyServicePacketsSent.setHorizontalAlignment(JLabel.CENTER);   
-	   emergencyServicePacketsSent.setFont(new Font("Open Sans", Font.BOLD, 13));  
+	   emergencyServicePacketsSent.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2));  
 	   trafficServicePacketsSent.setHorizontalAlignment(JLabel.CENTER);   
-	   trafficServicePacketsSent.setFont(new Font("Open Sans", Font.BOLD, 13));  
+	   trafficServicePacketsSent.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2));  
 	   numPacketsReceived.setHorizontalAlignment(JLabel.CENTER);   
-	   numPacketsReceived.setFont(new Font("Open Sans", Font.BOLD, 13));  
+	   numPacketsReceived.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2));  
 	   numPacketsPassed.setHorizontalAlignment(JLabel.CENTER);   
-	   numPacketsPassed.setFont(new Font("Open Sans", Font.BOLD, 13)); 
+	   numPacketsPassed.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2)); 
 	   numPacketsOmitted.setHorizontalAlignment(JLabel.CENTER);    
-	   numPacketsOmitted.setFont(new Font("Open Sans", Font.BOLD, 13)); 
+	   numPacketsOmitted.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2)); 
 	   delay.setHorizontalAlignment(JLabel.CENTER);          
 	   
 	   //Output boxes
 	   JLabel outputLabel = new JLabel("<html><u>Sending/Receiving</u></html>");
 	   outputLabel.setHorizontalAlignment(JLabel.CENTER);     
 	   output = new JTextArea();
-	   output.setFont(new Font("Open Sans", Font.PLAIN, TextScale*2));
+	   output.setFont(new Font("Open Sans", Font.PLAIN, InnerTextScale*2));
 	   output.setEditable(false);
 	   consoleScroll = new JScrollPane (output, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	   consoleScroll.setPreferredSize(new Dimension(UIscale*220,UIscale*40));
 	
 	   JLabel generalInfoServiceOutputLabel = new JLabel("<html><u>General Info Service Computed Information</u></html>");
 	   computedGeneralInfo = new JTextArea();
-	   computedGeneralInfo.setFont(new Font("Open Sans", Font.PLAIN, TextScale*2));
+	   computedGeneralInfo.setFont(new Font("Open Sans", Font.PLAIN, InnerTextScale*2));
 	   computedGeneralInfo.setEditable(false);
 	   computedGeneralInfoScroll = new JScrollPane (computedGeneralInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	   computedGeneralInfoScroll.setPreferredSize(new Dimension(UIscale*108,UIscale*30));
 	
 	   JLabel brakeServiceOutputLabel = new JLabel("<html><u>Brake Service Computed Information</u></html>");
 	   computedBrakeInfo = new JTextArea();
-	   computedBrakeInfo.setFont(new Font("Open Sans", Font.PLAIN, TextScale*2));
+	   computedBrakeInfo.setFont(new Font("Open Sans", Font.PLAIN, InnerTextScale*2));
 	   computedBrakeInfo.setEditable(false);
 	   computedBrakeInfoScroll = new JScrollPane (computedBrakeInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	   computedBrakeInfoScroll.setPreferredSize(new Dimension(UIscale*108,UIscale*30));
 	   
 	   JLabel emergencyServiceOutputLabel = new JLabel("<html><u>Emergency Service Computed Information</u></html>");
 	   computedEmergencyInfo = new JTextArea();
-	   computedEmergencyInfo.setFont(new Font("Open Sans", Font.PLAIN, TextScale*2));
+	   computedEmergencyInfo.setFont(new Font("Open Sans", Font.PLAIN, InnerTextScale*2));
 	   computedEmergencyInfo.setEditable(false);
 	   computedEmergencyInfoScroll = new JScrollPane (computedEmergencyInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	   computedEmergencyInfoScroll.setPreferredSize(new Dimension(UIscale*108,UIscale*30));
 
 	   JLabel trafficServiceOutputLabel = new JLabel("<html><u>Traffic Service Computed Information</u></html>");
 	   computedTrafficInfo = new JTextArea();
-	   computedTrafficInfo.setFont(new Font("Open Sans", Font.PLAIN, TextScale*2));
+	   computedTrafficInfo.setFont(new Font("Open Sans", Font.PLAIN, InnerTextScale*2));
 	   computedTrafficInfo.setEditable(false);
 	   computedTrafficInfoScroll = new JScrollPane (computedTrafficInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	   computedTrafficInfoScroll.setPreferredSize(new Dimension(UIscale*108,UIscale*30));
@@ -294,13 +299,20 @@ public class UserInterface implements Runnable, ActionListener{
 	   
 	   mainPanel.add(topPanel);
 	   mainPanel.add(buttonPanel);
-	   mainPanel.add(outputPanel);
+	   
+	   devPanel.add(outputPanel);
 	   
 	   mainFrame.add(mainPanel); 
 	   mainFrame.setTitle("WAVE Interface");
-	   mainFrame.setSize(UIscale*230,UIscale*200);
+	   mainFrame.setSize(UIscale*230,UIscale*50);
 	   mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	   mainFrame.setVisible(true);
+	   
+	   devFrame.add(devPanel); 
+	   devFrame.setTitle("WAVE Dev Interface");
+	   devFrame.setSize(UIscale*230,UIscale*150);
+	   devFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	   devFrame.setVisible(true);
     }
     
     public void start(){
