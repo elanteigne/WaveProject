@@ -65,7 +65,7 @@ public class GeneralInfoService extends Service implements Runnable{
 	}
 	
 	public void sendServiceMessage(){
-		sendMessage(serviceGroup, serviceGroup, messageID, "");
+		sendMessage(serviceGroup, serviceGroup, messageID, ""+waveManager.headlights);
 		messageID++;
 		waveManager.userInterface.updateGeneralInfoServicePacketsSent(messageID);
 	}
@@ -108,6 +108,12 @@ public class GeneralInfoService extends Service implements Runnable{
 				}else{
 					System.out.println("o Calculated: Vehicle is behind but is slower so is not considered");
 					output = "o Calculated: Vehicle is behind but is slower so is not considered";
+					waveManager.userInterface.computedGeneralInfo(output);
+				}
+			}else if(checkIfOncoming(heading, vehicleLattitude, vehicleLongitude)){
+				if(waveManager.headlights == 2){
+					System.out.println("o Calculated: Oncoming vehicles, please lower you high-beams");
+					output = "o Calculated: Oncoming vehicles, please lower you high-beams";
 					waveManager.userInterface.computedGeneralInfo(output);
 				}
 			}else{

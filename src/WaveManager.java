@@ -21,6 +21,7 @@ public class WaveManager {
 	public int heading;
 	public String vehicleType;
 	public boolean sirensOn;
+	public int headlights;
 	
 	//Calculated values
 	public int suggestedBrakeAmount; //Percentage of brake that should be applied
@@ -45,6 +46,7 @@ public class WaveManager {
 		speed = 0;
 		brakeAmount = checkBrake();
 		heading = checkHeading();
+		headlights = 0; //0 is off, 1 is low-beams, 2 is high-beams
 		checkGPS();	
 		delay=500;
 		

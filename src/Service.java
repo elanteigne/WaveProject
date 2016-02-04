@@ -104,5 +104,16 @@ public class Service {
 		}
 	}
 	
-	
+	public boolean checkIfOncoming(int heading, double lat1, double lon1) {
+		double bearing = compareBearing(lat1, lon1);
+		if(bearing<10 && bearing>350){		
+			if(heading<waveManager.heading+170 && heading>waveManager.heading-170){
+				return true;
+			}else{
+				return false;
+			}
+		}else{		
+			return false;
+		}
+	}
 }
