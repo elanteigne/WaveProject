@@ -304,7 +304,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   
 	   mainFrame.add(mainPanel); 
 	   mainFrame.setTitle("WAVE Interface");
-	   mainFrame.setSize(UIscale*230,UIscale*50);
+	   mainFrame.setSize(UIscale*275,UIscale*50);
 	   mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	   mainFrame.setVisible(true);
 	   

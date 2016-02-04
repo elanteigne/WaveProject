@@ -101,8 +101,8 @@ public class Receiver implements Runnable{
 			double vehicleLongitude = Double.parseDouble(strings[8]);
 			
 			//Commented for testing purposes
-			//if(!(strings[0].equals(waveManager.CarID))){
-			if(fromCarID.equals(waveManager.CarID)){
+			if(!(strings[0].equals(waveManager.CarID))){
+			//if(fromCarID.equals(waveManager.CarID)){
 				if(receivedMessagePreviously(fromCarID, messageID, messageGroup)){
 					
 					//The order of these is where PRIORITIES take place
@@ -197,6 +197,7 @@ public class Receiver implements Runnable{
 				long groupTimestamp = Long.valueOf(groupsToListenTo[i][1]);
 				long timeLimit =  groupTimestamp+5000;
 				if(timeLimit<=groupTimestamp){
+					numGroupsToListenTo--;
 					for(int j=i; j<groupsToListenTo.length-1; j++){
 						groupsToListenTo[j][0] = groupsToListenTo[j+1][0];
 						groupsToListenTo[j][1] = groupsToListenTo[j+1][1];
