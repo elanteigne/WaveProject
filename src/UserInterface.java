@@ -72,7 +72,7 @@ public class UserInterface implements Runnable, ActionListener{
     private JTextArea computedTrafficInfo;
     private JScrollPane computedTrafficInfoScroll;
     
-    public int UIscale = 4;    
+    public int UIscale = 5;    
     public int InnerTextScale = UIscale+1;
     public int OuterTextScale = InnerTextScale+1;
     
