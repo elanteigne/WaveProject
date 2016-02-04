@@ -11,6 +11,7 @@ public class WaveManager {
 	private TrafficService trafficService;
 	private Receiver receiver;
 	public UserInterface userInterface;
+	public AerialDisplay aerialDisplay;
 	
 	//MyInfo
 	public String CarID;
@@ -50,6 +51,8 @@ public class WaveManager {
 		
 		userInterface = new UserInterface(this);
 		userInterface.start();
+		aerialDisplay = new AerialDisplay(this);
+		aerialDisplay.start();
 		
 		try{ TimeUnit.SECONDS.sleep(1); } catch(Exception e){ }
 		
@@ -88,8 +91,8 @@ public class WaveManager {
 	
 	//Make this recurring and figure out GPS format
 	public void checkGPS(){
-		GPSlattitude = 45.3496235;
-		GPSlongitude = -73.7597858;
+		GPSlattitude = 50.05;//45.3496235;
+		GPSlongitude = 50.05;//-73.7597858;
 	}
 
 	public int checkHeading(){

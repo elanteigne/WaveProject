@@ -116,8 +116,8 @@ public class TrafficService extends Service implements Runnable {
 		for(int out = 0; out<2; out++){
 			System.out.println("o Calculated: There are " + dirPrv[out] + " vehicles travelling at " +spd[out]+ "km/h, approximately " + distToTraffic + " km away in the " + directionWords[dir[out]] + " direction");
 			output = "o Calculated: There are " + dirPrv[out] + " vehicles travelling at " +spd[out]+ "km/h, approximately " + distToTraffic + " km away in the " + directionWords[dir[out]] + " direction";
-			//waveManager.userInterface.computedTrafficInfo(output);
-			waveManager.userInterface.computedGeneralInfo(output);
+			waveManager.userInterface.computedTrafficInfo(output);
+			//waveManager.userInterface.computedGeneralInfo(output);
 			if(numVehicles <2){out++;};
 		}
 		
@@ -206,8 +206,8 @@ public class TrafficService extends Service implements Runnable {
 		
 		System.out.println("o Calculated: Traffic ahead is: " + trafficWords[trafficLevel]);
 		output = "o Calculated: Traffic ahead is: " + trafficWords[trafficLevel];
-		//waveManager.userInterface.computedTrafficInfo(output);
-		waveManager.userInterface.computedGeneralInfo(output);
+		waveManager.userInterface.computedTrafficInfo(output);
+		//waveManager.userInterface.computedGeneralInfo(output);
 		
 	if(trafficLevel > 3){
 		userMessage = trafficWords[trafficLevel] + " traffic in " + distToTraffic + "km. Please find an alternative route.";
@@ -219,8 +219,8 @@ public class TrafficService extends Service implements Runnable {
 	
 	//waveManager.userInterface.userInfo(userMessage);
 	System.out.println(userMessage);
-	//waveManager.userInterface.computedTrafficInfo(userMessage);
-	waveManager.userInterface.computedGeneralInfo(output);
+	waveManager.userInterface.computedTrafficInfo(userMessage);
+	//waveManager.userInterface.computedGeneralInfo(output);
 	/*	To do: 	Possible convenience algorithm implementation -> general or traffic?					*/
 				
 	}
