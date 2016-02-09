@@ -23,7 +23,7 @@ public class Receiver implements Runnable{
 	private String output;
 	private int maxHopCount = 5;
 	private int numGroupsToListenTo = 0;
-	private String[][] groupsToListenTo={{"230.0.0.1", "xxx"}, {"", ""}, {"", ""}, {"", ""}, {"", ""}, {"", ""}};
+	private String[][] groupsToListenTo={{"230.0.0.1", ""}, {"", ""}, {"", ""}, {"", ""}, {"", ""}, {"", ""}};
 	private String[][] recentlyReceivedMessages={{"", "", ""}, {"", "", ""}, {"", "", ""}, {"", "", ""},
 												{"", "", ""}, {"", "", ""}, {"", "", ""}, {"", "", ""},
 												{"", "", ""}, {"", "", ""}, {"", "", ""}, {"", "", ""},
@@ -101,8 +101,8 @@ public class Receiver implements Runnable{
 			double vehicleLongitude = Double.parseDouble(strings[8]);
 			
 			//Commented for testing purposes
-			if(!(strings[0].equals(waveManager.CarID))){
-			//if(fromCarID.equals(waveManager.CarID)){
+			//if(!(strings[0].equals(waveManager.CarID))){
+			if(fromCarID.equals(waveManager.CarID)){
 				if(receivedMessagePreviously(fromCarID, messageID, messageGroup)){
 					
 					//The order of these is where PRIORITIES take place
@@ -143,7 +143,7 @@ public class Receiver implements Runnable{
 						
 						boolean alreadyListening = false;
 						for(int i=0; i<groupsToListenTo.length; i++){
-							if(groupsToListenTo[i].equals(messageGroup)){
+							if(groupsToListenTo[i][0].equals(messageGroup)){
 								System.out.println("Group '"+messageGroup+"' is already in groupsToListenTo");
 								output = "Group '"+messageGroup+"' is already in groupsToListenTo";
 								waveManager.userInterface.output(output);
@@ -152,6 +152,7 @@ public class Receiver implements Runnable{
 						}
 						if(!alreadyListening){
 							numGroupsToListenTo++;
+							waveManager.userInterface.updateNumberGroupsListeningTo(numGroupsToListenTo);
 							groupsToListenTo[numGroupsToListenTo][0] = messageGroup;
 							groupsToListenTo[numGroupsToListenTo][1] = String.valueOf(System.currentTimeMillis());
 							
@@ -196,8 +197,12 @@ public class Receiver implements Runnable{
 			if(!(groupsToListenTo[i][0].equals(""))){
 				long groupTimestamp = Long.valueOf(groupsToListenTo[i][1]);
 				long timeLimit =  groupTimestamp+5000;
-				if(timeLimit<=groupTimestamp){
+				if(timeLimit<=System.currentTimeMillis()){					
 					numGroupsToListenTo--;
+					output = "Removed group '"+groupsToListenTo[i][0]+"' from groupsToListenTo";
+					waveManager.userInterface.output(output);
+					
+					waveManager.userInterface.updateNumberGroupsListeningTo(numGroupsToListenTo);
 					for(int j=i; j<groupsToListenTo.length-1; j++){
 						groupsToListenTo[j][0] = groupsToListenTo[j+1][0];
 						groupsToListenTo[j][1] = groupsToListenTo[j+1][1];

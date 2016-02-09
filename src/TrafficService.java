@@ -17,7 +17,7 @@ public class TrafficService extends Service implements Runnable {
 	//Constructor
 	public TrafficService(WaveManager waveManager){
 		super(waveManager);
-		delay = waveManager.delay;
+		delay = waveManager.delay*2;
 	}
 	
 	//Class Methods

@@ -20,6 +20,7 @@ public class UserInterface implements Runnable, ActionListener{
     private JPanel buttonPanel;
     private JPanel outputPanel;
     private JPanel packetInfoPanel;
+    private JPanel otherInfoPanel;
     private JPanel delayPanel;
     private JPanel controlsPanel;
     private JPanel sentPacketInfoPanel;
@@ -51,6 +52,7 @@ public class UserInterface implements Runnable, ActionListener{
     private JLabel receiver;
     private JLabel delay;
     private JLabel sirensLabel;
+    private JLabel groupsListeningToLabel;
     
     private JButton speedUpButton;
     private JButton speedDownButton;
@@ -90,7 +92,8 @@ public class UserInterface implements Runnable, ActionListener{
 	   rightPanel = new JPanel();
 	   buttonPanel = new JPanel();
 	   outputPanel = new JPanel();
-	   outputPanel = new JPanel();       
+	   outputPanel = new JPanel();      
+	   otherInfoPanel = new JPanel();  
 	   packetInfoPanel = new JPanel();
 	   controlsPanel = new JPanel();
 	   delayPanel = new JPanel();
@@ -129,17 +132,18 @@ public class UserInterface implements Runnable, ActionListener{
 	   generalInfo = new JLabel("General Info:");
 	   suggestedBrakeAmount = new JLabel("Speed Adjustment:");
 	   suggestedBrakeSpeed = new JLabel("Speed of Brake Applied:");
-	   sender = new JLabel("<html><u>Sender</u></html>");
+	   sender = new JLabel("<html><u>Trasmitted</u></html>");
 	   generalInfoPacketsSent = new JLabel("GeneralInfoService Packets Sent: 0 ");
 	   brakeServicePacketsSent = new JLabel("BreakService Packets Sent: 0 ");
 	   emergencyServicePacketsSent = new JLabel("EmergencyService Packets Sent: 0 ");
 	   trafficServicePacketsSent = new JLabel("TrafficService Packets Sent: 0 ");
-	   receiver = new JLabel("<html><u>Receiver</u></html>");
+	   receiver = new JLabel("<html><u>Received</u></html>");
 	   numPacketsReceived = new JLabel("Received Packets: 0 ");
 	   numPacketsPassed = new JLabel("Packets Passed: 0 ");
 	   numPacketsOmitted = new JLabel("Omitted Packets: 0 ");
 	   delay = new JLabel("Smallest Delay = "+waveManager.delay+"ms");
 	   sirensLabel = new JLabel("OFF");
+	   groupsListeningToLabel = new JLabel("Listening To 0 Service Groups");
 	
 	   leftPanelLabel.setHorizontalAlignment(JLabel.CENTER);
 	   centerPanelLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -179,6 +183,8 @@ public class UserInterface implements Runnable, ActionListener{
 	   numPacketsOmitted.setHorizontalAlignment(JLabel.CENTER);    
 	   numPacketsOmitted.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2)); 
 	   delay.setHorizontalAlignment(JLabel.CENTER);          
+	   groupsListeningToLabel.setHorizontalAlignment(JLabel.CENTER);    
+	   groupsListeningToLabel.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2)); 
 	   
 	   //Output boxes
 	   JLabel outputLabel = new JLabel("<html><u>Sending/Receiving</u></html>");
@@ -222,6 +228,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   centerPanel.setLayout(new GridLayout(6,1));
 	   rightPanel.setLayout(new GridLayout(6,1));
 	   buttonPanel.setLayout(new GridLayout(1,2));
+	   otherInfoPanel.setLayout(new GridLayout(1,2));
 	   packetInfoPanel.setLayout(new GridLayout(1,2));
 	   sentPacketInfoPanel.setLayout(new GridLayout(5,1));
 	   receivedPacketInfoPanel.setLayout(new GridLayout(4,1));
@@ -232,7 +239,8 @@ public class UserInterface implements Runnable, ActionListener{
 	   centerPanel.setPreferredSize(new Dimension(UIscale*140,UIscale*30));
 	   rightPanel.setPreferredSize(new Dimension(UIscale*140,UIscale*30));
 	   buttonPanel.setPreferredSize(new Dimension(UIscale*200,UIscale*10));
-	   outputPanel.setPreferredSize(new Dimension(UIscale*225,UIscale*150));
+	   outputPanel.setPreferredSize(new Dimension(UIscale*225,UIscale*300));
+	   otherInfoPanel.setPreferredSize(new Dimension(UIscale*160,UIscale*16));
 	   packetInfoPanel.setPreferredSize(new Dimension(UIscale*160,UIscale*16));
 	   sentPacketInfoPanel.setPreferredSize(new Dimension(UIscale*100,UIscale*8));
 	   receivedPacketInfoPanel.setPreferredSize(new Dimension(UIscale*100,UIscale*20));
@@ -269,11 +277,13 @@ public class UserInterface implements Runnable, ActionListener{
 		   controlsPanel.add(sirensLabel);
 	   }
 	   outputPanel.add(packetInfoPanel);
+	   outputPanel.add(otherInfoPanel);
 	   outputPanel.add(outputLabel);
 	   outputPanel.add(consoleScroll);
 	   outputPanel.add(computedDataPanel);
 	   packetInfoPanel.add(sentPacketInfoPanel);
 	   packetInfoPanel.add(receivedPacketInfoPanel);
+	   otherInfoPanel.add(groupsListeningToLabel);
 	   delayPanel.add(delay);
 	   delayPanel.add(delayDownButton);
 	   delayPanel.add(delayUpButton);
@@ -310,7 +320,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   
 	   devFrame.add(devPanel); 
 	   devFrame.setTitle("WAVE Dev Interface");
-	   devFrame.setSize(UIscale*230,UIscale*150);
+	   devFrame.setSize(UIscale*230,UIscale*175);
 	   devFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	   devFrame.setVisible(true);
     }
@@ -423,6 +433,10 @@ public class UserInterface implements Runnable, ActionListener{
 
     public void updateTrafficServicePacketsSent(int output){
     	trafficServicePacketsSent.setText("TrafficService Packets Sent: "+output+"");
+    }
+
+    public void updateNumberGroupsListeningTo(int output){
+    	groupsListeningToLabel.setText("Listening To "+output+" Service Groups");
     }
     
     public void actionPerformed(ActionEvent e) {
