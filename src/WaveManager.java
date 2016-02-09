@@ -16,7 +16,7 @@ public class WaveManager {
 	public String CarID;
 	public double GPSlattitude;
 	public double GPSlongitude;
-	public int speed;
+	public int[] speed = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	public int brakeAmount;
 	public int heading;
 	public String vehicleType;
@@ -42,8 +42,7 @@ public class WaveManager {
 	public WaveManager(){
 		CarID = checkVinNumber();
 		vehicleType = checkVehicleType();
-		speed = checkSpeed();
-		speed = 0;
+		speed[0] = checkSpeed();
 		brakeAmount = checkBrake();
 		heading = checkHeading();
 		headlights = 0; //0 is off, 1 is low-beams, 2 is high-beams
@@ -100,7 +99,15 @@ public class WaveManager {
 	}
 	
 	public int checkSpeed(){
+		int speed = this.speed[0];
 		return speed;
+	}
+	
+	public void addSpeed(int speed){
+		for(int i=9; i>0; i--){
+			this.speed[i]=this.speed[i-1];
+		}
+		this.speed[0]=speed;
 	}
 	
 	public int checkBrake(){

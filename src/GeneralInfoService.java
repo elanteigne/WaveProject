@@ -77,8 +77,8 @@ public class GeneralInfoService extends Service implements Runnable{
 		if(distanceBetweenVehicles<150){
 			//Only way to check ahead so far is checking the direction
 			if(checkIfAhead(heading, vehicleLattitude, vehicleLongitude)){
-				if(vehicleSpeed<waveManager.speed){
-					int speedDifference = waveManager.speed - vehicleSpeed;
+				if(vehicleSpeed<waveManager.speed[0]){
+					int speedDifference = waveManager.speed[0] - vehicleSpeed;
 					int warningLevel = outputWarningLights(speedDifference);
 					waveManager.trafficAheadSlowerWarningLight = warningLevel;
 					
@@ -94,8 +94,8 @@ public class GeneralInfoService extends Service implements Runnable{
 					waveManager.userInterface.computedGeneralInfo(output);
 				}
 			}else if(checkIfBehind(heading, vehicleLattitude, vehicleLongitude)){
-				if(vehicleSpeed>waveManager.speed){
-					int speedDifference = vehicleSpeed - waveManager.speed;
+				if(vehicleSpeed>waveManager.speed[0]){
+					int speedDifference = vehicleSpeed - waveManager.speed[0];
 					int warningLevel = outputWarningLights(speedDifference);
 					waveManager.trafficBehindFasterWarningLight = warningLevel;
 					
@@ -138,8 +138,10 @@ public class GeneralInfoService extends Service implements Runnable{
 				if(System.currentTimeMillis()<closebyVehiclesTimestamp+5000){
 					//if(waveManager.vehiclesAccountedFor.size()>5){
 					if(waveManager.vehiclesAccountedFor.size()>0){
-						waveManager.inTraffic = true;
-						waveManager.userInterface.computedGeneralInfo("In traffic: " + waveManager.inTraffic);
+						if(waveManager.speed[5]>(waveManager.speed[0]*0.5)){
+							waveManager.inTraffic = true;
+							waveManager.userInterface.computedGeneralInfo("In traffic: " + waveManager.inTraffic);
+						}
 					}
 				}else{
 					for(int i=0; i<waveManager.vehiclesAccountedFor.size(); i++){

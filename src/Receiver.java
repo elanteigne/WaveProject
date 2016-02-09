@@ -106,7 +106,6 @@ public class Receiver implements Runnable{
 				if(receivedMessagePreviously(fromCarID, messageID, messageGroup)){
 					
 					//The order of these is where PRIORITIES take place
-					
 					if(fromGroup.equals(emergencyService.serviceGroup)){
 						System.out.println("+ Received *EmergencyService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Sirens 'On', Heading:'"+heading+"', Speed: "+vehicleSpeed+" km/h, HopCount = "+hopCount);
 						output = "+ Received *EmergencyService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Sirens 'On', Heading:'"+heading+"', Speed: "+vehicleSpeed+" km/h, HopCount = "+hopCount;
@@ -195,8 +194,7 @@ public class Receiver implements Runnable{
 	public void checkListeningList(){
 		for(int i=1; i<groupsToListenTo.length; i++){
 			if(!(groupsToListenTo[i][0].equals(""))){
-				long groupTimestamp = Long.valueOf(groupsToListenTo[i][1]);
-				long timeLimit =  groupTimestamp+5000;
+				long timeLimit =  Long.valueOf(groupsToListenTo[i][1])+(waveManager.delay*10);
 				if(timeLimit<=System.currentTimeMillis()){					
 					numGroupsToListenTo--;
 					output = "Removed group '"+groupsToListenTo[i][0]+"' from groupsToListenTo";

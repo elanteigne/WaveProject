@@ -28,7 +28,7 @@ public class BrakeService extends Service implements Runnable{
 		while(true){
 			delay = waveManager.delay;
 			System.out.println(""+waveManager.speed);
-			if(waveManager.speed>10){
+			if(waveManager.speed[0]>10){
 				if(checkBrake()){				
 					sendControlMessage();
 					//Wait
@@ -80,7 +80,7 @@ public class BrakeService extends Service implements Runnable{
 			//If there are weather conditions it should affect break amount by a certain percentage
 			
 			double distanceBetweenVehicles = calculateDistance(vehicleLattitude, vehicleLongitude);
-			int speedDifference = waveManager.speed-speed;
+			int speedDifference = waveManager.speed[0]-speed;
 
 			//If vehicle ahead is going faster then there is no point in braking
 			if(speedDifference>0){

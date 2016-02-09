@@ -342,7 +342,7 @@ public class UserInterface implements Runnable, ActionListener{
     			 computedTrafficInfo.setCaretPosition(computedTrafficInfo.getDocument().getLength());
 
     			 writeCarID(waveManager.CarID);
-    			 writeSpeed(waveManager.speed);
+    			 writeSpeed(waveManager.speed[0]);
     			 writeBrakeAmount(waveManager.brakeAmount);
     			 writeHeading(waveManager.heading);
     			 writeGPS(waveManager.GPSlattitude, waveManager.GPSlongitude);
@@ -441,12 +441,12 @@ public class UserInterface implements Runnable, ActionListener{
     
     public void actionPerformed(ActionEvent e) {
     	if(e.getSource().equals(speedUpButton)){
-    		if(waveManager.speed>=0&&waveManager.speed<100){
-        		waveManager.speed+=10;
+    		if(waveManager.speed[0]>=0&&waveManager.speed[0]<100){
+        		waveManager.addSpeed(waveManager.speed[0]+=10);
     		}
     	}else if(e.getSource().equals(speedDownButton)){
-    		if(waveManager.speed>0&&waveManager.speed<=100){
-        		waveManager.speed-=10;
+    		if(waveManager.speed[0]>0&&waveManager.speed[0]<=100){
+        		waveManager.addSpeed(waveManager.speed[0]-=10);
     		}
     	}else if(e.getSource().equals(brakeUpButton)){
     		if(waveManager.brakeAmount>=0&&waveManager.brakeAmount<100){

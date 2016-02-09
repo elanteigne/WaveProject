@@ -24,7 +24,7 @@ public class Service {
 			
 			int hopCount = 0;
 			
-			String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.heading+"/"+waveManager.speed+"/"+waveManager.GPSlattitude+"/"+waveManager.GPSlongitude+"/"+data;
+			String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.heading+"/"+waveManager.speed[0]+"/"+waveManager.GPSlattitude+"/"+waveManager.GPSlongitude+"/"+data;
 			
 			/**Testing**/
 			//General & Braking 
