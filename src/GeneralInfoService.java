@@ -73,6 +73,7 @@ public class GeneralInfoService extends Service implements Runnable{
 	//Method to calculate speed adjustment based on received packets
 	public void computeData(String fromCarID, int heading,  int vehicleSpeed, double vehicleLattitude, double vehicleLongitude){
 		double distanceBetweenVehicles = calculateDistance(vehicleLattitude, vehicleLongitude);
+		waveManager.userInterface.writeGeneralInfo("");
 		
 		if(distanceBetweenVehicles<150){
 			//Only way to check ahead so far is checking the direction
@@ -133,7 +134,6 @@ public class GeneralInfoService extends Service implements Runnable{
 				
 				output = "xxx Num Vehicles Accounted For: "+waveManager.vehiclesAccountedFor.size();
 				waveManager.userInterface.computedGeneralInfo(output);
-				
 				
 				if(System.currentTimeMillis()<closebyVehiclesTimestamp+5000){
 					//if(waveManager.vehiclesAccountedFor.size()>5){
@@ -200,53 +200,3 @@ public class GeneralInfoService extends Service implements Runnable{
 		}
 	}
 }
-
-	/*public void addVehicle(String CarID, double GPSlattitude, double GPSlongitude, int speed, int bearing){
-		
-		VehicleInfo v = new VehicleInfo(CarID, GPSlattitude, GPSlongitude, speed, bearing);
-		boolean isDuplicate = false;
-		
-		//check for duplicate ID (is this fully handled by the receiver?)
-		for(int i = 0; i<vehicles.size(); i++){
-			if(vehicles.get(i).CarID != CarID){
-				isDuplicate = true;
-			}
-		}
-		//remove the oldest vehicle in the list if there are ten in the list
-		if(isDuplicate == false){
-			if(vehicles.size() > 9){ vehicles.remove(0);};
-			vehicles.add(v);
-		}
-		
-	}
-	
-*/
-
-/*for(int i=0; i<10; i++){
-if(!vehiclesAccountedFor[i].equals("")){
-	if(!vehiclesAccountedFor[i].equals(fromCarID)){
-		updateList = true;
-	}
-}
-}
-if(vehiclesAccountedFor[0].equals("")){
-emptyList=true;
-}
-
-if(updateList||emptyList){
-for(int i=9; i>0; i--){
-	vehiclesAccountedFor[i] = vehiclesAccountedFor[i-1];
-}
-vehiclesAccountedFor[0] = fromCarID;	
-}*/
-
-//addVehicle(CarID, GPSlattitude, GPSlongitude, speed, bearing);
-//addVehicles(direction, vehicleSpeed);
-/*
-numVehiclesAccountedFor = vehiclesAccountedFor.size();
-for(int i=0; i<9; i++){
-	if(!vehiclesAccountedFor[i].equals("")){
-		numVehiclesAccountedFor++;
-	}
-}
-*/

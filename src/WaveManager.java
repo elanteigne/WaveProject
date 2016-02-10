@@ -31,7 +31,7 @@ public class WaveManager {
 	public int trafficBehindFasterWarningLight;
 	public boolean inTraffic;
 	public int trafficLevel;
-	public ArrayList<ArrayList<Object>> vehiclesAccountedFor = new ArrayList<ArrayList<Object>>(); //static???
+	public ArrayList<ArrayList<Object>> vehiclesAccountedFor = new ArrayList<ArrayList<Object>>(); 
 	
 	//Resources
 	public int port = 2222;
