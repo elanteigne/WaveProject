@@ -82,7 +82,7 @@ public class WaveManager {
 	}
 	
 	public String checkVinNumber(){
-		String vinNum = "111-111-111-111";
+		String vinNum = "222-222-222-222";
 		return vinNum;
 	}
 	

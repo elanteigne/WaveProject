@@ -34,33 +34,31 @@ public class Speedometer extends JLabel{
 	public int[] getCoordXY(int speed, int width, int height){
 		double pX, pY;
 		double angle = initialAngle;
-		pX = this.getBounds().getWidth()/4 + width/2 + (7*width/16)*Math.sin(Math.toRadians(angle+speed))*(-1);
-		pY = this.getBounds().getHeight()/4 + height/2 + (7*height/16)*Math.cos(Math.toRadians(angle+speed));
+		pX = 5 + width/2 + (7*width/16)*Math.sin(Math.toRadians(angle+speed))*(-1);
+		pY = 5 + height/2 + (7*height/16)*Math.cos(Math.toRadians(angle+speed));
 		int[] coord = {(int)pX , (int)pY};
 		return coord;
 	}
 
 	@Override
-	public void paint(Graphics g) {
-		
-		
+	public void paintComponent(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
         
 		g2d.setColor(Color.BLACK);
-		g2d.setStroke(new BasicStroke(15,BasicStroke.CAP_ROUND,BasicStroke.JOIN_MITER));
+		g2d.setStroke(new BasicStroke(5,BasicStroke.CAP_ROUND,BasicStroke.JOIN_MITER));
 
 		g2d.drawLine(5, 5, 5, this.getHeight()-5);
 		g2d.drawLine(5, 5, this.getWidth()-5, 5);
 		g2d.drawLine(5, this.getHeight()-5, this.getWidth()-5, this.getHeight()-5);
 		g2d.drawLine(this.getWidth()-5, this.getHeight()-5, this.getWidth()-5 ,5);
-		g2d.fill(new Ellipse2D.Double(this.getBounds().getWidth()/4, this.getBounds().getHeight()/4, width, height));
+		g2d.fill(new Ellipse2D.Double(5, 5, width, height));
 		System.out.println(this.getSize().getWidth());
 		System.out.println(this.getSize().getHeight());
 		g2d.setStroke(new BasicStroke(3,BasicStroke.CAP_ROUND,BasicStroke.JOIN_MITER));
 
 		//Draw border of Speedmeter
 		g2d.setColor(Color.GREEN);
-		g2d.draw(new Ellipse2D.Double(this.getBounds().getWidth()/4, this.getBounds().getHeight()/4, width, height));
+		g2d.draw(new Ellipse2D.Double(5, 5, width, height));
 		//g2d.draw(new Ellipse2D.Double(width/16, height/16, 7*width/8, 7*height/8));
 		
 		//Find points for tick reference
@@ -95,20 +93,20 @@ public class Speedometer extends JLabel{
 
 		g2d.setColor(Color.RED);
 		switch(speed){
-		case 20:   g2d.drawLine(width/2 + (int) this.getBounds().getWidth()/4, height/2 + (int) this.getBounds().getHeight()/4, p20[0], p20[1]);  break;  //20 line
-		case 40:   g2d.drawLine(width/2 + (int) this.getBounds().getWidth()/4, height/2 + (int) this.getBounds().getHeight()/4, p40[0], p40[1]);  break;  //40 line
-		case 60:   g2d.drawLine(width/2 + (int) this.getBounds().getWidth()/4, height/2 + (int) this.getBounds().getHeight()/4, p60[0], p60[1]);  break;  //60 line
-		case 80:   g2d.drawLine(width/2 + (int) this.getBounds().getWidth()/4, height/2 + (int) this.getBounds().getHeight()/4, p80[0], p80[1]);  break;  //80 line
-		case 100:  g2d.drawLine(width/2 + (int) this.getBounds().getWidth()/4, height/2 + (int) this.getBounds().getHeight()/4, p100[0], p100[1]);  break;  //100 line
-		case 120:  g2d.drawLine(width/2 + (int) this.getBounds().getWidth()/4, height/2 + (int) this.getBounds().getHeight()/4, p120[0], p120[1]);  break;  //120 line
-		case 140:  g2d.drawLine(width/2 + (int) this.getBounds().getWidth()/4, height/2 + (int) this.getBounds().getHeight()/4, p140[0], p140[1]);  break;  //140 line
-		case 160:  g2d.drawLine(width/2 + (int) this.getBounds().getWidth()/4, height/2 + (int) this.getBounds().getHeight()/4, p160[0], p160[1]);  break;  //160 line
-		case 180:  g2d.drawLine(width/2 + (int) this.getBounds().getWidth()/4, height/2 +(int) this.getBounds().getHeight()/4, p180[0], p180[1]);  break;  //180 line
-		case 200:  g2d.drawLine(width/2 + (int) this.getBounds().getWidth()/4, height/2 + (int) this.getBounds().getHeight()/4, p200[0], p200[1]);  break;  //200 line
-		case 220:  g2d.drawLine(width/2 + (int) this.getBounds().getWidth()/4, height/2 + (int) this.getBounds().getHeight()/4, p220[0], p220[1]);  break;  //220 line
-		case 240:  g2d.drawLine(width/2 + (int) this.getBounds().getWidth()/4, height/2 + (int) this.getBounds().getHeight()/4, p240[0], p240[1]);  break;  //240 line
-		case 0:    g2d.drawLine(width/2 + (int) this.getBounds().getWidth()/4, height/2 + (int) this.getBounds().getHeight()/4, p0[0], p0[1]);	break;  //0 line
-		default:   g2d.drawLine(width/2 + (int) this.getBounds().getWidth()/4, height/2 + (int) this.getBounds().getHeight()/4, p0[0], p0[1]);	break;
+		case 20:   g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p20[0], p20[1]);  break;  //20 line
+		case 40:   g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p40[0], p40[1]);  break;  //40 line
+		case 60:   g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p60[0], p60[1]);  break;  //60 line
+		case 80:   g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p80[0], p80[1]);  break;  //80 line
+		case 100:  g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p100[0], p100[1]);  break;  //100 line
+		case 120:  g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p120[0], p120[1]);  break;  //120 line
+		case 140:  g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p140[0], p140[1]);  break;  //140 line
+		case 160:  g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p160[0], p160[1]);  break;  //160 line
+		case 180:  g2d.drawLine(width/2 + (int) 5, height/2 +(int) 5, p180[0], p180[1]);  break;  //180 line
+		case 200:  g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p200[0], p200[1]);  break;  //200 line
+		case 220:  g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p220[0], p220[1]);  break;  //220 line
+		case 240:  g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p240[0], p240[1]);  break;  //240 line
+		case 0:    g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p0[0], p0[1]);	break;  //0 line
+		default:   g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p0[0], p0[1]);	break;
 		}
 
 	}
@@ -120,15 +118,17 @@ public class Speedometer extends JLabel{
 		JFrame frame = new JFrame("Speedometer Test");
 		frame.setLayout(new BorderLayout());
 		Speedometer s = new Speedometer();
-		s.setSize(s.getWidth()/2, s.getHeight()/2);
+		s.setMinimumSize(new Dimension(s.getWidth(), s.getHeight()));
+		s.setMaximumSize(new Dimension(s.getWidth(), s.getHeight()));
+		s.setPreferredSize(new Dimension(s.getWidth(), s.getHeight()));
 		frame.add(new JButton("North"), BorderLayout.NORTH);
 	    frame.add(new JButton("South"), BorderLayout.SOUTH);
 	    frame.add(new JButton("East"), BorderLayout.EAST);
-	    //frame.add(new JButton("West"), BorderLayout.WEST);
+	    frame.add(new JButton("West"), BorderLayout.WEST);
 		frame.add(s,BorderLayout.CENTER);
 		//frame.add(s,BorderLayout.SOUTH);
-		frame.setSize(1000, 500);
-		//frame.pack();
+		frame.setMinimumSize(new Dimension(350, 300));
+		frame.pack();
 		
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
