@@ -35,7 +35,7 @@ public class WaveManager {
 	
 	//Resources
 	public int port = 2222;
-	public int delay;
+	public int delay = 10000;
 	public String controlGroup = "230.0.0.1";
 	
 	//Constructor
@@ -47,7 +47,6 @@ public class WaveManager {
 		heading = checkHeading();
 		headlights = 0; //0 is off, 1 is low-beams, 2 is high-beams
 		checkGPS();	
-		delay=500;
 		
 		userInterface = new UserInterface(this);
 		userInterface.start();
@@ -103,7 +102,7 @@ public class WaveManager {
 		return speed;
 	}
 	
-	public void addSpeed(int speed){
+	public synchronized void addSpeed(int speed){
 		for(int i=9; i>0; i--){
 			this.speed[i]=this.speed[i-1];
 		}

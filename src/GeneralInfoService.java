@@ -131,10 +131,7 @@ public class GeneralInfoService extends Service implements Runnable{
 				}
 				
 				listVehicle(fromCarID, heading, vehicleSpeed, vehicleLattitude, vehicleLongitude);
-				
-				output = "xxx Num Vehicles Accounted For: "+waveManager.vehiclesAccountedFor.size();
-				waveManager.userInterface.computedGeneralInfo(output);
-				
+								
 				if(System.currentTimeMillis()<closebyVehiclesTimestamp+5000){
 					//if(waveManager.vehiclesAccountedFor.size()>5){
 					if(waveManager.vehiclesAccountedFor.size()>0){

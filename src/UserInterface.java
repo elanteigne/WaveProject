@@ -1,10 +1,6 @@
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 public class UserInterface implements Runnable, ActionListener{
 	//Objects
@@ -401,7 +397,7 @@ public class UserInterface implements Runnable, ActionListener{
     
     public void writeGeneralInfo(String outputText){
     	generalInfo.setText("General Info: "+outputText);
-    	BufferedImage myPicture;
+    	/*BufferedImage myPicture;
 		try {
 	    	generalInfo.setText("Trying: "+outputText);
 			myPicture = ImageIO.read(new File("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarAheadYellow.png"));
@@ -410,7 +406,7 @@ public class UserInterface implements Runnable, ActionListener{
 		} catch (IOException e) { 
 		    // TODO Auto-generated catch block
 		    e.printStackTrace();
-		}
+		}*/
     }
     
     public void writeSuggestedSpeedAdjustment(String outputText){
