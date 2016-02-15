@@ -31,6 +31,7 @@ public class UserInterface implements Runnable, ActionListener{
     private JPanel computedDataPanel;
     private JPanel leftComputedDataPanel;
     private JPanel rightComputedDataPanel;
+    private JPanel speedometerPanel;
     
     private ImageIcon carAheadRed;
     private ImageIcon carAheadOrange;
@@ -41,6 +42,7 @@ public class UserInterface implements Runnable, ActionListener{
     private ImageIcon brakingRed;
     private ImageIcon brakingOrange;
     private ImageIcon brakingYellow;
+    private ImageIcon sirenIcon;
     
     private JLabel leftPanelLabel;
     private JLabel centerPanelLabel;
@@ -58,6 +60,7 @@ public class UserInterface implements Runnable, ActionListener{
     private JLabel generalInfoCarBehind;
     private JLabel generalInfoCarBehindSpeed;
     private JLabel brakingCarAhead;
+    private JLabel emergencySiren;
     private JLabel generalInfoPacketsSent;
     private JLabel brakeServicePacketsSent;
     private JLabel emergencyServicePacketsSent;
@@ -110,6 +113,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   staticDataPanel = new JPanel();
 	   variableDataPanel = new JPanel();
 	   calculatedInfoPanel = new JPanel();
+	   speedometerPanel = new JPanel();
 	   buttonPanel = new JPanel();
 	   outputPanel = new JPanel();
 	   outputPanel = new JPanel();      
@@ -149,6 +153,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   brakingRed = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\BrakingRed.png");
 	   brakingOrange = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\BrakingOrange.png");
 	   brakingYellow = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\BrakingYellow.png");
+	   sirenIcon = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\Siren.png");
 	   
 	   //Labels
 	   leftPanelLabel = new JLabel("<html><u>Vehicle Info</u></html>");
@@ -167,6 +172,8 @@ public class UserInterface implements Runnable, ActionListener{
 	   suggestedSpeedAdjustment = new JLabel("Speed Adjustment:");
 	   suggestedSpeedAdjustmentValue = new JLabel("0 Km/h");
 	   brakingCarAhead = new JLabel();
+	   emergencySiren = new JLabel(sirenIcon);
+	   emergencySiren.setVisible(false);
 	   sender = new JLabel("<html><u>Trasmitted</u></html>");
 	   generalInfoPacketsSent = new JLabel("GeneralInfoService Packets Sent: 0 ");
 	   brakeServicePacketsSent = new JLabel("BreakService Packets Sent: 0 ");
@@ -263,7 +270,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   
 	   topPanel.setLayout(new GridLayout(1,3));
 	   staticDataPanel.setLayout(new GridLayout(4,1));
-	   variableDataPanel.setLayout(new GridLayout(5,1));
+	   variableDataPanel.setLayout(new GridLayout(4,1));
 	   calculatedInfoPanel.setLayout(new GridLayout(4,2));
 	   buttonPanel.setLayout(new GridLayout(1,2));
 	   otherInfoPanel.setLayout(new GridLayout(1,2));
@@ -287,6 +294,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   leftComputedDataPanel.setPreferredSize(new Dimension(UIscale*110,UIscale*140));
 	   rightComputedDataPanel.setPreferredSize(new Dimension(UIscale*110,UIscale*140));
 	   delayPanel.setPreferredSize(new Dimension(UIscale*10,UIscale*20));
+	   speedometerPanel.setPreferredSize(new Dimension(UIscale*50,UIscale*50));
 	   outputLabel.setPreferredSize(new Dimension(UIscale*225,UIscale*8));
 	   
 	   //Add components to panels
@@ -299,10 +307,11 @@ public class UserInterface implements Runnable, ActionListener{
 	   staticDataPanel.add(vehicleType);
 	   centerPanel.add(centerPanelLabel);
 	   centerPanel.add(variableDataPanel);
+	   centerPanel.add(speedometerPanel);
 	   variableDataPanel.add(gps);
 	   variableDataPanel.add(heading);
-	   variableDataPanel.add(speed);
 	   variableDataPanel.add(brakeAmount);
+	   speedometerPanel.add(speed);
 	   rightPanel.add(rightPanelLabel);
 	   rightPanel.add(calculatedInfoPanel);
 	   calculatedInfoPanel.add(suggestedSpeedAdjustment);
@@ -312,6 +321,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   calculatedInfoPanel.add(generalInfoCarBehind);
 	   calculatedInfoPanel.add(generalInfoCarBehindSpeed);
 	   calculatedInfoPanel.add(brakingCarAhead);
+	   calculatedInfoPanel.add(emergencySiren);
 	   buttonPanel.add(delayPanel);
 	   buttonPanel.add(controlsPanel);
 	   controlsPanel.add(speedUpButton);
@@ -476,6 +486,10 @@ public class UserInterface implements Runnable, ActionListener{
 		}	
     }
     
+    public void writeEmergencySiren(){
+		emergencySiren.setVisible(true);
+    }
+    
     public void updateNumPacketsReceived(int output){
     	numPacketsReceived.setText("Received Packets: "+output+" ");
     }
@@ -510,11 +524,11 @@ public class UserInterface implements Runnable, ActionListener{
     
     public void actionPerformed(ActionEvent e) {
     	if(e.getSource().equals(speedUpButton)){
-    		if(waveManager.speed[0]>=0&&waveManager.speed[0]<100){
+    		if(waveManager.speed[0]>=0&&waveManager.speed[0]<200){
         		waveManager.addSpeed(waveManager.speed[0]+=10);
     		}
     	}else if(e.getSource().equals(speedDownButton)){
-    		if(waveManager.speed[0]>0&&waveManager.speed[0]<=100){
+    		if(waveManager.speed[0]>0&&waveManager.speed[0]<=200){
         		waveManager.addSpeed(waveManager.speed[0]-=10);
     		}
     	}else if(e.getSource().equals(brakeUpButton)){
