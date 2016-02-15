@@ -101,8 +101,8 @@ public class Receiver implements Runnable{
 			double vehicleLongitude = Double.parseDouble(strings[8]);
 			
 			//Commented for testing purposes
-			if(!(strings[0].equals(waveManager.CarID))){
-			//if(fromCarID.equals(waveManager.CarID)){
+			//if(!(strings[0].equals(waveManager.CarID))){
+			if(fromCarID.equals(waveManager.CarID)){
 				if(receivedMessagePreviously(fromCarID, messageID, messageGroup)){
 					
 					//The order of these is where PRIORITIES take place
@@ -111,7 +111,7 @@ public class Receiver implements Runnable{
 						output = "+ Received *EmergencyService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Sirens 'On', Heading:'"+heading+"', Speed: "+vehicleSpeed+" km/h, HopCount = "+hopCount;
 						waveManager.userInterface.output(output);
 								
-						emergencyService.computeData(vehicleLattitude, vehicleLongitude);
+						emergencyService.computeData(heading, vehicleLattitude, vehicleLongitude);
 					}else if(fromGroup.equals(brakeService.serviceGroup)){
 						int brakeAmount = Integer.parseInt(strings[9]);
 						

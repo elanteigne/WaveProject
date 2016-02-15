@@ -28,7 +28,7 @@ public class Service {
 			
 			/**Testing**/
 			//General & Braking 
-			//String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.bearing+"/"+60+"/"+45.3476235+"/"+-73.6597858+"/"+data;
+			//String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.heading+"/"+60+"/"+45.3476235+"/"+-73.6597858+"/"+data;
 			
 			DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetDestination, waveManager.port);
 						

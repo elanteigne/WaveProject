@@ -17,6 +17,9 @@ public class UserInterface implements Runnable, ActionListener{
     private JPanel leftPanel;
     private JPanel centerPanel;
     private JPanel rightPanel;
+    private JPanel staticDataPanel;
+    private JPanel variableDataPanel;
+    private JPanel calculatedInfoPanel;
     private JPanel buttonPanel;
     private JPanel outputPanel;
     private JPanel packetInfoPanel;
@@ -29,6 +32,16 @@ public class UserInterface implements Runnable, ActionListener{
     private JPanel leftComputedDataPanel;
     private JPanel rightComputedDataPanel;
     
+    private ImageIcon carAheadRed;
+    private ImageIcon carAheadOrange;
+    private ImageIcon carAheadYellow;
+    private ImageIcon carBehindRed;
+    private ImageIcon carBehindOrange;
+    private ImageIcon carBehindYellow;
+    private ImageIcon brakingRed;
+    private ImageIcon brakingOrange;
+    private ImageIcon brakingYellow;
+    
     private JLabel leftPanelLabel;
     private JLabel centerPanelLabel;
     private JLabel rightPanelLabel;
@@ -38,9 +51,13 @@ public class UserInterface implements Runnable, ActionListener{
     private JLabel speed;
     private JLabel brakeAmount;
     private JLabel vehicleType;
-    private JLabel generalInfo;
-    private JLabel suggestedBrakeAmount;
-    private JLabel suggestedBrakeSpeed;
+    private JLabel suggestedSpeedAdjustment;
+    private JLabel suggestedSpeedAdjustmentValue;
+    private JLabel generalInfoCarAhead;
+    private JLabel generalInfoCarAheadSpeed;
+    private JLabel generalInfoCarBehind;
+    private JLabel generalInfoCarBehindSpeed;
+    private JLabel brakingCarAhead;
     private JLabel generalInfoPacketsSent;
     private JLabel brakeServicePacketsSent;
     private JLabel emergencyServicePacketsSent;
@@ -90,6 +107,9 @@ public class UserInterface implements Runnable, ActionListener{
 	   leftPanel = new JPanel();
 	   centerPanel = new JPanel();
 	   rightPanel = new JPanel();
+	   staticDataPanel = new JPanel();
+	   variableDataPanel = new JPanel();
+	   calculatedInfoPanel = new JPanel();
 	   buttonPanel = new JPanel();
 	   outputPanel = new JPanel();
 	   outputPanel = new JPanel();      
@@ -119,6 +139,17 @@ public class UserInterface implements Runnable, ActionListener{
 	   brakeDownButton.addActionListener(this);
 	   sirenButton.addActionListener(this);
 	   
+	   //Images
+	   carAheadRed = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarAheadRed.png");
+	   carAheadOrange = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarAheadOrange.png");
+	   carAheadYellow = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarAheadYellow.png");
+	   carBehindRed = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarBehindRed.png");
+	   carBehindOrange = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarBehindOrange.png");
+	   carBehindYellow = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarBehindYellow.png");
+	   brakingRed = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\BrakingRed.png");
+	   brakingOrange = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\BrakingOrange.png");
+	   brakingYellow = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\BrakingYellow.png");
+	   
 	   //Labels
 	   leftPanelLabel = new JLabel("<html><u>Vehicle Info</u></html>");
 	   centerPanelLabel = new JLabel("<html><u>Variable Data</u></html>");
@@ -129,9 +160,13 @@ public class UserInterface implements Runnable, ActionListener{
 	   speed = new JLabel("Speed: -");
 	   brakeAmount = new JLabel("Brake Amount: -");
 	   vehicleType = new JLabel("Vehicle Type: -");
-	   generalInfo = new JLabel("General Info:");
-	   suggestedBrakeAmount = new JLabel("Speed Adjustment:");
-	   suggestedBrakeSpeed = new JLabel("Speed of Brake Applied:");
+	   generalInfoCarAhead = new JLabel();
+	   generalInfoCarAheadSpeed = new JLabel();
+	   generalInfoCarBehind = new JLabel();
+	   generalInfoCarBehindSpeed = new JLabel();
+	   suggestedSpeedAdjustment = new JLabel("Speed Adjustment:");
+	   suggestedSpeedAdjustmentValue = new JLabel("0 Km/h");
+	   brakingCarAhead = new JLabel();
 	   sender = new JLabel("<html><u>Trasmitted</u></html>");
 	   generalInfoPacketsSent = new JLabel("GeneralInfoService Packets Sent: 0 ");
 	   brakeServicePacketsSent = new JLabel("BreakService Packets Sent: 0 ");
@@ -160,12 +195,15 @@ public class UserInterface implements Runnable, ActionListener{
 	   brakeAmount.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2));
 	   vehicleType.setHorizontalAlignment(JLabel.CENTER);
 	   vehicleType.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2)); 
-	   generalInfo.setHorizontalAlignment(JLabel.CENTER);
-	   generalInfo.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2)); 
-	   suggestedBrakeAmount.setHorizontalAlignment(JLabel.CENTER);
-	   suggestedBrakeAmount.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2)); 
-	   suggestedBrakeSpeed.setHorizontalAlignment(JLabel.CENTER);   
-	   suggestedBrakeSpeed.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2)); 
+	   generalInfoCarAhead.setHorizontalAlignment(JLabel.CENTER);
+	   generalInfoCarAhead.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2)); 
+	   suggestedSpeedAdjustment.setHorizontalAlignment(JLabel.CENTER);
+	   suggestedSpeedAdjustment.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2)); 
+	   suggestedSpeedAdjustmentValue.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*3)); 
+	   generalInfoCarAheadSpeed.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*3)); 
+	   generalInfoCarBehindSpeed.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*3)); 
+	   brakingCarAhead.setHorizontalAlignment(JLabel.CENTER);   
+	   brakingCarAhead.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2)); 
 	   sender.setHorizontalAlignment(JLabel.CENTER);  
 	   receiver.setHorizontalAlignment(JLabel.CENTER);  
 	   generalInfoPacketsSent.setHorizontalAlignment(JLabel.CENTER);   
@@ -224,9 +262,9 @@ public class UserInterface implements Runnable, ActionListener{
 	   computedTrafficInfoScroll.setPreferredSize(new Dimension(UIscale*108,UIscale*30));
 	   
 	   topPanel.setLayout(new GridLayout(1,3));
-	   leftPanel.setLayout(new GridLayout(6,1));
-	   centerPanel.setLayout(new GridLayout(6,1));
-	   rightPanel.setLayout(new GridLayout(6,1));
+	   staticDataPanel.setLayout(new GridLayout(4,1));
+	   variableDataPanel.setLayout(new GridLayout(5,1));
+	   calculatedInfoPanel.setLayout(new GridLayout(4,2));
 	   buttonPanel.setLayout(new GridLayout(1,2));
 	   otherInfoPanel.setLayout(new GridLayout(1,2));
 	   packetInfoPanel.setLayout(new GridLayout(1,2));
@@ -234,10 +272,11 @@ public class UserInterface implements Runnable, ActionListener{
 	   receivedPacketInfoPanel.setLayout(new GridLayout(4,1));
 	   computedDataPanel.setLayout(new GridLayout(1,2));
 	   
-	   topPanel.setPreferredSize(new Dimension(UIscale*140,UIscale*30));
-	   leftPanel.setPreferredSize(new Dimension(UIscale*140,UIscale*30));
-	   centerPanel.setPreferredSize(new Dimension(UIscale*140,UIscale*30));
-	   rightPanel.setPreferredSize(new Dimension(UIscale*140,UIscale*30));
+	   topPanel.setPreferredSize(new Dimension(UIscale*250,UIscale*100));
+	   staticDataPanel.setPreferredSize(new Dimension(UIscale*140,UIscale*30));
+	   variableDataPanel.setPreferredSize(new Dimension(UIscale*140,UIscale*30));
+	   rightPanel.setPreferredSize(new Dimension(UIscale*140,UIscale*100));
+	   calculatedInfoPanel.setPreferredSize(new Dimension(UIscale*70,UIscale*90));
 	   buttonPanel.setPreferredSize(new Dimension(UIscale*200,UIscale*10));
 	   outputPanel.setPreferredSize(new Dimension(UIscale*225,UIscale*300));
 	   otherInfoPanel.setPreferredSize(new Dimension(UIscale*160,UIscale*16));
@@ -255,17 +294,24 @@ public class UserInterface implements Runnable, ActionListener{
 	   topPanel.add(centerPanel);
 	   topPanel.add(rightPanel);
 	   leftPanel.add(leftPanelLabel);
-	   leftPanel.add(carID);
-	   leftPanel.add(vehicleType);
+	   leftPanel.add(staticDataPanel);
+	   staticDataPanel.add(carID);
+	   staticDataPanel.add(vehicleType);
 	   centerPanel.add(centerPanelLabel);
-	   centerPanel.add(gps);
-	   centerPanel.add(heading);
-	   centerPanel.add(speed);
-	   centerPanel.add(brakeAmount);
+	   centerPanel.add(variableDataPanel);
+	   variableDataPanel.add(gps);
+	   variableDataPanel.add(heading);
+	   variableDataPanel.add(speed);
+	   variableDataPanel.add(brakeAmount);
 	   rightPanel.add(rightPanelLabel);
-	   rightPanel.add(generalInfo);
-	   rightPanel.add(suggestedBrakeAmount);
-	   rightPanel.add(suggestedBrakeSpeed);
+	   rightPanel.add(calculatedInfoPanel);
+	   calculatedInfoPanel.add(suggestedSpeedAdjustment);
+	   calculatedInfoPanel.add(suggestedSpeedAdjustmentValue);
+	   calculatedInfoPanel.add(generalInfoCarAhead);
+	   calculatedInfoPanel.add(generalInfoCarAheadSpeed);
+	   calculatedInfoPanel.add(generalInfoCarBehind);
+	   calculatedInfoPanel.add(generalInfoCarBehindSpeed);
+	   calculatedInfoPanel.add(brakingCarAhead);
 	   buttonPanel.add(delayPanel);
 	   buttonPanel.add(controlsPanel);
 	   controlsPanel.add(speedUpButton);
@@ -306,15 +352,13 @@ public class UserInterface implements Runnable, ActionListener{
 	   leftComputedDataPanel.add(computedEmergencyInfoScroll);
 	   rightComputedDataPanel.add(trafficServiceOutputLabel);
 	   rightComputedDataPanel.add(computedTrafficInfoScroll);
-	   
 	   mainPanel.add(topPanel);
 	   mainPanel.add(buttonPanel);
-	   
 	   devPanel.add(outputPanel);
 	   
 	   mainFrame.add(mainPanel); 
 	   mainFrame.setTitle("WAVE Interface");
-	   mainFrame.setSize(UIscale*275,UIscale*50);
+	   mainFrame.setSize(UIscale*250,UIscale*125);
 	   mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	   mainFrame.setVisible(true);
 	   
@@ -393,28 +437,43 @@ public class UserInterface implements Runnable, ActionListener{
     
     public void writeBrakeAmount(int outputText){
     	brakeAmount.setText("Brake Amount: "+outputText);
+    	
     }
     
-    public void writeGeneralInfo(String outputText){
-    	generalInfo.setText("General Info: "+outputText);
-    	/*BufferedImage myPicture;
-		try {
-	    	generalInfo.setText("Trying: "+outputText);
-			myPicture = ImageIO.read(new File("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarAheadYellow.png"));
-	    	generalInfo.setText("Worked: "+outputText);
-			generalInfo = new JLabel(new ImageIcon(myPicture));
-		} catch (IOException e) { 
-		    // TODO Auto-generated catch block
-		    e.printStackTrace();
-		}*/
+    public void writeGeneralInfoCarAhead(int speedDifference){
+    	if(speedDifference<10){
+    		generalInfoCarAhead.setIcon(carAheadYellow);
+		}else if(speedDifference<20){
+			generalInfoCarAhead.setIcon(carAheadOrange);
+		}else{
+			generalInfoCarAhead.setIcon(carAheadRed);
+		}	
+    	generalInfoCarAheadSpeed.setText("- "+speedDifference);
+    }
+    
+    public void writeGeneralInfoCarBehind(int speedDifference){
+    	if(speedDifference<10){
+    		generalInfoCarBehind.setIcon(carBehindYellow);
+		}else if(speedDifference<20){
+			generalInfoCarBehind.setIcon(carBehindOrange);
+		}else{
+			generalInfoCarBehind.setIcon(carBehindRed);
+		}	
+    	generalInfoCarBehindSpeed.setText("+ "+speedDifference);
     }
     
     public void writeSuggestedSpeedAdjustment(String outputText){
-    	suggestedBrakeAmount.setText("Speed Adjustment: "+outputText);
+    	suggestedSpeedAdjustmentValue.setText(outputText+" Km/h");
     }
     
-    public void writeSpeedBrakeApplied(String outputText){
-    	suggestedBrakeSpeed.setText("Speed of Brake Applied: "+outputText);
+    public void writeSpeedBrakeApplied(int brakeAmount){
+    	if(brakeAmount<20){
+    		brakingCarAhead.setIcon(brakingYellow);
+		}else if(brakeAmount<40){
+			brakingCarAhead.setIcon(brakingOrange);
+		}else{
+			brakingCarAhead.setIcon(brakingRed);
+		}	
     }
     
     public void updateNumPacketsReceived(int output){

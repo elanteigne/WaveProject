@@ -113,12 +113,11 @@ public class BrakeService extends Service implements Runnable{
 				}else{
 					waveManager.suggestedBrakeSpeed = 1;
 				}
-				System.out.println("o Calculated: SpeedDifference = "+speedDifference+" km/h, mySpeed = "+waveManager.speed[0]+" km/h, DistanceBetweenVehicles = "+distanceBetweenVehicles+" m, SuggestedBrakeAmount = "+waveManager.suggestedBrakeAmount+"%, AdditionalBrakeAmount = "+waveManager.additionalBrakeAmount+"%, SuggestedBrakeSpeed = '"+waveManager.suggestedBrakeSpeed+"'");
-				output = "o Calculated: SpeedDifference = "+speedDifference+" km/h, mySpeed = "+waveManager.speed[0]+" km/h,"+""
+				System.out.println("o Calculated: SpeedDifference = "+speedDifference+" km/h, mySpeed = "+waveManager.speed+" km/h, DistanceBetweenVehicles = "+distanceBetweenVehicles+" m, SuggestedBrakeAmount = "+waveManager.suggestedBrakeAmount+"%, AdditionalBrakeAmount = "+waveManager.additionalBrakeAmount+"%, SuggestedBrakeSpeed = '"+waveManager.suggestedBrakeSpeed+"'");
+				output = "o Calculated: SpeedDifference = "+speedDifference+" km/h, mySpeed = "+waveManager.speed+" km/h,"+""
 						+ " DistanceBetweenVehicles = "+distanceBetweenVehicles+" m, SuggestedBrakeAmount = "+waveManager.suggestedBrakeAmount+"%,"
 						+" AdditionalBrakeAmount = "+waveManager.additionalBrakeAmount+"%, SuggestedBrakeSpeed = '"+waveManager.suggestedBrakeSpeed+"'";
 				waveManager.userInterface.computedBrakeInfo(output);
-				waveManager.userInterface.writeSpeedBrakeApplied(brakeAmount);
 			}else{
 				System.out.println("o Calculated: Vehicle ahead is going faster then you, therefore braking is not considered");
 				output = "o Calculated: Vehicle ahead is going faster then you, therefore braking is not considered";

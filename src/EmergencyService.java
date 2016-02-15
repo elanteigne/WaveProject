@@ -59,11 +59,17 @@ public class EmergencyService extends Service implements Runnable {
 	}
 	
 	//Method to calculate speed adjustment based on received packets
-	public void computeData(double vehicleLattitude, double vehicleLongitude){
-		double distance = calculateDistance(vehicleLattitude, vehicleLongitude);
-		
-		System.out.println("o Calculated: Emergency Vehicle approaching ("+(int)distance+"m). Please be aware.");
-		output = "o Calculated: Emergency Vehicle approaching ("+(int)distance+"m). Please be aware.";
-		waveManager.userInterface.computedEmergencyInfo(output);
+	public void computeData(int heading, double vehicleLattitude, double vehicleLongitude){
+		if(checkIfBehind(heading, vehicleLattitude, vehicleLongitude)){
+			double distance = calculateDistance(vehicleLattitude, vehicleLongitude);
+			
+			output = "o Calculated: Emergency Vehicle approaching ("+(int)distance+"m). Please be aware.";
+			System.out.println(output);
+			waveManager.userInterface.computedEmergencyInfo(output);
+		}else{
+			output = "o Calculated: Emergency Vehicle nearby but not behind you. Please be aware.";
+			System.out.println(output);
+			waveManager.userInterface.computedEmergencyInfo(output);
+		}
 	}
 }

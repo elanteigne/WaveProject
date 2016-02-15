@@ -35,7 +35,7 @@ public class WaveManager {
 	
 	//Resources
 	public int port = 2222;
-	public int delay = 10000;
+	public int delay = 500;
 	public String controlGroup = "230.0.0.1";
 	
 	//Constructor
