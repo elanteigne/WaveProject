@@ -128,9 +128,9 @@ public class GeneralInfoService extends Service implements Runnable{
 				if(System.currentTimeMillis()<closebyVehiclesTimestamp+5000){
 					//if(waveManager.vehiclesAccountedFor.size()>5){
 					if(waveManager.vehiclesAccountedFor.size()>0){
-						if(waveManager.speed[5]>(waveManager.speed[0]*0.5)){
+						if(waveManager.speed[4]>(waveManager.speed[0]*1.5)){
 							waveManager.inTraffic = true;
-							waveManager.userInterface.computedGeneralInfo("In traffic: " + waveManager.inTraffic);
+							waveManager.userInterface.computedGeneralInfo("o Calculated: In traffic");
 						}
 					}
 				}else{
