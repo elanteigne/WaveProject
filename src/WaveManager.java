@@ -16,11 +16,12 @@ public class WaveManager {
 	public String CarID;
 	public double GPSlattitude;
 	public double GPSlongitude;
-	public int speed;
+	public int[] speed = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	public int brakeAmount;
 	public int heading;
 	public String vehicleType;
 	public boolean sirensOn;
+	public int headlights;
 	
 	//Calculated values
 	public int suggestedBrakeAmount; //Percentage of brake that should be applied
@@ -30,23 +31,22 @@ public class WaveManager {
 	public int trafficBehindFasterWarningLight;
 	public boolean inTraffic;
 	public int trafficLevel;
-	public ArrayList<ArrayList<Object>> vehiclesAccountedFor = new ArrayList<ArrayList<Object>>(); //static???
+	public ArrayList<ArrayList<Object>> vehiclesAccountedFor = new ArrayList<ArrayList<Object>>(); 
 	
 	//Resources
 	public int port = 2222;
-	public int delay;
+	public int delay = 500;
 	public String controlGroup = "230.0.0.1";
 	
 	//Constructor
 	public WaveManager(){
 		CarID = checkVinNumber();
 		vehicleType = checkVehicleType();
-		speed = checkSpeed();
-		speed = 0;
+		speed[0] = checkSpeed();
 		brakeAmount = checkBrake();
 		heading = checkHeading();
+		headlights = 0; //0 is off, 1 is low-beams, 2 is high-beams
 		checkGPS();	
-		delay=500;
 		
 		userInterface = new UserInterface(this);
 		userInterface.start();
@@ -88,17 +88,25 @@ public class WaveManager {
 	
 	//Make this recurring and figure out GPS format
 	public void checkGPS(){
-		GPSlattitude = 45.3496235;
-		GPSlongitude = -73.7597858;
+		GPSlattitude = 45.382620;
+		GPSlongitude = -75.688210;
 	}
 
 	public int checkHeading(){
-		int heading = 0; //N
+		int heading = 330; //N
 		return heading;
 	}
 	
 	public int checkSpeed(){
+		int speed = this.speed[0];
 		return speed;
+	}
+	
+	public synchronized void addSpeed(int speed){
+		for(int i=9; i>0; i--){
+			this.speed[i]=this.speed[i-1];
+		}
+		this.speed[0]=speed;
 	}
 	
 	public int checkBrake(){

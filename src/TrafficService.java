@@ -17,7 +17,7 @@ public class TrafficService extends Service implements Runnable {
 	//Constructor
 	public TrafficService(WaveManager waveManager){
 		super(waveManager);
-		delay = waveManager.delay;
+		delay = waveManager.delay*2;
 	}
 	
 	//Class Methods
@@ -84,7 +84,7 @@ public class TrafficService extends Service implements Runnable {
 		String[] trafficWords = {"Low", "Limited", "Moderate","Mild", "Heavy", "Severe"};
 		String[] directionWords = {"N","NNE", "NE", "NEE", "E", "SEE", "SE", "SSE", "S","SSW", "SW", "SWW","W", "NWW", "NW", "NNW"};
 		int direction = waveManager.heading;
-		int speed = waveManager.speed;
+		int speed = waveManager.speed[0];
 		double longitude = waveManager.GPSlongitude;
 		double lattitude = waveManager.GPSlattitude;
 		double speedDiff = 0;
