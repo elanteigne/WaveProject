@@ -80,13 +80,13 @@ public class GeneralInfoService extends Service implements Runnable{
 				if(vehicleSpeed<waveManager.speed[0]){
 					int speedDifference = waveManager.speed[0] - vehicleSpeed;
 
-					output = "o Calculated: Traffic Ahead Slower by "+speedDifference;
+					output = "o Calculated: Traffic Ahead Slower by "+speedDifference+" Km/h";
 					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 					
-					waveManager.userInterface.writeGeneralInfoCarAhead(speedDifference);
+					waveManager.userInterface.writeGeneralInfoCarAhead(speedDifference, vehicleSpeed);
 				}else{
-					output = "o Calculated: Vehicle is ahead but is faster so is not considered";
+					output = "o Calculated: Vehicle is ahead but is not slower so it is not considered";
 					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 				}
@@ -94,19 +94,19 @@ public class GeneralInfoService extends Service implements Runnable{
 				if(vehicleSpeed>waveManager.speed[0]){
 					int speedDifference = vehicleSpeed - waveManager.speed[0];
 
-					output = "o Calculated: Traffic Behind Faster by "+speedDifference;
+					output = "o Calculated: Traffic Behind Faster by "+speedDifference+" Km/h";
 					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 					
-					waveManager.userInterface.writeGeneralInfoCarBehind(speedDifference);
+					waveManager.userInterface.writeGeneralInfoCarBehind(speedDifference, vehicleSpeed);
 				}else{
-					output = "o Calculated: Vehicle is behind but is slower so is not considered";
+					output = "o Calculated: Vehicle is behind but not faster so it is not considered";
 					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 				}
 			}else if(checkIfOncoming(heading, vehicleLattitude, vehicleLongitude)){
 				if(waveManager.headlights == 2){
-					output = "o Calculated: Oncoming vehicles, please lower you high-beams";
+					output = "o Calculated: Oncoming vehicles, please lower your high-beams";
 					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 				}

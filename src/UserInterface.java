@@ -178,7 +178,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   numPacketsOmitted = new JLabel("Omitted Packets: 0 ");
 	   delay = new JLabel("Smallest Delay = "+waveManager.delay+"ms");
 	   sirensLabel = new JLabel("OFF");
-	   groupsListeningToLabel = new JLabel("Listening To 0 Service Groups");
+	   groupsListeningToLabel = new JLabel("Listening To 0 Service Group(s)");
 	
 	   leftPanelLabel.setHorizontalAlignment(JLabel.CENTER);
 	   centerPanelLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -440,26 +440,26 @@ public class UserInterface implements Runnable, ActionListener{
     	
     }
     
-    public void writeGeneralInfoCarAhead(int speedDifference){
-    	if(speedDifference<10){
+    public void writeGeneralInfoCarAhead(int speedDifference, int vehicleSpeed){
+    	if(speedDifference<=20){
     		generalInfoCarAhead.setIcon(carAheadYellow);
-		}else if(speedDifference<20){
+		}else if(speedDifference<=40){
 			generalInfoCarAhead.setIcon(carAheadOrange);
 		}else{
 			generalInfoCarAhead.setIcon(carAheadRed);
 		}	
-    	generalInfoCarAheadSpeed.setText("- "+speedDifference);
+    	generalInfoCarAheadSpeed.setText(vehicleSpeed+" Km/h");
     }
     
-    public void writeGeneralInfoCarBehind(int speedDifference){
-    	if(speedDifference<10){
+    public void writeGeneralInfoCarBehind(int speedDifference, int vehicleSpeed){
+    	if(speedDifference<=20){
     		generalInfoCarBehind.setIcon(carBehindYellow);
-		}else if(speedDifference<20){
+		}else if(speedDifference<=40){
 			generalInfoCarBehind.setIcon(carBehindOrange);
 		}else{
 			generalInfoCarBehind.setIcon(carBehindRed);
 		}	
-    	generalInfoCarBehindSpeed.setText("+ "+speedDifference);
+    	generalInfoCarBehindSpeed.setText(vehicleSpeed+" Km/h");
     }
     
     public void writeSuggestedSpeedAdjustment(String outputText){
@@ -467,9 +467,9 @@ public class UserInterface implements Runnable, ActionListener{
     }
     
     public void writeSpeedBrakeApplied(int brakeAmount){
-    	if(brakeAmount<20){
+    	if(brakeAmount<=20){
     		brakingCarAhead.setIcon(brakingYellow);
-		}else if(brakeAmount<40){
+		}else if(brakeAmount<=40){
 			brakingCarAhead.setIcon(brakingOrange);
 		}else{
 			brakingCarAhead.setIcon(brakingRed);
@@ -505,7 +505,7 @@ public class UserInterface implements Runnable, ActionListener{
     }
 
     public void updateNumberGroupsListeningTo(int output){
-    	groupsListeningToLabel.setText("Listening To "+output+" Service Groups");
+    	groupsListeningToLabel.setText("Listening To "+output+" Service Group(s)");
     }
     
     public void actionPerformed(ActionEvent e) {
