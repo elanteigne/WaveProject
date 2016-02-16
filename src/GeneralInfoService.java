@@ -65,7 +65,7 @@ public class GeneralInfoService extends Service implements Runnable{
 	}
 	
 	public void sendServiceMessage(){
-		sendMessage(serviceGroup, serviceGroup, messageID, "");
+		sendMessage(serviceGroup, serviceGroup, messageID, ""+waveManager.headlights);
 		messageID++;
 		waveManager.userInterface.updateGeneralInfoServicePacketsSent(messageID);
 	}
@@ -77,42 +77,42 @@ public class GeneralInfoService extends Service implements Runnable{
 		if(distanceBetweenVehicles<150){
 			//Only way to check ahead so far is checking the direction
 			if(checkIfAhead(heading, vehicleLattitude, vehicleLongitude)){
-				if(vehicleSpeed<waveManager.speed){
-					int speedDifference = waveManager.speed - vehicleSpeed;
-					int warningLevel = outputWarningLights(speedDifference);
-					waveManager.trafficAheadSlowerWarningLight = warningLevel;
-					
-					System.out.println("o Calculated: TrafficAheadSlower x"+warningLevel);
-					output = "o Calculated: TrafficAheadSlower x"+warningLevel;
+				if(vehicleSpeed<waveManager.speed[0]){
+					int speedDifference = waveManager.speed[0] - vehicleSpeed;
+
+					output = "o Calculated: Traffic Ahead Slower by "+speedDifference+" Km/h";
+					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 					
-					output = "TrafficAheadSlower x"+warningLevel;
-					waveManager.userInterface.writeGeneralInfo(output);
+					waveManager.userInterface.writeGeneralInfoCarAhead(speedDifference, vehicleSpeed);
 				}else{
-					System.out.println("o Calculated: Vehicle is ahead but is faster so is not considered");
-					output = "o Calculated: Vehicle is ahead but is faster so is not considered";
+					output = "o Calculated: Vehicle is ahead but is not slower so it is not considered";
+					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 				}
 			}else if(checkIfBehind(heading, vehicleLattitude, vehicleLongitude)){
-				if(vehicleSpeed>waveManager.speed){
-					int speedDifference = vehicleSpeed - waveManager.speed;
-					int warningLevel = outputWarningLights(speedDifference);
-					waveManager.trafficBehindFasterWarningLight = warningLevel;
-					
-					System.out.println("o Calculated: TrafficBehindFaster x"+warningLevel);
-					output = "o Calculated: TrafficBehindFaster x"+warningLevel;
+				if(vehicleSpeed>waveManager.speed[0]){
+					int speedDifference = vehicleSpeed - waveManager.speed[0];
+
+					output = "o Calculated: Traffic Behind Faster by "+speedDifference+" Km/h";
+					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 					
-					output = "TrafficBehindFaster x"+warningLevel;
-					waveManager.userInterface.writeGeneralInfo(output);
+					waveManager.userInterface.writeGeneralInfoCarBehind(speedDifference, vehicleSpeed);
 				}else{
-					System.out.println("o Calculated: Vehicle is behind but is slower so is not considered");
-					output = "o Calculated: Vehicle is behind but is slower so is not considered";
+					output = "o Calculated: Vehicle is behind but not faster so it is not considered";
+					System.out.println(output);
+					waveManager.userInterface.computedGeneralInfo(output);
+				}
+			}else if(checkIfOncoming(heading, vehicleLattitude, vehicleLongitude)){
+				if(waveManager.headlights == 2){
+					output = "o Calculated: Oncoming vehicles, please lower your high-beams";
+					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 				}
 			}else{
-				System.out.println("o Calculated: Vehicle is not in critical area, therefore not considered");
 				output = "o Calculated: Vehicle is not in critical area, therefore not considered";
+				System.out.println(output);
 				waveManager.userInterface.computedGeneralInfo(output);
 			}
 			
@@ -124,16 +124,14 @@ public class GeneralInfoService extends Service implements Runnable{
 				}
 				
 				listVehicle(fromCarID, heading, vehicleSpeed, vehicleLattitude, vehicleLongitude);
-				
-				output = "xxx Num Vehicles Accounted For: "+waveManager.vehiclesAccountedFor.size();
-				waveManager.userInterface.computedGeneralInfo(output);
-				
-				
+								
 				if(System.currentTimeMillis()<closebyVehiclesTimestamp+5000){
 					//if(waveManager.vehiclesAccountedFor.size()>5){
 					if(waveManager.vehiclesAccountedFor.size()>0){
-						waveManager.inTraffic = true;
-						waveManager.userInterface.computedGeneralInfo("In traffic: " + waveManager.inTraffic);
+						if(waveManager.speed[4]>(waveManager.speed[0]*1.5)){
+							waveManager.inTraffic = true;
+							waveManager.userInterface.computedGeneralInfo("o Calculated: In traffic");
+						}
 					}
 				}else{
 					for(int i=0; i<waveManager.vehiclesAccountedFor.size(); i++){
@@ -147,20 +145,10 @@ public class GeneralInfoService extends Service implements Runnable{
 				//numVehiclesAccountedFor=0;
 			}
 		}else{
-			System.out.println("o Calculated: Vehicle is too far ahead to be considered");
 			output = "o Calculated: Vehicle is too far ahead to be considered";
+			System.out.println(output);
 			waveManager.userInterface.computedGeneralInfo(output);
 		}
-	}
-	
-	private int outputWarningLights(int speedDifference){
-		if(speedDifference<10){
-			return 1; //Turn on first warning light
-		}else if(speedDifference<20){
-			return 2; //Turn on second warning light
-		}else{
-			return 3; //Turn on third warning light
-		}		
 	}
 	
 	private void listVehicle(String fromCarID, int heading,  int vehicleSpeed, double vehicleLattitude, double vehicleLongitude){
@@ -192,53 +180,3 @@ public class GeneralInfoService extends Service implements Runnable{
 		}
 	}
 }
-
-	/*public void addVehicle(String CarID, double GPSlattitude, double GPSlongitude, int speed, int bearing){
-		
-		VehicleInfo v = new VehicleInfo(CarID, GPSlattitude, GPSlongitude, speed, bearing);
-		boolean isDuplicate = false;
-		
-		//check for duplicate ID (is this fully handled by the receiver?)
-		for(int i = 0; i<vehicles.size(); i++){
-			if(vehicles.get(i).CarID != CarID){
-				isDuplicate = true;
-			}
-		}
-		//remove the oldest vehicle in the list if there are ten in the list
-		if(isDuplicate == false){
-			if(vehicles.size() > 9){ vehicles.remove(0);};
-			vehicles.add(v);
-		}
-		
-	}
-	
-*/
-
-/*for(int i=0; i<10; i++){
-if(!vehiclesAccountedFor[i].equals("")){
-	if(!vehiclesAccountedFor[i].equals(fromCarID)){
-		updateList = true;
-	}
-}
-}
-if(vehiclesAccountedFor[0].equals("")){
-emptyList=true;
-}
-
-if(updateList||emptyList){
-for(int i=9; i>0; i--){
-	vehiclesAccountedFor[i] = vehiclesAccountedFor[i-1];
-}
-vehiclesAccountedFor[0] = fromCarID;	
-}*/
-
-//addVehicle(CarID, GPSlattitude, GPSlongitude, speed, bearing);
-//addVehicles(direction, vehicleSpeed);
-/*
-numVehiclesAccountedFor = vehiclesAccountedFor.size();
-for(int i=0; i<9; i++){
-	if(!vehiclesAccountedFor[i].equals("")){
-		numVehiclesAccountedFor++;
-	}
-}
-*/
