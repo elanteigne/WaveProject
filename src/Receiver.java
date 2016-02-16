@@ -111,7 +111,7 @@ public class Receiver implements Runnable{
 						output = "+ Received *EmergencyService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Sirens 'On', Heading:'"+heading+"', Speed: "+vehicleSpeed+" km/h, HopCount = "+hopCount;
 						waveManager.userInterface.output(output);
 								
-						emergencyService.computeData(vehicleLattitude, vehicleLongitude);
+						emergencyService.computeData(heading, vehicleLattitude, vehicleLongitude);
 					}else if(fromGroup.equals(brakeService.serviceGroup)){
 						int brakeAmount = Integer.parseInt(strings[9]);
 						
