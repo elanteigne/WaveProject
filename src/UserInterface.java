@@ -105,7 +105,7 @@ public class UserInterface implements Runnable, ActionListener{
     public int OuterTextScale = InnerTextScale+1;
     
 	//Class Methods
-    public UserInterface(WaveManager waveManager){
+    public UserInterface(final WaveManager waveManager){
        this.waveManager=waveManager;
 	   mainFrame = new JFrame();
 	   devFrame = new JFrame();
@@ -169,8 +169,6 @@ public class UserInterface implements Runnable, ActionListener{
 	   gps = new JLabel("GPS: -, -");
 	   heading = new JLabel("Heading: - degrees");
 	   speed = new JLabel("Speed: -"){
-
-			public int speed = 1;
 			private int height= 200;
 			private int width = 200;
 			private int initialAngle = 59;
@@ -239,7 +237,7 @@ public class UserInterface implements Runnable, ActionListener{
 				g2d.drawString("240",(int)(p240[0]-2*width/32),(int)(p240[1]+1*width/32));
 
 				g2d.setColor(Color.RED);
-				switch(speed){
+				switch(waveManager.speed[0]){
 				case 20:   g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p20[0], p20[1]);  break;  //20 line
 				case 40:   g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p40[0], p40[1]);  break;  //40 line
 				case 60:   g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p60[0], p60[1]);  break;  //60 line
@@ -259,12 +257,10 @@ public class UserInterface implements Runnable, ActionListener{
 			};
 	   brakeAmount = new JLabel("Brake Amount: -");
 	   vehicleType = new JLabel("Vehicle Type: -");
-<<<<<<< HEAD
-	   generalInfo = new JLabel("General Info:");
-	   suggestedBrakeAmount = new JLabel("Speed Adjustment:");
-	   suggestedBrakeSpeed = new JLabel("Speed of Brake Applied:");
+//	   generalInfo = new JLabel("General Info:");
+//	   suggestedBrakeAmount = new JLabel("Speed Adjustment:");
+//	   suggestedBrakeSpeed = new JLabel("Speed of Brake Applied:");
 	   sender = new JLabel("<html><u>Trasmitted</u></html>");
-=======
 	   sender = new JLabel("<html><u>Sender</u></html>");
 	   generalInfoCarAhead = new JLabel();
 	   generalInfoCarAheadSpeed = new JLabel();
@@ -277,7 +273,6 @@ public class UserInterface implements Runnable, ActionListener{
 	   emergencySiren.setVisible(false);
 	   sender = new JLabel("<html><u>Trasmitted</u></html>");
 
->>>>>>> refs/remotes/origin/Eric
 	   generalInfoPacketsSent = new JLabel("GeneralInfoService Packets Sent: 0 ");
 	   brakeServicePacketsSent = new JLabel("BreakService Packets Sent: 0 ");
 	   emergencyServicePacketsSent = new JLabel("EmergencyService Packets Sent: 0 ");
@@ -288,11 +283,8 @@ public class UserInterface implements Runnable, ActionListener{
 	   numPacketsOmitted = new JLabel("Omitted Packets: 0 ");
 	   delay = new JLabel("Smallest Delay = "+waveManager.delay+"ms");
 	   sirensLabel = new JLabel("OFF");
-<<<<<<< HEAD
+
 	   groupsListeningToLabel = new JLabel("Listening To 0 Service Groups");
-=======
-//	   groupsListeningToLabel = new JLabel("Listening To 0 Service Group(s)");
->>>>>>> refs/remotes/origin/Eric
 	
 	   leftPanelLabel.setHorizontalAlignment(JLabel.CENTER);
 	   centerPanelLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -475,12 +467,9 @@ public class UserInterface implements Runnable, ActionListener{
 	   
 	   mainFrame.add(mainPanel); 
 	   mainFrame.setTitle("WAVE Interface");
-<<<<<<< HEAD
 	   mainFrame.setSize(UIscale*275,UIscale*50);
-=======
 	   mainFrame.setSize(UIscale*230,UIscale*50);
 	   mainFrame.setSize(UIscale*250,UIscale*125);
->>>>>>> refs/remotes/origin/Eric
 	   mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	   mainFrame.setVisible(true);
 	   
@@ -508,11 +497,7 @@ public class UserInterface implements Runnable, ActionListener{
     			 computedTrafficInfo.setCaretPosition(computedTrafficInfo.getDocument().getLength());
 
     			 writeCarID(waveManager.CarID);
-<<<<<<< HEAD
     			 writeSpeed(waveManager.speed[0]);
-=======
-//    			 writeSpeed(waveManager.speed);
->>>>>>> refs/remotes/origin/Eric
     			 writeBrakeAmount(waveManager.brakeAmount);
     			 writeHeading(waveManager.heading);
     			 writeGPS(waveManager.GPSlattitude, waveManager.GPSlongitude);
@@ -566,20 +551,19 @@ public class UserInterface implements Runnable, ActionListener{
     	
     }
     
-<<<<<<< HEAD
-    public void writeGeneralInfo(String outputText){
-    	generalInfo.setText("General Info: "+outputText);
-    	BufferedImage myPicture;
-		try {
-	    	generalInfo.setText("Trying: "+outputText);
-			myPicture = ImageIO.read(new File("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarAheadYellow.png"));
-	    	generalInfo.setText("Worked: "+outputText);
-			generalInfo = new JLabel(new ImageIcon(myPicture));
-		} catch (IOException e) { 
-		    // TODO Auto-generated catch block
-		    e.printStackTrace();
-		}
-=======
+//    public void writeGeneralInfo(String outputText){
+//    	generalInfo.setText("General Info: "+outputText);
+//    	BufferedImage myPicture;
+//		try {
+//	    	generalInfo.setText("Trying: "+outputText);
+//			myPicture = ImageIO.read(new File("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarAheadYellow.png"));
+//	    	generalInfo.setText("Worked: "+outputText);
+//			generalInfo = new JLabel(new ImageIcon(myPicture));
+//		} catch (IOException e) { 
+//		    // TODO Auto-generated catch block
+//		    e.printStackTrace();
+//		}
+//		
     public void writeGeneralInfoCarAhead(int speedDifference, int vehicleSpeed){
     	if(speedDifference<=20){
     		generalInfoCarAhead.setIcon(carAheadYellow);
@@ -600,7 +584,6 @@ public class UserInterface implements Runnable, ActionListener{
 			generalInfoCarBehind.setIcon(carBehindRed);
 		}	
     	generalInfoCarBehindSpeed.setText(vehicleSpeed+" Km/h");
->>>>>>> refs/remotes/origin/Eric
     }
     
     public void writeSuggestedSpeedAdjustment(String outputText){
@@ -653,26 +636,14 @@ public class UserInterface implements Runnable, ActionListener{
     	groupsListeningToLabel.setText("Listening To "+output+" Service Groups");
     }
     
-    public void updateNumberGroupsListeningTo(int output){
-//    	groupsListeningToLabel.setText("Listening To "+output+" Service Group(s)");
-    }
-    
     public void actionPerformed(ActionEvent e) {
     	if(e.getSource().equals(speedUpButton)){
-<<<<<<< HEAD
-    		if(waveManager.speed[0]>=0&&waveManager.speed[0]<100){
-        		waveManager.addSpeed(waveManager.speed[0]+=10);
+    		if(waveManager.speed[0]>=0&&waveManager.speed[0]<240){
+        		waveManager.addSpeed(waveManager.speed[0]+=20);
     		}
     	}else if(e.getSource().equals(speedDownButton)){
-    		if(waveManager.speed[0]>0&&waveManager.speed[0]<=100){
-=======
-    		if(waveManager.speed[0]>=0&&waveManager.speed[0]<200){
-        		waveManager.addSpeed(waveManager.speed[0]+=10);
-    		}
-    	}else if(e.getSource().equals(speedDownButton)){
-    		if(waveManager.speed[0]>0&&waveManager.speed[0]<=200){
->>>>>>> refs/remotes/origin/Eric
-        		waveManager.addSpeed(waveManager.speed[0]-=10);
+    		if(waveManager.speed[0]>0&&waveManager.speed[0]<=240){
+        		waveManager.addSpeed(waveManager.speed[0]-=20);
     		}
     	}else if(e.getSource().equals(brakeUpButton)){
     		if(waveManager.brakeAmount>=0&&waveManager.brakeAmount<100){
@@ -700,3 +671,4 @@ public class UserInterface implements Runnable, ActionListener{
     }
     
 }
+    
