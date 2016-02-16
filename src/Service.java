@@ -28,9 +28,9 @@ public class Service {
 			
 			/**Testing**/
 			//CarBehind
-			//String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.heading+"/"+60+"/"+45.38214+"/"+-75.68781+"/"+data;
+			String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.heading+"/"+60+"/"+45.38214+"/"+-75.68781+"/"+data;
 			//CarAhead
-			String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.heading+"/"+60+"/"+45.38286+"/"+-75.68836+"/"+data;
+			//String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.heading+"/"+60+"/"+45.38286+"/"+-75.68836+"/"+data;
 			
 			DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetDestination, waveManager.port);
 						
