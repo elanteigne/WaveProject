@@ -94,6 +94,11 @@ public class UserInterface implements Runnable, ActionListener{
     private JTextArea computedTrafficInfo;
     private JScrollPane computedTrafficInfoScroll;
     
+    private long carAheadIconTimestamp = 0;
+    private long carBehindIconTimestamp = 0;
+    private long brakeIconTimestamp = 0;
+    private long sirenIconTimestamp = 0;
+    
     public int UIscale = 5;    
     public int InnerTextScale = UIscale+1;
     public int OuterTextScale = InnerTextScale+1;
@@ -401,6 +406,7 @@ public class UserInterface implements Runnable, ActionListener{
     			 writeHeading(waveManager.heading);
     			 writeGPS(waveManager.GPSlattitude, waveManager.GPSlongitude);
     			 writeVehicleType(waveManager.vehicleType);
+    			 checkIconTimestamps();
     		 }catch(Exception e){ }
     	}
     }
@@ -458,7 +464,10 @@ public class UserInterface implements Runnable, ActionListener{
 		}else{
 			generalInfoCarAhead.setIcon(carAheadRed);
 		}	
+    	generalInfoCarAhead.setVisible(true);
     	generalInfoCarAheadSpeed.setText(vehicleSpeed+" Km/h");
+    	generalInfoCarAheadSpeed.setVisible(true);
+    	carAheadIconTimestamp = System.currentTimeMillis();
     }
     
     public void writeGeneralInfoCarBehind(int speedDifference, int vehicleSpeed){
@@ -469,7 +478,10 @@ public class UserInterface implements Runnable, ActionListener{
 		}else{
 			generalInfoCarBehind.setIcon(carBehindRed);
 		}	
+    	generalInfoCarBehind.setVisible(true);
     	generalInfoCarBehindSpeed.setText(vehicleSpeed+" Km/h");
+    	generalInfoCarBehindSpeed.setVisible(true);
+    	carBehindIconTimestamp = System.currentTimeMillis();
     }
     
     public void writeSuggestedSpeedAdjustment(String outputText){
@@ -483,11 +495,14 @@ public class UserInterface implements Runnable, ActionListener{
 			brakingCarAhead.setIcon(brakingOrange);
 		}else{
 			brakingCarAhead.setIcon(brakingRed);
-		}	
+		}
+    	brakingCarAhead.setVisible(true);
+    	brakeIconTimestamp = System.currentTimeMillis();
     }
     
     public void writeEmergencySiren(){
 		emergencySiren.setVisible(true);
+    	sirenIconTimestamp = System.currentTimeMillis();
     }
     
     public void updateNumPacketsReceived(int output){
@@ -556,4 +571,23 @@ public class UserInterface implements Runnable, ActionListener{
     	}
     }
     
+    public void checkIconTimestamps(){
+    	long currentTime = System.currentTimeMillis();
+    	if(carAheadIconTimestamp!=0 && carAheadIconTimestamp+5000<currentTime){
+    		generalInfoCarAhead.setVisible(false);
+    		carAheadIconTimestamp=0;
+    	}
+		if(carBehindIconTimestamp!=0 && carBehindIconTimestamp+5000<currentTime){
+			generalInfoCarBehind.setVisible(false);
+			carBehindIconTimestamp=0;
+		}
+		if(brakeIconTimestamp!=0 && brakeIconTimestamp+5000<currentTime){
+			brakingCarAhead.setVisible(false);
+			brakeIconTimestamp=0;
+		}
+		if(sirenIconTimestamp!=0 && sirenIconTimestamp+5000<currentTime){
+			emergencySiren.setVisible(false);
+			sirenIconTimestamp=0;
+		}
+    }
 }
