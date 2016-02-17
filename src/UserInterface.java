@@ -379,7 +379,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   
 	   devFrame.add(devPanel); 
 	   devFrame.setTitle("WAVE Dev Interface");
-	   devFrame.setSize(UIscale*230,UIscale*175);
+	   devFrame.setSize(UIscale*230,UIscale*168);
 	   devFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	   devFrame.setVisible(true);
     }
@@ -575,10 +575,12 @@ public class UserInterface implements Runnable, ActionListener{
     	long currentTime = System.currentTimeMillis();
     	if(carAheadIconTimestamp!=0 && carAheadIconTimestamp+5000<currentTime){
     		generalInfoCarAhead.setVisible(false);
+	    	generalInfoCarAheadSpeed.setVisible(false);
     		carAheadIconTimestamp=0;
     	}
 		if(carBehindIconTimestamp!=0 && carBehindIconTimestamp+5000<currentTime){
 			generalInfoCarBehind.setVisible(false);
+	    	generalInfoCarBehindSpeed.setVisible(false);
 			carBehindIconTimestamp=0;
 		}
 		if(brakeIconTimestamp!=0 && brakeIconTimestamp+5000<currentTime){
