@@ -20,7 +20,8 @@ public class UserInterface implements Runnable, ActionListener{
     private JPanel rightPanel;
     private JPanel staticDataPanel;
     private JPanel variableDataPanel;
-    private JPanel calculatedInfoPanel;
+    private JPanel calculatedInfoPanel1;
+    private JPanel calculatedInfoPanel2;
     private JPanel buttonPanel;
     private JPanel outputPanel;
     private JPanel packetInfoPanel;
@@ -43,11 +44,13 @@ public class UserInterface implements Runnable, ActionListener{
     private ImageIcon brakingRed;
     private ImageIcon brakingOrange;
     private ImageIcon brakingYellow;
-    private ImageIcon sirenIcon;
+    private ImageIcon sirenIconOff;
+    private ImageIcon sirenIconOn;
     
     private JLabel leftPanelLabel;
     private JLabel centerPanelLabel;
     private JLabel rightPanelLabel;
+    private JLabel calcInfoLabel;
     private JLabel carID;
     private JLabel gps;
     private JLabel heading;
@@ -61,7 +64,9 @@ public class UserInterface implements Runnable, ActionListener{
     private JLabel generalInfoCarBehind;
     private JLabel generalInfoCarBehindSpeed;
     private JLabel brakingCarAhead;
+    private JLabel brakingCarAheadSpeed;
     private JLabel emergencySiren;
+    private JLabel emergencySirenDistance;
     private JLabel generalInfoPacketsSent;
     private JLabel brakeServicePacketsSent;
     private JLabel emergencyServicePacketsSent;
@@ -95,12 +100,15 @@ public class UserInterface implements Runnable, ActionListener{
     private JTextArea computedTrafficInfo;
     private JScrollPane computedTrafficInfoScroll;
     
+    private boolean sirenFlashing; 
+    
     private long carAheadIconTimestamp = 0;
     private long carBehindIconTimestamp = 0;
     private long brakeIconTimestamp = 0;
     private long sirenIconTimestamp = 0;
+    private long sirenFlashingTimestamp = 0;
     
-    public int UIscale = 4;    
+    public int UIscale = 5;    
     public int InnerTextScale = UIscale+1;
     public int OuterTextScale = InnerTextScale+1;
     
@@ -118,7 +126,8 @@ public class UserInterface implements Runnable, ActionListener{
 	   rightPanel = new JPanel();
 	   staticDataPanel = new JPanel();
 	   variableDataPanel = new JPanel();
-	   calculatedInfoPanel = new JPanel();
+	   calculatedInfoPanel1 = new JPanel();
+	   calculatedInfoPanel2 = new JPanel();
 	   speedometerPanel = new JPanel();
 	   buttonPanel = new JPanel();
 	   outputPanel = new JPanel();
@@ -159,12 +168,14 @@ public class UserInterface implements Runnable, ActionListener{
 	   brakingRed = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\BrakingRed.png");
 	   brakingOrange = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\BrakingOrange.png");
 	   brakingYellow = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\BrakingYellow.png");
-	   sirenIcon = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\Siren.png");
+	   sirenIconOff = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\SirenOff.png");
+	   sirenIconOn = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\SirenOn.png");
 	   
 	   //Labels
 	   leftPanelLabel = new JLabel("<html><u>Vehicle Info</u></html>");
 	   centerPanelLabel = new JLabel("<html><u>Variable Data</u></html>");
 	   rightPanelLabel = new JLabel("<html><u>Calculated Info</u></html>");
+	   calcInfoLabel = new JLabel("<html><u>Calculated Info</u></html>");
 	   carID = new JLabel("Car ID: xxx-xxx-xxx-xxx");
 	   gps = new JLabel("GPS: -, -");
 	   heading = new JLabel("Heading: - degrees");
@@ -231,9 +242,11 @@ public class UserInterface implements Runnable, ActionListener{
 	   generalInfoCarBehindSpeed = new JLabel();
 	   suggestedSpeedAdjustment = new JLabel("Speed Adjustment:");
 	   suggestedSpeedAdjustmentValue = new JLabel("0 Km/h");
+	   brakingCarAheadSpeed = new JLabel();
 	   brakingCarAhead = new JLabel();
-	   emergencySiren = new JLabel(sirenIcon);
+	   emergencySiren = new JLabel(sirenIconOff);
 	   emergencySiren.setVisible(false);
+	   emergencySirenDistance = new JLabel();
 	   sender = new JLabel("<html><u>Trasmitted</u></html>");
 	   generalInfoPacketsSent = new JLabel("GeneralInfoService Packets Sent: 0 ");
 	   brakeServicePacketsSent = new JLabel("BreakService Packets Sent: 0 ");
@@ -270,7 +283,8 @@ public class UserInterface implements Runnable, ActionListener{
 	   generalInfoCarAheadSpeed.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*3)); 
 	   generalInfoCarBehindSpeed.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*3)); 
 	   brakingCarAhead.setHorizontalAlignment(JLabel.CENTER);   
-	   brakingCarAhead.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2)); 
+	   brakingCarAheadSpeed.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*3)); 
+	   emergencySirenDistance.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*3)); 
 	   sender.setHorizontalAlignment(JLabel.CENTER);  
 	   receiver.setHorizontalAlignment(JLabel.CENTER);  
 	   generalInfoPacketsSent.setHorizontalAlignment(JLabel.CENTER);   
@@ -329,9 +343,10 @@ public class UserInterface implements Runnable, ActionListener{
 	   computedTrafficInfoScroll.setPreferredSize(new Dimension(UIscale*108,UIscale*30));
 	   
 	   topPanel.setLayout(new GridLayout(1,3));
-	   staticDataPanel.setLayout(new GridLayout(4,1));
+	   staticDataPanel.setLayout(new GridLayout(3,1));
 	   variableDataPanel.setLayout(new GridLayout(4,1));
-	   calculatedInfoPanel.setLayout(new GridLayout(4,2));
+	   calculatedInfoPanel1.setLayout(new GridLayout(3,2));
+	   calculatedInfoPanel2.setLayout(new GridLayout(4,2));
 	   buttonPanel.setLayout(new GridLayout(1,2));
 	   otherInfoPanel.setLayout(new GridLayout(1,2));
 	   packetInfoPanel.setLayout(new GridLayout(1,2));
@@ -340,10 +355,11 @@ public class UserInterface implements Runnable, ActionListener{
 	   computedDataPanel.setLayout(new GridLayout(1,2));
 	   
 	   topPanel.setPreferredSize(new Dimension(UIscale*250,UIscale*100));
-	   staticDataPanel.setPreferredSize(new Dimension(UIscale*140,UIscale*30));
+	   staticDataPanel.setPreferredSize(new Dimension(UIscale*140,UIscale*15));
 	   variableDataPanel.setPreferredSize(new Dimension(UIscale*140,UIscale*30));
 	   rightPanel.setPreferredSize(new Dimension(UIscale*140,UIscale*100));
-	   calculatedInfoPanel.setPreferredSize(new Dimension(UIscale*70,UIscale*90));
+	   calculatedInfoPanel1.setPreferredSize(new Dimension(UIscale*70,UIscale*90));
+	   calculatedInfoPanel2.setPreferredSize(new Dimension(UIscale*70,UIscale*90));
 	   buttonPanel.setPreferredSize(new Dimension(UIscale*200,UIscale*10));
 	   outputPanel.setPreferredSize(new Dimension(UIscale*225,UIscale*300));
 	   otherInfoPanel.setPreferredSize(new Dimension(UIscale*160,UIscale*16));
@@ -364,6 +380,12 @@ public class UserInterface implements Runnable, ActionListener{
 	   topPanel.add(rightPanel);
 	   leftPanel.add(leftPanelLabel);
 	   leftPanel.add(staticDataPanel);
+	   leftPanel.add(calcInfoLabel);
+	   leftPanel.add(calculatedInfoPanel1);
+	   calculatedInfoPanel1.add(brakingCarAhead);
+	   calculatedInfoPanel1.add(brakingCarAheadSpeed);
+	   calculatedInfoPanel1.add(emergencySiren);
+	   calculatedInfoPanel1.add(emergencySirenDistance);
 	   staticDataPanel.add(carID);
 	   staticDataPanel.add(vehicleType);
 	   centerPanel.add(centerPanelLabel);
@@ -374,15 +396,13 @@ public class UserInterface implements Runnable, ActionListener{
 	   variableDataPanel.add(brakeAmount);
 	   speedometerPanel.add(speed);
 	   rightPanel.add(rightPanelLabel);
-	   rightPanel.add(calculatedInfoPanel);
-	   calculatedInfoPanel.add(suggestedSpeedAdjustment);
-	   calculatedInfoPanel.add(suggestedSpeedAdjustmentValue);
-	   calculatedInfoPanel.add(generalInfoCarAhead);
-	   calculatedInfoPanel.add(generalInfoCarAheadSpeed);
-	   calculatedInfoPanel.add(generalInfoCarBehind);
-	   calculatedInfoPanel.add(generalInfoCarBehindSpeed);
-	   calculatedInfoPanel.add(brakingCarAhead);
-	   calculatedInfoPanel.add(emergencySiren);
+	   rightPanel.add(calculatedInfoPanel2);
+	   calculatedInfoPanel2.add(suggestedSpeedAdjustment);
+	   calculatedInfoPanel2.add(suggestedSpeedAdjustmentValue);
+	   calculatedInfoPanel2.add(generalInfoCarAhead);
+	   calculatedInfoPanel2.add(generalInfoCarAheadSpeed);
+	   calculatedInfoPanel2.add(generalInfoCarBehind);
+	   calculatedInfoPanel2.add(generalInfoCarBehindSpeed);
 	   buttonPanel.add(delayPanel);
 	   buttonPanel.add(controlsPanel);
 	   controlsPanel.add(speedUpButton);
@@ -462,6 +482,9 @@ public class UserInterface implements Runnable, ActionListener{
     			 writeHeading(waveManager.heading);
     			 writeGPS(waveManager.GPSlattitude, waveManager.GPSlongitude);
     			 writeVehicleType(waveManager.vehicleType);
+    			 if(sirenFlashing){
+        			 checkSiren();
+    			 }
     			 checkIconTimestamps();
     		 }catch(Exception e){ }
     	}
@@ -544,7 +567,7 @@ public class UserInterface implements Runnable, ActionListener{
     	suggestedSpeedAdjustmentValue.setText(outputText+" Km/h");
     }
     
-    public void writeSpeedBrakeApplied(int brakeAmount){
+    public void writeBrakeApplied(int brakeAmount, int distance){
     	if(brakeAmount<=20){
     		brakingCarAhead.setIcon(brakingYellow);
 		}else if(brakeAmount<=40){
@@ -553,12 +576,33 @@ public class UserInterface implements Runnable, ActionListener{
 			brakingCarAhead.setIcon(brakingRed);
 		}
     	brakingCarAhead.setVisible(true);
+    	brakingCarAheadSpeed.setText(brakeAmount+"%, "+distance+"m");
     	brakeIconTimestamp = System.currentTimeMillis();
     }
     
-    public void writeEmergencySiren(){
+    public void writeEmergencySiren(int distance){
 		emergencySiren.setVisible(true);
+		if(sirenFlashing!=true){
+			sirenFlashing = true;
+	    	sirenFlashingTimestamp = System.currentTimeMillis();
+		}
+		emergencySirenDistance.setText(distance+"m");
+		emergencySirenDistance.setVisible(true);
     	sirenIconTimestamp = System.currentTimeMillis();
+    }
+    
+    public void checkSiren(){
+    	if(sirenFlashing){
+    		if(sirenFlashingTimestamp+1000>System.currentTimeMillis()){
+	    		if(sirenFlashingTimestamp+500>System.currentTimeMillis()){
+	        		emergencySiren.setIcon(sirenIconOn);
+	    		}else{
+	        		emergencySiren.setIcon(sirenIconOff);
+	    		}
+    		}else{
+    			sirenFlashingTimestamp =System.currentTimeMillis();
+    		}
+    	}
     }
     
     public void updateNumPacketsReceived(int output){
@@ -613,6 +657,7 @@ public class UserInterface implements Runnable, ActionListener{
     	}else if(e.getSource().equals(sirenButton)){
     		if(waveManager.sirensOn){
     			waveManager.sirensOn=false;
+    			sirenFlashing = false;
     			sirensLabel.setText("OFF");
     		}else{
     			waveManager.sirensOn=true;
@@ -641,10 +686,12 @@ public class UserInterface implements Runnable, ActionListener{
 		}
 		if(brakeIconTimestamp!=0 && brakeIconTimestamp+2000<currentTime){
 			brakingCarAhead.setVisible(false);
+			brakingCarAheadSpeed.setVisible(false);
 			brakeIconTimestamp=0;
 		}
 		if(sirenIconTimestamp!=0 && sirenIconTimestamp+2000<currentTime){
 			emergencySiren.setVisible(false);
+			emergencySirenDistance.setVisible(false);
 			sirenIconTimestamp=0;
 		}
     }
