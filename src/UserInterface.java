@@ -100,7 +100,7 @@ public class UserInterface implements Runnable, ActionListener{
     private long brakeIconTimestamp = 0;
     private long sirenIconTimestamp = 0;
     
-    public int UIscale = 5;    
+    public int UIscale = 4;    
     public int InnerTextScale = UIscale+1;
     public int OuterTextScale = InnerTextScale+1;
     
@@ -168,11 +168,11 @@ public class UserInterface implements Runnable, ActionListener{
 	   carID = new JLabel("Car ID: xxx-xxx-xxx-xxx");
 	   gps = new JLabel("GPS: -, -");
 	   heading = new JLabel("Heading: - degrees");
-	   speed = new JLabel("Speed: -"){
+	   speed = new JLabel(){
 		    private int[] points;
 		    private int currentSpeed;
-			private int height= 200;
-			private int width = 200;
+			private int height= UIscale*40;
+			private int width = UIscale*40;
 			private int initialAngle = 59;
 			private static final long serialVersionUID = 1L;
 
@@ -184,9 +184,16 @@ public class UserInterface implements Runnable, ActionListener{
 				int[] coord = {(int)pX , (int)pY};
 				return coord;
 			}
-
-			@Override
-			public Dimension getPreferredSize(){return new Dimension(210,210);}
+			
+			public int[] getCoordNeedle(int speed, int width, int height){
+				double pX, pY;
+				double angle = initialAngle;
+				pX = 5 + width/2 + (6.5*width/16)*Math.sin(Math.toRadians(angle+speed))*(-1);
+				pY = 5 + height/2 + (6.5*height/16)*Math.cos(Math.toRadians(angle+speed));
+				int[] coord = {(int)pX , (int)pY};
+				return coord;
+			}
+			
 			@Override
 			public void paintComponent(Graphics g) {
 				Graphics2D g2d = (Graphics2D) g;
@@ -195,7 +202,6 @@ public class UserInterface implements Runnable, ActionListener{
 				g2d.fill(new Ellipse2D.Double(5, 5, width, height));
 				g2d.setStroke(new BasicStroke(3,BasicStroke.CAP_ROUND,BasicStroke.JOIN_MITER));
 
-				//Draw border of Speedometer
 				g2d.setColor(Color.GREEN);
 				g2d.draw(new Ellipse2D.Double(5, 5, width, height));
 
@@ -210,7 +216,7 @@ public class UserInterface implements Runnable, ActionListener{
 				}
 				
 				//Find points for tick reference
-				points = this.getCoordXY(currentSpeed, width, height);
+				points = this.getCoordNeedle(currentSpeed, width, height);
 
 				g2d.setColor(Color.RED);
 				g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, points[0], points[1]); 
@@ -350,6 +356,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   delayPanel.setPreferredSize(new Dimension(UIscale*10,UIscale*20));
 	   speedometerPanel.setPreferredSize(new Dimension(UIscale*50,UIscale*50));
 	   outputLabel.setPreferredSize(new Dimension(UIscale*225,UIscale*8));
+	   speed.setPreferredSize(new Dimension(UIscale*42,UIscale*42));
 	   
 	   //Add components to panels
 	   topPanel.add(leftPanel);
