@@ -1,12 +1,7 @@
-import javax.imageio.ImageIO;
 import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 public class UserInterface implements Runnable, ActionListener{
 	//Objects
@@ -100,7 +95,12 @@ public class UserInterface implements Runnable, ActionListener{
     private JTextArea computedTrafficInfo;
     private JScrollPane computedTrafficInfoScroll;
     
-    public int UIscale = 5;    
+    private long carAheadIconTimestamp = 0;
+    private long carBehindIconTimestamp = 0;
+    private long brakeIconTimestamp = 0;
+    private long sirenIconTimestamp = 0;
+    
+    public int UIscale = 4;    
     public int InnerTextScale = UIscale+1;
     public int OuterTextScale = InnerTextScale+1;
     
@@ -168,9 +168,11 @@ public class UserInterface implements Runnable, ActionListener{
 	   carID = new JLabel("Car ID: xxx-xxx-xxx-xxx");
 	   gps = new JLabel("GPS: -, -");
 	   heading = new JLabel("Heading: - degrees");
-	   speed = new JLabel("Speed: -"){
-			private int height= 200;
-			private int width = 200;
+	   speed = new JLabel(){
+		    private int[] points;
+		    private int currentSpeed;
+			private int height= UIscale*40;
+			private int width = UIscale*40;
 			private int initialAngle = 59;
 			private static final long serialVersionUID = 1L;
 
@@ -183,85 +185,46 @@ public class UserInterface implements Runnable, ActionListener{
 				return coord;
 			}
 
-			@Override
-			public Dimension getPreferredSize(){return new Dimension(210,210);}
+			public int[] getCoordNeedle(int speed, int width, int height){
+				double pX, pY;
+				double angle = initialAngle;
+				pX = 5 + width/2 + (6.5*width/16)*Math.sin(Math.toRadians(angle+speed))*(-1);
+				pY = 5 + height/2 + (6.5*height/16)*Math.cos(Math.toRadians(angle+speed));
+				int[] coord = {(int)pX , (int)pY};
+				return coord;
+			}
+			
 			@Override
 			public void paintComponent(Graphics g) {
 				Graphics2D g2d = (Graphics2D) g;
-		        
-				g2d.setColor(Color.BLACK);
-				g2d.setStroke(new BasicStroke(5,BasicStroke.CAP_ROUND,BasicStroke.JOIN_MITER));
+				currentSpeed = waveManager.speed[0];
 
-				g2d.drawLine(5, 5, 5, this.getHeight()-5);
-				g2d.drawLine(5, 5, this.getWidth()-5, 5);
-				g2d.drawLine(5, this.getHeight()-5, this.getWidth()-5, this.getHeight()-5);
-				g2d.drawLine(this.getWidth()-5, this.getHeight()-5, this.getWidth()-5 ,5);
 				g2d.fill(new Ellipse2D.Double(5, 5, width, height));
-				System.out.println(this.getSize().getWidth());
-				System.out.println(this.getSize().getHeight());
 				g2d.setStroke(new BasicStroke(3,BasicStroke.CAP_ROUND,BasicStroke.JOIN_MITER));
 
-				//Draw border of Speedmeter
 				g2d.setColor(Color.GREEN);
 				g2d.draw(new Ellipse2D.Double(5, 5, width, height));
-				//g2d.draw(new Ellipse2D.Double(width/16, height/16, 7*width/8, 7*height/8));
-				
-				//Find points for tick reference
-				int[] p0 = this.getCoordXY(0, width, height);
-				int[] p20 = this.getCoordXY(20, width, height);
-				int[] p40 = this.getCoordXY(40, width, height);
-				int[] p60 = this.getCoordXY(60, width, height);
-				int[] p80 = this.getCoordXY(80, width, height);
-				int[] p100 = this.getCoordXY(100, width, height);
-				int[] p120 = this.getCoordXY(120, width, height);
-				int[] p140 = this.getCoordXY(140, width, height);
-				int[] p160 = this.getCoordXY(160, width, height);
-				int[] p180 = this.getCoordXY(180, width, height);
-				int[] p200 = this.getCoordXY(200, width, height);
-				int[] p220 = this.getCoordXY(220, width, height);
-				int[] p240 = this.getCoordXY(240, width, height);
 
 				g2d.setColor(Color.WHITE);
-				g2d.drawString("0",(int)(p0[0]-1*width/32),(int)(p0[1]+1*width/32));
-				g2d.drawString("20",(int)(p20[0]-1*width/32),(int)(p20[1]+1*width/32));
-				g2d.drawString("40",(int)(p40[0]-1*width/32),(int)(p40[1]+1*width/32));
-				g2d.drawString("60",(int)(p60[0]-1*width/32),(int)(p60[1]+1*width/32));		
-				g2d.drawString("80",(int)(p80[0]-1*width/32),(int)(p80[1]+1*width/32));
-				g2d.drawString("100",(int)(p100[0]-2*width/32),(int)(p100[1]+1*width/32));
-				g2d.drawString("120",(int)(p120[0]-2*width/32),(int)(p120[1]+1*width/32));		
-				g2d.drawString("140",(int)(p140[0]-2*width/32),(int)(p140[1]+1*width/32));		
-				g2d.drawString("160",(int)(p160[0]-2*width/32),(int)(p160[1]+1*width/32));		
-				g2d.drawString("180",(int)(p180[0]-2*width/32),(int)(p180[1]+1*width/32));		
-				g2d.drawString("200",(int)(p200[0]-2*width/32),(int)(p200[1]+1*width/32));		
-				g2d.drawString("220",(int)(p220[0]-2*width/32),(int)(p220[1]+1*width/32));		
-				g2d.drawString("240",(int)(p240[0]-2*width/32),(int)(p240[1]+1*width/32));
+				for(int i=0; i<250;i+=20){
+					points = this.getCoordXY(i, width, height);
+					if(i>=100){
+						g2d.drawString(""+i,(int)(points[0]-2*width/32),(int)(points[1]+1*width/32));
+					}else{
+						g2d.drawString(""+i,(int)(points[0]-1*width/32),(int)(points[1]+1*width/32));
+					}
+				}
+				
+				//Find points for tick reference
+				points = this.getCoordNeedle(currentSpeed, width, height);
 
 				g2d.setColor(Color.RED);
-				switch(waveManager.speed[0]){
-				case 20:   g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p20[0], p20[1]);  break;  //20 line
-				case 40:   g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p40[0], p40[1]);  break;  //40 line
-				case 60:   g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p60[0], p60[1]);  break;  //60 line
-				case 80:   g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p80[0], p80[1]);  break;  //80 line
-				case 100:  g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p100[0], p100[1]);  break;  //100 line
-				case 120:  g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p120[0], p120[1]);  break;  //120 line
-				case 140:  g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p140[0], p140[1]);  break;  //140 line
-				case 160:  g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p160[0], p160[1]);  break;  //160 line
-				case 180:  g2d.drawLine(width/2 + (int) 5, height/2 +(int) 5, p180[0], p180[1]);  break;  //180 line
-				case 200:  g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p200[0], p200[1]);  break;  //200 line
-				case 220:  g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p220[0], p220[1]);  break;  //220 line
-				case 240:  g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p240[0], p240[1]);  break;  //240 line
-				case 0:    g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p0[0], p0[1]);	break;  //0 line
-				default:   g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, p0[0], p0[1]);	break;
-				}
+				g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, points[0], points[1]); 
+				
 			}
-			};
+		};
 	   brakeAmount = new JLabel("Brake Amount: -");
 	   vehicleType = new JLabel("Vehicle Type: -");
-//	   generalInfo = new JLabel("General Info:");
-//	   suggestedBrakeAmount = new JLabel("Speed Adjustment:");
-//	   suggestedBrakeSpeed = new JLabel("Speed of Brake Applied:");
-	   sender = new JLabel("<html><u>Trasmitted</u></html>");
-	   sender = new JLabel("<html><u>Sender</u></html>");
 	   generalInfoCarAhead = new JLabel();
 	   generalInfoCarAheadSpeed = new JLabel();
 	   generalInfoCarBehind = new JLabel();
@@ -272,7 +235,6 @@ public class UserInterface implements Runnable, ActionListener{
 	   emergencySiren = new JLabel(sirenIcon);
 	   emergencySiren.setVisible(false);
 	   sender = new JLabel("<html><u>Trasmitted</u></html>");
-
 	   generalInfoPacketsSent = new JLabel("GeneralInfoService Packets Sent: 0 ");
 	   brakeServicePacketsSent = new JLabel("BreakService Packets Sent: 0 ");
 	   emergencyServicePacketsSent = new JLabel("EmergencyService Packets Sent: 0 ");
@@ -283,9 +245,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   numPacketsOmitted = new JLabel("Omitted Packets: 0 ");
 	   delay = new JLabel("Smallest Delay = "+waveManager.delay+"ms");
 	   sirensLabel = new JLabel("OFF");
-
-	   groupsListeningToLabel = new JLabel("Listening To 0 Service Groups");
-	
+	   groupsListeningToLabel = new JLabel("Listening To 0 Service Group(s)");	
 	   leftPanelLabel.setHorizontalAlignment(JLabel.CENTER);
 	   centerPanelLabel.setHorizontalAlignment(JLabel.CENTER);
 	   rightPanelLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -395,6 +355,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   delayPanel.setPreferredSize(new Dimension(UIscale*10,UIscale*20));
 	   speedometerPanel.setPreferredSize(new Dimension(UIscale*50,UIscale*50));
 	   outputLabel.setPreferredSize(new Dimension(UIscale*225,UIscale*8));
+	   speed.setPreferredSize(new Dimension(UIscale*42,UIscale*42));
 	   
 	   //Add components to panels
 	   topPanel.add(leftPanel);
@@ -475,7 +436,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   
 	   devFrame.add(devPanel); 
 	   devFrame.setTitle("WAVE Dev Interface");
-	   devFrame.setSize(UIscale*230,UIscale*175);
+	   devFrame.setSize(UIscale*230,UIscale*168);
 	   devFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	   devFrame.setVisible(true);
     }
@@ -502,6 +463,7 @@ public class UserInterface implements Runnable, ActionListener{
     			 writeHeading(waveManager.heading);
     			 writeGPS(waveManager.GPSlattitude, waveManager.GPSlongitude);
     			 writeVehicleType(waveManager.vehicleType);
+    			 checkIconTimestamps();
     		 }catch(Exception e){ }
     	}
     }
@@ -551,19 +513,6 @@ public class UserInterface implements Runnable, ActionListener{
     	
     }
     
-//    public void writeGeneralInfo(String outputText){
-//    	generalInfo.setText("General Info: "+outputText);
-//    	BufferedImage myPicture;
-//		try {
-//	    	generalInfo.setText("Trying: "+outputText);
-//			myPicture = ImageIO.read(new File("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarAheadYellow.png"));
-//	    	generalInfo.setText("Worked: "+outputText);
-//			generalInfo = new JLabel(new ImageIcon(myPicture));
-//		} catch (IOException e) { 
-//		    // TODO Auto-generated catch block
-//		    e.printStackTrace();
-//		}
-//		
     public void writeGeneralInfoCarAhead(int speedDifference, int vehicleSpeed){
     	if(speedDifference<=20){
     		generalInfoCarAhead.setIcon(carAheadYellow);
@@ -572,7 +521,10 @@ public class UserInterface implements Runnable, ActionListener{
 		}else{
 			generalInfoCarAhead.setIcon(carAheadRed);
 		}	
+    	generalInfoCarAhead.setVisible(true);
     	generalInfoCarAheadSpeed.setText(vehicleSpeed+" Km/h");
+    	generalInfoCarAheadSpeed.setVisible(true);
+    	carAheadIconTimestamp = System.currentTimeMillis();
     }
     
     public void writeGeneralInfoCarBehind(int speedDifference, int vehicleSpeed){
@@ -583,7 +535,10 @@ public class UserInterface implements Runnable, ActionListener{
 		}else{
 			generalInfoCarBehind.setIcon(carBehindRed);
 		}	
+    	generalInfoCarBehind.setVisible(true);
     	generalInfoCarBehindSpeed.setText(vehicleSpeed+" Km/h");
+    	generalInfoCarBehindSpeed.setVisible(true);
+    	carBehindIconTimestamp = System.currentTimeMillis();
     }
     
     public void writeSuggestedSpeedAdjustment(String outputText){
@@ -597,11 +552,14 @@ public class UserInterface implements Runnable, ActionListener{
 			brakingCarAhead.setIcon(brakingOrange);
 		}else{
 			brakingCarAhead.setIcon(brakingRed);
-		}	
+		}
+    	brakingCarAhead.setVisible(true);
+    	brakeIconTimestamp = System.currentTimeMillis();
     }
     
     public void writeEmergencySiren(){
 		emergencySiren.setVisible(true);
+    	sirenIconTimestamp = System.currentTimeMillis();
     }
     
     public void updateNumPacketsReceived(int output){
@@ -633,17 +591,17 @@ public class UserInterface implements Runnable, ActionListener{
     }
 
     public void updateNumberGroupsListeningTo(int output){
-    	groupsListeningToLabel.setText("Listening To "+output+" Service Groups");
+    	groupsListeningToLabel.setText("Listening To "+output+" Service Group(s)");
     }
     
     public void actionPerformed(ActionEvent e) {
     	if(e.getSource().equals(speedUpButton)){
     		if(waveManager.speed[0]>=0&&waveManager.speed[0]<240){
-        		waveManager.addSpeed(waveManager.speed[0]+=20);
+        		waveManager.addSpeed(waveManager.speed[0]+=10);
     		}
     	}else if(e.getSource().equals(speedDownButton)){
     		if(waveManager.speed[0]>0&&waveManager.speed[0]<=240){
-        		waveManager.addSpeed(waveManager.speed[0]-=20);
+        		waveManager.addSpeed(waveManager.speed[0]-=10);
     		}
     	}else if(e.getSource().equals(brakeUpButton)){
     		if(waveManager.brakeAmount>=0&&waveManager.brakeAmount<100){
@@ -670,5 +628,26 @@ public class UserInterface implements Runnable, ActionListener{
     	}
     }
     
+    public void checkIconTimestamps(){
+    	long currentTime = System.currentTimeMillis();
+    	if(carAheadIconTimestamp!=0 && carAheadIconTimestamp+2000<currentTime){
+    		generalInfoCarAhead.setVisible(false);
+	    	generalInfoCarAheadSpeed.setVisible(false);
+    		carAheadIconTimestamp=0;
+    	}
+		if(carBehindIconTimestamp!=0 && carBehindIconTimestamp+2000<currentTime){
+			generalInfoCarBehind.setVisible(false);
+	    	generalInfoCarBehindSpeed.setVisible(false);
+			carBehindIconTimestamp=0;
+		}
+		if(brakeIconTimestamp!=0 && brakeIconTimestamp+2000<currentTime){
+			brakingCarAhead.setVisible(false);
+			brakeIconTimestamp=0;
+		}
+		if(sirenIconTimestamp!=0 && sirenIconTimestamp+2000<currentTime){
+			emergencySiren.setVisible(false);
+			sirenIconTimestamp=0;
+		}
+    }
 }
     
