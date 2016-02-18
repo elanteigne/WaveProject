@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Ellipse2D;
 
 public class UserInterface implements Runnable, ActionListener{
 	//Objects
@@ -167,7 +168,55 @@ public class UserInterface implements Runnable, ActionListener{
 	   carID = new JLabel("Car ID: xxx-xxx-xxx-xxx");
 	   gps = new JLabel("GPS: -, -");
 	   heading = new JLabel("Heading: - degrees");
-	   speed = new JLabel("Speed: -");
+	   speed = new JLabel("Speed: -"){
+		    private int[] points;
+		    private int currentSpeed;
+			private int height= 200;
+			private int width = 200;
+			private int initialAngle = 59;
+			private static final long serialVersionUID = 1L;
+
+			public int[] getCoordXY(int speed, int width, int height){
+				double pX, pY;
+				double angle = initialAngle;
+				pX = 5 + width/2 + (7*width/16)*Math.sin(Math.toRadians(angle+speed))*(-1);
+				pY = 5 + height/2 + (7*height/16)*Math.cos(Math.toRadians(angle+speed));
+				int[] coord = {(int)pX , (int)pY};
+				return coord;
+			}
+
+			@Override
+			public Dimension getPreferredSize(){return new Dimension(210,210);}
+			@Override
+			public void paintComponent(Graphics g) {
+				Graphics2D g2d = (Graphics2D) g;
+				currentSpeed = waveManager.speed[0];
+
+				g2d.fill(new Ellipse2D.Double(5, 5, width, height));
+				g2d.setStroke(new BasicStroke(3,BasicStroke.CAP_ROUND,BasicStroke.JOIN_MITER));
+
+				//Draw border of Speedometer
+				g2d.setColor(Color.GREEN);
+				g2d.draw(new Ellipse2D.Double(5, 5, width, height));
+
+				g2d.setColor(Color.WHITE);
+				for(int i=0; i<250;i+=20){
+					points = this.getCoordXY(i, width, height);
+					if(i>=100){
+						g2d.drawString(""+i,(int)(points[0]-2*width/32),(int)(points[1]+1*width/32));
+					}else{
+						g2d.drawString(""+i,(int)(points[0]-1*width/32),(int)(points[1]+1*width/32));
+					}
+				}
+				
+				//Find points for tick reference
+				points = this.getCoordXY(currentSpeed, width, height);
+
+				g2d.setColor(Color.RED);
+				g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, points[0], points[1]); 
+				
+			}
+		};
 	   brakeAmount = new JLabel("Brake Amount: -");
 	   vehicleType = new JLabel("Vehicle Type: -");
 	   generalInfoCarAhead = new JLabel();
@@ -539,11 +588,11 @@ public class UserInterface implements Runnable, ActionListener{
     
     public void actionPerformed(ActionEvent e) {
     	if(e.getSource().equals(speedUpButton)){
-    		if(waveManager.speed[0]>=0&&waveManager.speed[0]<200){
+    		if(waveManager.speed[0]>=0&&waveManager.speed[0]<240){
         		waveManager.addSpeed(waveManager.speed[0]+=10);
     		}
     	}else if(e.getSource().equals(speedDownButton)){
-    		if(waveManager.speed[0]>0&&waveManager.speed[0]<=200){
+    		if(waveManager.speed[0]>0&&waveManager.speed[0]<=240){
         		waveManager.addSpeed(waveManager.speed[0]-=10);
     		}
     	}else if(e.getSource().equals(brakeUpButton)){
@@ -573,21 +622,21 @@ public class UserInterface implements Runnable, ActionListener{
     
     public void checkIconTimestamps(){
     	long currentTime = System.currentTimeMillis();
-    	if(carAheadIconTimestamp!=0 && carAheadIconTimestamp+5000<currentTime){
+    	if(carAheadIconTimestamp!=0 && carAheadIconTimestamp+2000<currentTime){
     		generalInfoCarAhead.setVisible(false);
 	    	generalInfoCarAheadSpeed.setVisible(false);
     		carAheadIconTimestamp=0;
     	}
-		if(carBehindIconTimestamp!=0 && carBehindIconTimestamp+5000<currentTime){
+		if(carBehindIconTimestamp!=0 && carBehindIconTimestamp+2000<currentTime){
 			generalInfoCarBehind.setVisible(false);
 	    	generalInfoCarBehindSpeed.setVisible(false);
 			carBehindIconTimestamp=0;
 		}
-		if(brakeIconTimestamp!=0 && brakeIconTimestamp+5000<currentTime){
+		if(brakeIconTimestamp!=0 && brakeIconTimestamp+2000<currentTime){
 			brakingCarAhead.setVisible(false);
 			brakeIconTimestamp=0;
 		}
-		if(sirenIconTimestamp!=0 && sirenIconTimestamp+5000<currentTime){
+		if(sirenIconTimestamp!=0 && sirenIconTimestamp+2000<currentTime){
 			emergencySiren.setVisible(false);
 			sirenIconTimestamp=0;
 		}
