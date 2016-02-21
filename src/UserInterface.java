@@ -150,9 +150,9 @@ public class UserInterface implements Runnable, ActionListener{
 	   //Light Blue -> C0DEFF
 	   //Medium Blue -> A0CFFF
 	   //Dark Blue -> 6CADE8
-	   mainPanel.setBackground(Color.WHITE);
-	   devPanel.setBackground(Color.WHITE);
-	   topPanel.setBackground(Color.WHITE);
+	   mainPanel.setBackground(Color.decode("#A0CFFF"));
+	   devPanel.setBackground(Color.decode("#A0CFFF"));
+	   topPanel.setBackground(Color.decode("#A0CFFF"));
 	   leftPanel.setBackground(Color.decode("#A0CFFF"));
 	   centerPanel.setBackground(Color.decode("#A0CFFF"));
 	   rightPanel.setBackground(Color.decode("#A0CFFF"));
