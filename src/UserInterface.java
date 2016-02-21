@@ -153,14 +153,14 @@ public class UserInterface implements Runnable, ActionListener{
 	   mainPanel.setBackground(Color.WHITE);
 	   devPanel.setBackground(Color.WHITE);
 	   topPanel.setBackground(Color.WHITE);
-	   leftPanel.setBackground(Color.decode("#C0DEFF"));
-	   centerPanel.setBackground(Color.decode("#C0DEFF"));
-	   rightPanel.setBackground(Color.decode("#C0DEFF"));
-	   staticDataPanel.setBackground(Color.decode("#C0DEFF"));
-	   variableDataPanel.setBackground(Color.decode("#C0DEFF"));
-	   calculatedInfoPanel1.setBackground(Color.decode("#A0CFFF"));
-	   calculatedInfoPanel2.setBackground(Color.decode("#A0CFFF"));
-	   speedometerPanel.setBackground(Color.decode("#C0DEFF"));
+	   leftPanel.setBackground(Color.decode("#A0CFFF"));
+	   centerPanel.setBackground(Color.decode("#A0CFFF"));
+	   rightPanel.setBackground(Color.decode("#A0CFFF"));
+	   staticDataPanel.setBackground(Color.decode("#A0CFFF"));
+	   variableDataPanel.setBackground(Color.decode("#A0CFFF"));
+	   calculatedInfoPanel1.setBackground(Color.decode("#C0DEFF"));
+	   calculatedInfoPanel2.setBackground(Color.decode("#C0DEFF"));
+	   speedometerPanel.setBackground(Color.decode("#A0CFFF"));
 	   buttonPanel.setBackground(Color.decode("#C0DEFF"));
 	   outputPanel.setBackground(Color.decode("#C0DEFF"));
 	   otherInfoPanel.setBackground(Color.decode("#C0DEFF"));
@@ -316,11 +316,15 @@ public class UserInterface implements Runnable, ActionListener{
 	   suggestedSpeedAdjustment.setHorizontalAlignment(JLabel.CENTER);
 	   suggestedSpeedAdjustment.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2)); 
 	   suggestedSpeedAdjustmentValue.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*3)); 
+	   generalInfoCarAhead.setHorizontalAlignment(JLabel.CENTER);
 	   generalInfoCarAheadSpeed.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*3)); 
+	   generalInfoCarBehind.setHorizontalAlignment(JLabel.CENTER);
 	   generalInfoCarBehindSpeed.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*3)); 
 	   brakingCarAhead.setHorizontalAlignment(JLabel.CENTER);   
 	   brakingCarAheadSpeed.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*3)); 
+	   emergencySiren.setHorizontalAlignment(JLabel.CENTER);
 	   emergencySirenDistance.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*3)); 
+	   trafficAhead.setHorizontalAlignment(JLabel.CENTER);
 	   sender.setHorizontalAlignment(JLabel.CENTER);  
 	   receiver.setHorizontalAlignment(JLabel.CENTER);  
 	   generalInfoPacketsSent.setHorizontalAlignment(JLabel.CENTER);   
@@ -340,6 +344,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   delay.setHorizontalAlignment(JLabel.CENTER);          
 	   groupsListeningToLabel.setHorizontalAlignment(JLabel.CENTER);    
 	   groupsListeningToLabel.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*2)); 
+	   generalInfoCarBehind.setHorizontalAlignment(JLabel.CENTER);
 	   
 	   //Output boxes
 	   JLabel outputLabel = new JLabel("<html><u>Sending/Receiving</u></html>");
