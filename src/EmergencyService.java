@@ -67,12 +67,12 @@ public class EmergencyService extends Service implements Runnable {
 				output = "o Calculated: Emergency Vehicle approaching behind ("+(int)distance+"m). Please be aware.";
 				System.out.println(output);
 				waveManager.userInterface.computedEmergencyInfo(output);
-				waveManager.userInterface.writeEmergencySiren((int)distance);
+				waveManager.userInterface.turnOnEmergencySiren((int)distance);
 			}else{
 				output = "o Calculated: Emergency Vehicle nearby ("+(int)distance+"m). Please be aware.";
 				System.out.println(output);
 				waveManager.userInterface.computedEmergencyInfo(output);
-				waveManager.userInterface.writeEmergencySiren((int)distance);
+				waveManager.userInterface.turnOnEmergencySiren((int)distance);
 			}
 		}
 	}

@@ -84,7 +84,7 @@ public class GeneralInfoService extends Service implements Runnable{
 					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 					
-					waveManager.userInterface.writeGeneralInfoCarAhead(speedDifference, vehicleSpeed);
+					waveManager.userInterface.turnOnGeneralInfoCarAhead(speedDifference, vehicleSpeed);
 				}else{
 					output = "o Calculated: Vehicle is ahead but is not slower so it is not considered";
 					System.out.println(output);
@@ -98,7 +98,7 @@ public class GeneralInfoService extends Service implements Runnable{
 					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 					
-					waveManager.userInterface.writeGeneralInfoCarBehind(speedDifference, vehicleSpeed);
+					waveManager.userInterface.turnOnGeneralInfoCarBehind(speedDifference, vehicleSpeed);
 				}else{
 					output = "o Calculated: Vehicle is behind but not faster so it is not considered";
 					System.out.println(output);
