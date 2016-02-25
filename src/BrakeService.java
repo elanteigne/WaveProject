@@ -118,10 +118,10 @@ public class BrakeService extends Service implements Runnable{
 						+ " DistanceBetweenVehicles = "+distanceBetweenVehicles+" m, SuggestedBrakeAmount = "+waveManager.suggestedBrakeAmount+"%,"
 						+" AdditionalBrakeAmount = "+waveManager.additionalBrakeAmount+"%, SuggestedBrakeSpeed = '"+waveManager.suggestedBrakeSpeed+"'";
 				waveManager.userInterface.computedBrakeInfo(output);
-				waveManager.userInterface.writeSpeedBrakeApplied(brakeAmount);
+				waveManager.userInterface.turnOnBrakeApplied(brakeAmount, (int)distanceBetweenVehicles);
 			}else{
-				System.out.println("o Calculated: Vehicle ahead is going faster then you, therefore braking is not considered");
-				output = "o Calculated: Vehicle ahead is going faster then you, therefore braking is not considered";
+				System.out.println("o Calculated: Vehicle ahead is going faster than you, therefore braking is not considered");
+				output = "o Calculated: Vehicle ahead is going faster than you, therefore braking is not considered";
 				waveManager.userInterface.computedBrakeInfo(output);
 			}
 		}else{
