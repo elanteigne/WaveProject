@@ -27,7 +27,7 @@ public class BrakeService extends Service implements Runnable{
 	public void run(){
 		while(true){
 			delay = waveManager.delay;
-			System.out.println(""+waveManager.speed);
+//			System.out.println(""+waveManager.speed);
 			if(waveManager.speed[0]>10){
 				if(checkBrake()){				
 					sendControlMessage();

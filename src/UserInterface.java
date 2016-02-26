@@ -150,16 +150,16 @@ public class UserInterface implements Runnable, ActionListener{
 	   sirenButton.addActionListener(this);
 	   
 	   //Images
-	   carAheadRed = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarAheadRed.png");
-	   carAheadOrange = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarAheadOrange.png");
-	   carAheadYellow = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarAheadYellow.png");
-	   carBehindRed = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarBehindRed.png");
-	   carBehindOrange = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarBehindOrange.png");
-	   carBehindYellow = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarBehindYellow.png");
-	   brakingRed = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\BrakingRed.png");
-	   brakingOrange = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\BrakingOrange.png");
-	   brakingYellow = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\BrakingYellow.png");
-	   sirenIcon = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\Siren.png");
+	   carAheadRed = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\CarAheadRed.png");
+	   carAheadOrange = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\CarAheadOrange.png");
+	   carAheadYellow = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\CarAheadYellow.png");
+	   carBehindRed = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\CarBehindRed.png");
+	   carBehindOrange = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\CarBehindOrange.png");
+	   carBehindYellow = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\CarBehindYellow.png");
+	   brakingRed = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\BrakingRed.png");
+	   brakingOrange = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\BrakingOrange.png");
+	   brakingYellow = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\BrakingYellow.png");
+	   sirenIcon = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\Siren.png");
 	   
 	   //Labels
 	   leftPanelLabel = new JLabel("<html><u>Vehicle Info</u></html>");

@@ -39,7 +39,6 @@ public class EmergencyService extends Service implements Runnable {
 	public void run(){
 		while(true){
 			delay = waveManager.delay;
-			System.out.println(""+waveManager.sirensOn);
 			if(waveManager.sirensOn){
 				sendControlMessage();
 				//Wait 
