@@ -60,7 +60,7 @@ public class WaveManager {
 		
 		//Emergency Service
 		if(vehicleType.equals("Emergency")){
-			sirensOn = checkSirens();
+			sirensOn = false;
 		}
 	
 		//Traffic Service
@@ -119,9 +119,17 @@ public class WaveManager {
 		//String vehicleType = "Civilian";
 		return vehicleType;
 	}
-	
-	public boolean checkSirens(){
-		return false;
+
+	public synchronized int getSpeed(){
+		return speed[0];
 	}
 	
+	public synchronized boolean getSiren(){
+		return sirensOn;
+	}
+	
+
+	public synchronized boolean getTrafficValue(){
+		return inTraffic;
+	}
 }

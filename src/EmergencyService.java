@@ -39,8 +39,7 @@ public class EmergencyService extends Service implements Runnable {
 	public void run(){
 		while(true){
 			delay = waveManager.delay;
-			System.out.println(""+waveManager.sirensOn);
-			if(waveManager.sirensOn){
+			if(waveManager.getSiren()){
 				sendControlMessage();
 				//Wait 
 				try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
@@ -65,12 +64,10 @@ public class EmergencyService extends Service implements Runnable {
 			if(checkIfBehind(heading, vehicleLattitude, vehicleLongitude)){
 				
 				output = "o Calculated: Emergency Vehicle approaching behind ("+(int)distance+"m). Please be aware.";
-				System.out.println(output);
 				waveManager.userInterface.computedEmergencyInfo(output);
 				waveManager.userInterface.turnOnEmergencySiren((int)distance);
 			}else{
 				output = "o Calculated: Emergency Vehicle nearby ("+(int)distance+"m). Please be aware.";
-				System.out.println(output);
 				waveManager.userInterface.computedEmergencyInfo(output);
 				waveManager.userInterface.turnOnEmergencySiren((int)distance);
 			}

@@ -12,15 +12,15 @@ public class GeneralInfoService extends Service implements Runnable{
 	public String serviceGroup = "230.0.0.2";
 	public int messageID = 0;
 	public int numClosebyVehicles;
-	//private double closebyVehiclesTimestamp;
 	private String output;
+	private String[] vehicleAheadInfo = {"","",""};
+	private double vehicleAheadTimestamp;
+	private String[] vehicleBehindInfo = {"","",""};
+	private double vehicleBehindTimestamp;
 	
 	//Exterior info
-	
 	//public static ArrayList<ArrayList<Object>> vehiclesAccountedFor = new ArrayList<ArrayList<Object>>();
-	
 	private long closebyVehiclesTimestamp;
-
 	private int numVehiclesAccountedFor;
 
 	//Constructor
@@ -28,7 +28,7 @@ public class GeneralInfoService extends Service implements Runnable{
 		super(waveManager);
 		delay = waveManager.delay*2;
 	}
-
+	
 	//Class Methods
 	public void start(){
 		if(generalInfoServiceThread==null){
@@ -78,41 +78,47 @@ public class GeneralInfoService extends Service implements Runnable{
 			//Only way to check ahead so far is checking the direction
 			if(checkIfAhead(heading, vehicleLattitude, vehicleLongitude)){
 				if(vehicleSpeed<waveManager.speed[0]){
-					int speedDifference = waveManager.speed[0] - vehicleSpeed;
-
+					if(vehicleSpeed>Integer.parseInt(vehicleAheadInfo[1]) && distanceBetweenVehicles<(Double.parseDouble(vehicleAheadInfo[3])+30)){
+						vehicleAheadInfo[0] = fromCarID;
+						vehicleAheadInfo[1] = ""+vehicleSpeed;
+						vehicleAheadInfo[2] = ""+distanceBetweenVehicles;
+					}
+					
+					int speedDifference = waveManager.speed[0] - Integer.parseInt(vehicleAheadInfo[1]);
+					
 					output = "o Calculated: Traffic Ahead Slower by "+speedDifference+" Km/h";
-					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 					
 					waveManager.userInterface.turnOnGeneralInfoCarAhead(speedDifference, vehicleSpeed);
 				}else{
 					output = "o Calculated: Vehicle is ahead but is not slower so it is not considered";
-					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 				}
 			}else if(checkIfBehind(heading, vehicleLattitude, vehicleLongitude)){
 				if(vehicleSpeed>waveManager.speed[0]){
-					int speedDifference = vehicleSpeed - waveManager.speed[0];
+					if(vehicleSpeed<Integer.parseInt(vehicleAheadInfo[1]) && distanceBetweenVehicles<(Double.parseDouble(vehicleAheadInfo[3])+30)){
+						vehicleBehindInfo[0] = fromCarID;
+						vehicleBehindInfo[1] = ""+vehicleSpeed;
+						vehicleBehindInfo[2] = ""+distanceBetweenVehicles;
+					}
+					
+					int speedDifference = Integer.parseInt(vehicleBehindInfo[1]) - waveManager.speed[0];
 
 					output = "o Calculated: Traffic Behind Faster by "+speedDifference+" Km/h";
-					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 					
 					waveManager.userInterface.turnOnGeneralInfoCarBehind(speedDifference, vehicleSpeed);
 				}else{
 					output = "o Calculated: Vehicle is behind but not faster so it is not considered";
-					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 				}
 			}else if(checkIfOncoming(heading, vehicleLattitude, vehicleLongitude)){
 				if(waveManager.headlights == 2){
 					output = "o Calculated: Oncoming vehicles, please lower your high-beams";
-					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 				}
 			}else{
 				output = "o Calculated: Vehicle is not in critical area, therefore not considered";
-				System.out.println(output);
 				waveManager.userInterface.computedGeneralInfo(output);
 			}
 			
@@ -146,7 +152,6 @@ public class GeneralInfoService extends Service implements Runnable{
 			}
 		}else{
 			output = "o Calculated: Vehicle is too far ahead to be considered";
-			System.out.println(output);
 			waveManager.userInterface.computedGeneralInfo(output);
 		}
 	}

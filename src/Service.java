@@ -46,7 +46,6 @@ public class Service {
 			
 			String output = "-> Sent "+packetType+" message to "+fromGroup+": "+message;
 			waveManager.userInterface.output(output);
-			System.out.println(output);
 		}catch(Exception e){ }
 	}
 	

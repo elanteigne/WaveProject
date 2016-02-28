@@ -325,6 +325,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   emergencySiren.setHorizontalAlignment(JLabel.CENTER);
 	   emergencySirenDistance.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*3)); 
 	   trafficAhead.setHorizontalAlignment(JLabel.CENTER);
+	   trafficAheadDistance.setFont(new Font("Open Sans", Font.BOLD, OuterTextScale*3)); 
 	   sender.setHorizontalAlignment(JLabel.CENTER);  
 	   receiver.setHorizontalAlignment(JLabel.CENTER);  
 	   generalInfoPacketsSent.setHorizontalAlignment(JLabel.CENTER);   
@@ -620,6 +621,7 @@ public class UserInterface implements Runnable, ActionListener{
 		}
     	brakingCarAhead.setVisible(true);
     	brakingCarAheadSpeed.setText(brakeAmount+"%, "+distance+"m");
+    	brakingCarAheadSpeed.setVisible(true);
     	brakeIconTimestamp = System.currentTimeMillis();
     }
     
@@ -634,7 +636,7 @@ public class UserInterface implements Runnable, ActionListener{
     	sirenIconTimestamp = System.currentTimeMillis();
     }
     
-    public void turnOnTrafficAhead(int trafficDensity, int distance){
+    public void turnOnTrafficAhead(int trafficDensity, int distance, int avSpeed){
     	if(trafficDensity==1){
     		trafficAhead.setIcon(trafficAheadYellow);
 		}else if(trafficDensity==2){
@@ -643,7 +645,7 @@ public class UserInterface implements Runnable, ActionListener{
 			trafficAhead.setIcon(trafficAheadRed);
 		}
     	trafficAhead.setVisible(true);
-		trafficAheadDistance.setText(distance+"m");
+		trafficAheadDistance.setText(distance+"m, "+avSpeed+" Km/h");
 		trafficAheadDistance.setVisible(true);
 		trafficAheadTimestamp = System.currentTimeMillis();
     }
