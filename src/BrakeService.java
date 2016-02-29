@@ -79,7 +79,7 @@ public class BrakeService extends Service implements Runnable{
 			//If there are weather conditions it should affect break amount by a certain percentage
 			
 			double distanceBetweenVehicles = calculateDistance(vehicleLattitude, vehicleLongitude);
-			int speedDifference = waveManager.speed[0]-speed;
+			int speedDifference = waveManager.getSpeed()-speed;
 
 			//If vehicle ahead is going faster then there is no point in braking
 			if(speedDifference>0){
@@ -112,7 +112,7 @@ public class BrakeService extends Service implements Runnable{
 				}else{
 					waveManager.suggestedBrakeSpeed = 1;
 				}
-				output = "o Calculated: SpeedDifference = "+speedDifference+" km/h, mySpeed = "+waveManager.speed[0]+" km/h,"+""
+				output = "o Calculated: SpeedDifference = "+speedDifference+" km/h, mySpeed = "+waveManager.getSpeed()+" km/h,"+""
 						+ " DistanceBetweenVehicles = "+distanceBetweenVehicles+" m, SuggestedBrakeAmount = "+waveManager.suggestedBrakeAmount+"%,"
 						+" AdditionalBrakeAmount = "+waveManager.additionalBrakeAmount+"%, SuggestedBrakeSpeed = '"+waveManager.suggestedBrakeSpeed+"'";
 				waveManager.userInterface.computedBrakeInfo(output);
