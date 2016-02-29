@@ -34,6 +34,8 @@ public class UserInterface implements Runnable, ActionListener{
     private JPanel leftComputedDataPanel;
     private JPanel rightComputedDataPanel;
     private JPanel speedometerPanel;
+    private JPanel sirenInfoPanel;
+    
     
     private ImageIcon carAheadRed;
     private ImageIcon carAheadOrange;
@@ -49,6 +51,7 @@ public class UserInterface implements Runnable, ActionListener{
     private ImageIcon trafficAheadRed;
     private ImageIcon trafficAheadOrange;
     private ImageIcon trafficAheadYellow;
+    private ImageIcon backArrow;
     
     private JLabel leftPanelLabel;
     private JLabel centerPanelLabel;
@@ -88,6 +91,7 @@ public class UserInterface implements Runnable, ActionListener{
     private JLabel brakeServiceOutputLabel;
     private JLabel emergencyServiceOutputLabel;
     private JLabel trafficServiceOutputLabel;
+    private JLabel sirenDirection;
     
     
     private JButton speedUpButton;
@@ -159,6 +163,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   computedDataPanel = new JPanel();
 	   leftComputedDataPanel = new JPanel();
 	   rightComputedDataPanel = new JPanel();
+	   sirenInfoPanel = new JPanel();
 	   
 	   //Light Blue -> C0DEFF
 	   //Medium Blue -> A0CFFF
@@ -185,6 +190,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   computedDataPanel.setBackground(Color.decode("#A0CFFF"));
 	   leftComputedDataPanel.setBackground(Color.decode("#A0CFFF"));
 	   rightComputedDataPanel.setBackground(Color.decode("#A0CFFF"));
+	   sirenInfoPanel.setBackground(Color.decode("#C0DEFF"));
 	   
 	   //Make buttons increase gas and brake
 	   speedUpButton = new JButton("Faster");
@@ -217,6 +223,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   trafficAheadRed = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\TrafficIconRed.png");
 	   trafficAheadOrange = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\TrafficIconOrange.png");
 	   trafficAheadYellow = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\TrafficIconYellow.png");
+	   backArrow = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\BackArrow.png");
 	   
 	   //Labels
 	   leftPanelLabel = new JLabel("<html><u>Vehicle Info</u></html>");
@@ -296,6 +303,8 @@ public class UserInterface implements Runnable, ActionListener{
 	   emergencySiren = new JLabel(sirenIconOff);
 	   emergencySiren.setVisible(false);
 	   emergencySirenDistance = new JLabel();
+	   sirenDirection = new JLabel(backArrow);
+	   sirenDirection.setVisible(false);
 	   sender = new JLabel("<html><u>Trasmitted</u></html>");
 	   generalInfoPacketsSent = new JLabel("GeneralInfoService Packets Sent: 0 ");
 	   brakeServicePacketsSent = new JLabel("BreakService Packets Sent: 0 ");
@@ -337,6 +346,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   brakingCarAheadSpeed.setFont(new Font("Open Sans", Font.BOLD, OuterTextScaleMain*3)); 
 	   emergencySiren.setHorizontalAlignment(JLabel.CENTER);
 	   emergencySirenDistance.setFont(new Font("Open Sans", Font.BOLD, OuterTextScaleMain*3)); 
+	   emergencySirenDistance.setHorizontalAlignment(JLabel.CENTER);
 	   trafficAhead.setHorizontalAlignment(JLabel.CENTER);
 	   trafficAheadDistance.setFont(new Font("Open Sans", Font.BOLD, OuterTextScaleMain*3)); 
 	   sender.setHorizontalAlignment(JLabel.CENTER);  
@@ -408,6 +418,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   sentPacketInfoPanel.setLayout(new GridLayout(5,1));
 	   receivedPacketInfoPanel.setLayout(new GridLayout(4,1));
 	   computedDataPanel.setLayout(new GridLayout(1,2));
+	   sirenInfoPanel.setLayout(new GridLayout(1,2));
 	   
 	   
 	   topPanel.setPreferredSize(new Dimension(UIscaleMain*250,UIscaleMain*100));
@@ -442,7 +453,9 @@ public class UserInterface implements Runnable, ActionListener{
 	   calculatedInfoPanel1.add(brakingCarAhead);
 	   calculatedInfoPanel1.add(brakingCarAheadSpeed);
 	   calculatedInfoPanel1.add(emergencySiren);
-	   calculatedInfoPanel1.add(emergencySirenDistance);
+	   calculatedInfoPanel1.add(sirenInfoPanel);
+	   sirenInfoPanel.add(emergencySirenDistance);
+	   sirenInfoPanel.add(sirenDirection);
 	   staticDataPanel.add(carID);
 	   staticDataPanel.add(vehicleType);
 	   centerPanel.add(centerPanelLabel);
@@ -648,7 +661,7 @@ public class UserInterface implements Runnable, ActionListener{
     	brakeIconTimestamp = System.currentTimeMillis();
     }
     
-    public void turnOnEmergencySiren(int distance){
+    public void turnOnEmergencySiren(int distance, boolean behind){
 		emergencySiren.setVisible(true);
 		if(sirenFlashing!=true){
 			sirenFlashing = true;
@@ -656,6 +669,9 @@ public class UserInterface implements Runnable, ActionListener{
 		}
 		emergencySirenDistance.setText(distance+"m");
 		emergencySirenDistance.setVisible(true);
+		if(behind){
+			sirenDirection.setVisible(true);
+		}
     	sirenIconTimestamp = System.currentTimeMillis();
     }
     
@@ -689,12 +705,12 @@ public class UserInterface implements Runnable, ActionListener{
     
     public void checkIconTimestamps(){
     	long currentTime = System.currentTimeMillis();
-    	if(carAheadIconTimestamp!=0 && carAheadIconTimestamp+2000<currentTime){
+    	if(carAheadIconTimestamp!=0 && carAheadIconTimestamp+4000<currentTime){
     		generalInfoCarAhead.setVisible(false);
 	    	generalInfoCarAheadSpeed.setVisible(false);
     		carAheadIconTimestamp=0;
     	}
-		if(carBehindIconTimestamp!=0 && carBehindIconTimestamp+2000<currentTime){
+		if(carBehindIconTimestamp!=0 && carBehindIconTimestamp+4000<currentTime){
 			generalInfoCarBehind.setVisible(false);
 	    	generalInfoCarBehindSpeed.setVisible(false);
 			carBehindIconTimestamp=0;
@@ -707,6 +723,7 @@ public class UserInterface implements Runnable, ActionListener{
 		if(sirenIconTimestamp!=0 && sirenIconTimestamp+2000<currentTime){
 			emergencySiren.setVisible(false);
 			emergencySirenDistance.setVisible(false);
+			sirenDirection.setVisible(false);
 			sirenIconTimestamp=0;
 		}
 		if(trafficAheadTimestamp!=0 && trafficAheadTimestamp+2000<currentTime){
