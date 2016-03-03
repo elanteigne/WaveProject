@@ -46,16 +46,13 @@ public class Service {
 			
 			String output = "-> Sent "+packetType+" message to "+fromGroup+": "+message;
 			waveManager.userInterface.output(output);
-			System.out.println(output);
 		}catch(Exception e){ }
 	}
 	
 	public double calculateDistance(double lat1, double lon1) {
-		double theta = lon1 - waveManager.GPSlongitude;
-		double distance = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(waveManager.GPSlattitude)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(waveManager.GPSlattitude)) * Math.cos(deg2rad(theta));
-		distance = Math.acos(distance);
-		distance = distance * 6372.795477598;
-		distance = rad2deg(distance);
+		double theta = deg2rad(lon1) - deg2rad(waveManager.GPSlongitude);
+		double distance = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(waveManager.GPSlattitude)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(waveManager.GPSlattitude)) * Math.cos(theta);
+		distance = Math.acos(distance)* 6372795.477598;
 		
 		return distance;
 	}

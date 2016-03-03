@@ -12,15 +12,15 @@ public class GeneralInfoService extends Service implements Runnable{
 	public String serviceGroup = "230.0.0.2";
 	public int messageID = 0;
 	public int numClosebyVehicles;
-	//private double closebyVehiclesTimestamp;
 	private String output;
+	private String[] vehicleAheadInfo = {"","",""};
+	private double vehicleAheadTimestamp = 0;
+	private String[] vehicleBehindInfo = {"","",""};
+	private double vehicleBehindTimestamp = 0;
 	
 	//Exterior info
-	
 	//public static ArrayList<ArrayList<Object>> vehiclesAccountedFor = new ArrayList<ArrayList<Object>>();
-	
 	private long closebyVehiclesTimestamp;
-
 	private int numVehiclesAccountedFor;
 
 	//Constructor
@@ -28,7 +28,7 @@ public class GeneralInfoService extends Service implements Runnable{
 		super(waveManager);
 		delay = waveManager.delay*2;
 	}
-
+	
 	//Class Methods
 	public void start(){
 		if(generalInfoServiceThread==null){
@@ -55,6 +55,7 @@ public class GeneralInfoService extends Service implements Runnable{
 
 				count++;
 			}
+			checkTimestamps();
 		}
 	}
 	
@@ -77,60 +78,70 @@ public class GeneralInfoService extends Service implements Runnable{
 		if(distanceBetweenVehicles<150){
 			//Only way to check ahead so far is checking the direction
 			if(checkIfAhead(heading, vehicleLattitude, vehicleLongitude)){
-				if(vehicleSpeed<waveManager.speed[0]){
-					int speedDifference = waveManager.speed[0] - vehicleSpeed;
-
+				if(vehicleSpeed<waveManager.getSpeed()){
+					if(vehicleAheadInfo[0].equals("") || vehicleSpeed<Integer.parseInt(vehicleAheadInfo[1]) && distanceBetweenVehicles<(Double.parseDouble(vehicleAheadInfo[2])+30)){
+						vehicleAheadInfo[0] = fromCarID;
+						vehicleAheadInfo[1] = ""+vehicleSpeed;
+						vehicleAheadInfo[2] = ""+distanceBetweenVehicles;
+						vehicleAheadTimestamp = System.currentTimeMillis();
+					}
+					
+					int speedDifference = waveManager.getSpeed() - Integer.parseInt(vehicleAheadInfo[1]);
+					
 					output = "o Calculated: Traffic Ahead Slower by "+speedDifference+" Km/h";
-					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 					
-					waveManager.userInterface.writeGeneralInfoCarAhead(speedDifference, vehicleSpeed);
+					waveManager.userInterface.turnOnGeneralInfoCarAhead(speedDifference, vehicleSpeed);
 				}else{
 					output = "o Calculated: Vehicle is ahead but is not slower so it is not considered";
-					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 				}
 			}else if(checkIfBehind(heading, vehicleLattitude, vehicleLongitude)){
-				if(vehicleSpeed>waveManager.speed[0]){
-					int speedDifference = vehicleSpeed - waveManager.speed[0];
+				if(vehicleSpeed>waveManager.getSpeed()){
+					if(vehicleBehindInfo[0].equals("") || vehicleSpeed>Integer.parseInt(vehicleAheadInfo[1]) && distanceBetweenVehicles<(Double.parseDouble(vehicleAheadInfo[2])+30)){
+						vehicleBehindInfo[0] = fromCarID;
+						vehicleBehindInfo[1] = ""+vehicleSpeed;
+						vehicleBehindInfo[2] = ""+distanceBetweenVehicles;
+					}
+					
+					int speedDifference = Integer.parseInt(vehicleBehindInfo[1]) - waveManager.getSpeed();
 
 					output = "o Calculated: Traffic Behind Faster by "+speedDifference+" Km/h";
-					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 					
-					waveManager.userInterface.writeGeneralInfoCarBehind(speedDifference, vehicleSpeed);
+					waveManager.userInterface.turnOnGeneralInfoCarBehind(speedDifference, vehicleSpeed);
 				}else{
 					output = "o Calculated: Vehicle is behind but not faster so it is not considered";
-					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 				}
 			}else if(checkIfOncoming(heading, vehicleLattitude, vehicleLongitude)){
 				if(waveManager.headlights == 2){
 					output = "o Calculated: Oncoming vehicles, please lower your high-beams";
-					System.out.println(output);
 					waveManager.userInterface.computedGeneralInfo(output);
 				}
 			}else{
 				output = "o Calculated: Vehicle is not in critical area, therefore not considered";
-				System.out.println(output);
 				waveManager.userInterface.computedGeneralInfo(output);
 			}
 			
 			//Decide if trafficService should start sending
-			if(distanceBetweenVehicles<25){
+			if(distanceBetweenVehicles<100){
 				
 				if(waveManager.vehiclesAccountedFor.size()==0){
 					closebyVehiclesTimestamp = System.currentTimeMillis();
 				}
 				
 				listVehicle(fromCarID, heading, vehicleSpeed, vehicleLattitude, vehicleLongitude);
-								
+
+				output = "o Calculated: "+vehicleSpeed+" Km/h";
+				waveManager.userInterface.computedGeneralInfo(output);
+				
 				if(System.currentTimeMillis()<closebyVehiclesTimestamp+5000){
 					//if(waveManager.vehiclesAccountedFor.size()>5){
 					if(waveManager.vehiclesAccountedFor.size()>0){
-						if(waveManager.speed[5]>(waveManager.speed[0]*0.5)){
-							waveManager.inTraffic = true;
-							waveManager.userInterface.computedGeneralInfo("In traffic: " + waveManager.inTraffic);
+						if(waveManager.speed[4]>(waveManager.getSpeed()*1.5)){
+							waveManager.inTraffic = true;							
+							waveManager.userInterface.computedGeneralInfo("o Calculated: In traffic");
 						}
 					}
 				}else{
@@ -141,12 +152,9 @@ public class GeneralInfoService extends Service implements Runnable{
 					waveManager.inTraffic = false;
 					//waveManager.userInterface.computedGeneralInfo(">>>Emptied vehicles list");
 				}
-				
-				//numVehiclesAccountedFor=0;
 			}
 		}else{
 			output = "o Calculated: Vehicle is too far ahead to be considered";
-			System.out.println(output);
 			waveManager.userInterface.computedGeneralInfo(output);
 		}
 	}
@@ -179,4 +187,20 @@ public class GeneralInfoService extends Service implements Runnable{
 		
 		}
 	}
+	
+	private void checkTimestamps(){
+		if(vehicleAheadTimestamp+2000<System.currentTimeMillis()){
+			vehicleAheadInfo[0] = "";
+			vehicleAheadInfo[1] = "";
+			vehicleAheadInfo[2] = "";
+			
+		}
+		if(vehicleBehindTimestamp+2000<System.currentTimeMillis()){
+			vehicleBehindInfo[0] = "";
+			vehicleBehindInfo[1] = "";
+			vehicleBehindInfo[2] = "";
+			
+		}
+	}
+	
 }
