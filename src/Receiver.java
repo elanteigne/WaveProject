@@ -58,7 +58,6 @@ public class Receiver implements Runnable{
 	
 	public void run(){
 		while(true){
-			checkListeningList();
 			for(int i=0; i<groupsToListenTo.length; i++){
 				if(!(groupsToListenTo[i][0].equals(""))){
 					switchGroups(groupsToListenTo[i][0]);
@@ -69,6 +68,7 @@ public class Receiver implements Runnable{
 					}
 				}
 			}
+			checkListeningList();
 		}
 	}
 	
@@ -117,20 +117,25 @@ public class Receiver implements Runnable{
 						output = "+ Received *BrakeService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed: "+vehicleSpeed+" km/h, BrakeAmount: "+brakeAmount+"%, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Heading:'"+heading+"', HopCount = "+hopCount;
 						waveManager.userInterface.output(output);
 						
-						brakeService.computeData(heading, vehicleSpeed, vehicleLattitude, vehicleLongitude, brakeAmount);
+						brakeService.computeData(fromCarID, heading, vehicleSpeed, vehicleLattitude, vehicleLongitude, brakeAmount);
 					}else if(fromGroup.equals(generalInfoService.serviceGroup)){
 						output = "+ Received *GeneralInfoService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+vehicleSpeed+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Heading:'"+heading+"', HopCount = "+hopCount;
 						waveManager.userInterface.output(output);
 										
 						generalInfoService.computeData(fromCarID, heading, vehicleSpeed, vehicleLattitude, vehicleLongitude);
 					}else if(fromGroup.equals(trafficService.serviceGroup)){
+					
+						int directionCluster = Integer.parseInt(strings[9]);
+						int speedCluster = Integer.parseInt(strings[10]);
+						int sizeCluster = Integer.parseInt(strings[11]);
+						double latCluster = Double.parseDouble(strings[12]);
+						double lngCluster = Double.parseDouble(strings[13]);
 						
-						int trafficLevel = Integer.parseInt(strings[9]);
-						
-						output = "+ Received *TrafficService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': TrafficLevel:'"+trafficLevel+"': Speed:'"+vehicleSpeed+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Heading:'"+heading+"', HopCount = "+hopCount;
+						System.out.println("+ Received *TrafficService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+vehicleSpeed+"': Direction:'"+directionCluster*22.5+"': Speed:'"+speedCluster+"': Size:'"+sizeCluster+"': Cluster lattitude:'"+latCluster+"': Cluster longitude:'"+lngCluster+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Heading:'"+heading+"', HopCount = "+hopCount);
+						output = "+ Received *TrafficService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+vehicleSpeed+"': Direction:'"+directionCluster*22.5+"': Speed:'"+speedCluster+"': Size:'"+sizeCluster+"': Cluster lattitude:'"+latCluster+"': Cluster longitude:'"+lngCluster+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Heading:'"+heading+"', HopCount = "+hopCount;
 						waveManager.userInterface.output(output);
 						
-						trafficService.computeData();
+						trafficService.computeData(directionCluster, speedCluster, sizeCluster, latCluster, lngCluster);
 					}else{
 						output = "+ Received *Control* message advertising '"+messageGroup+"' from CarID '"+fromCarID+"'";
 						waveManager.userInterface.output(output);

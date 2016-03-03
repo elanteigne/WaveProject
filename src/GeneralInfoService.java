@@ -83,6 +83,7 @@ public class GeneralInfoService extends Service implements Runnable{
 						vehicleAheadInfo[0] = fromCarID;
 						vehicleAheadInfo[1] = ""+vehicleSpeed;
 						vehicleAheadInfo[2] = ""+distanceBetweenVehicles;
+						vehicleAheadTimestamp = System.currentTimeMillis();
 					}
 					
 					int speedDifference = waveManager.getSpeed() - Integer.parseInt(vehicleAheadInfo[1]);
@@ -124,7 +125,7 @@ public class GeneralInfoService extends Service implements Runnable{
 			}
 			
 			//Decide if trafficService should start sending
-			if(distanceBetweenVehicles<25){
+			if(distanceBetweenVehicles<100){
 				
 				if(waveManager.vehiclesAccountedFor.size()==0){
 					closebyVehiclesTimestamp = System.currentTimeMillis();
@@ -134,6 +135,7 @@ public class GeneralInfoService extends Service implements Runnable{
 								
 				if(System.currentTimeMillis()<closebyVehiclesTimestamp+5000){
 					//if(waveManager.vehiclesAccountedFor.size()>5){
+					waveManager.userInterface.computedGeneralInfo(""+waveManager.vehiclesAccountedFor.size());
 					if(waveManager.vehiclesAccountedFor.size()>0){
 						if(waveManager.speed[4]>(waveManager.getSpeed()*1.5)){
 							waveManager.inTraffic = true;
