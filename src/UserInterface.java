@@ -726,7 +726,7 @@ public class UserInterface implements Runnable, ActionListener{
 			sirenDirection.setVisible(false);
 			sirenIconTimestamp=0;
 		}
-		if(trafficAheadTimestamp!=0 && trafficAheadTimestamp+2000<currentTime){
+		if(trafficAheadTimestamp!=0 && trafficAheadTimestamp+5000<currentTime){
 			trafficAhead.setVisible(false);
 			trafficAheadDistance.setVisible(false);
 			trafficAheadTimestamp=0;

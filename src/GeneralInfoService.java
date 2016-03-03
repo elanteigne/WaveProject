@@ -132,13 +132,15 @@ public class GeneralInfoService extends Service implements Runnable{
 				}
 				
 				listVehicle(fromCarID, heading, vehicleSpeed, vehicleLattitude, vehicleLongitude);
-								
+
+				output = "o Calculated: "+vehicleSpeed+" Km/h";
+				waveManager.userInterface.computedGeneralInfo(output);
+				
 				if(System.currentTimeMillis()<closebyVehiclesTimestamp+5000){
 					//if(waveManager.vehiclesAccountedFor.size()>5){
-					waveManager.userInterface.computedGeneralInfo(""+waveManager.vehiclesAccountedFor.size());
 					if(waveManager.vehiclesAccountedFor.size()>0){
 						if(waveManager.speed[4]>(waveManager.getSpeed()*1.5)){
-							waveManager.inTraffic = true;
+							waveManager.inTraffic = true;							
 							waveManager.userInterface.computedGeneralInfo("o Calculated: In traffic");
 						}
 					}

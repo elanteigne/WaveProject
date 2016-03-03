@@ -131,7 +131,6 @@ public class Receiver implements Runnable{
 						double latCluster = Double.parseDouble(strings[12]);
 						double lngCluster = Double.parseDouble(strings[13]);
 						
-						System.out.println("+ Received *TrafficService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+vehicleSpeed+"': Direction:'"+directionCluster*22.5+"': Speed:'"+speedCluster+"': Size:'"+sizeCluster+"': Cluster lattitude:'"+latCluster+"': Cluster longitude:'"+lngCluster+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Heading:'"+heading+"', HopCount = "+hopCount);
 						output = "+ Received *TrafficService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+vehicleSpeed+"': Direction:'"+directionCluster*22.5+"': Speed:'"+speedCluster+"': Size:'"+sizeCluster+"': Cluster lattitude:'"+latCluster+"': Cluster longitude:'"+lngCluster+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Heading:'"+heading+"', HopCount = "+hopCount;
 						waveManager.userInterface.output(output);
 						

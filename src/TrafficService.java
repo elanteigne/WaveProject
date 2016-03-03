@@ -45,19 +45,21 @@ public class TrafficService extends Service implements Runnable {
 	
 	public void run(){
 		while(true){
-			delay = waveManager.delay*4;
 			
-			sendControlMessage();
+			delay = waveManager.delay*2;
+			
+			sendControlMessage(); 
 			//Wait 
 			try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
-			if(waveManager.inTraffic == true){
+			
+			if(waveManager.getTrafficValue()){
+				this.clusterVariables = getClusterValues();
+				
 				int count = 0;
-				while(count<2){
-					this.clusterVariables = getClusterValues();
-					//waveManager.userInterface.computedTrafficInfo("Here");
+				while(count<5){
 					sendServiceMessage();
 					
-					delay = waveManager.delay;
+					delay = waveManager.delay*4;
 					//Wait
 					try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
 					count++;
@@ -82,63 +84,82 @@ public class TrafficService extends Service implements Runnable {
 		String[] directionWords = {"N","NNE", "NE", "NEE", "E", "SEE", "SE", "SSE", "S","SSW", "SW", "SWW","W", "NWW", "NW", "NNW"};
 		
 		//TRAFFIC LEVEL ALGORITHM
-		
 		//If cluster in the same direction
 		if(direction == directionCluster || direction == directionCluster + 1 || direction == directionCluster - 1 ){
 			
-			distToTraffic = calculateDistance(latCluster, lngCluster);
-			speedDiff = speedDifference(speed, speedCluster);
-		
-			//If cluster speed is smaller
-			if(speed < speedCluster){
-				trafficLevel = 0;	
-			}else{	
-				if(sizeCluster>9){
-					if(speedDiff > 30){
-						trafficLevel = 3;
-					}else if(speedDiff > 10){
-						trafficLevel = 2;
+			//If cluster is ahead
+			if(checkIfAhead((int)(directionCluster*22.5), latCluster, lngCluster)){
+				
+				distToTraffic = calculateDistance(latCluster, lngCluster);
+				speedDiff = speedDifference(speed, speedCluster);
+			
+				System.out.println(""+speedCluster);
+				//If cluster speed is smaller
+				if(speed < speedCluster){
+					trafficLevel = 0;	
+				}else{	
+					if(sizeCluster>9){
+						if(speedDiff > 40){
+							trafficLevel = 3;
+						}else if(speedDiff > 30){
+							trafficLevel = 3;
+						}else if(speedDiff > 20){
+							trafficLevel = 2;
+						}else if(speedDiff > 10){
+							trafficLevel = 2;
+						}else{
+							trafficLevel = 1;
+						}
+					}else if(sizeCluster>6){
+						if(speedDiff > 40){
+							trafficLevel = 3;
+						}else if(speedDiff > 30){
+							trafficLevel = 2;
+						}else if(speedDiff > 20){
+							trafficLevel = 2;
+						}else if(speedDiff > 10){
+							trafficLevel = 1;
+						}else{
+							trafficLevel = 1;
+						}
+					}else if(sizeCluster>3){
+						if(speedDiff > 40){
+							trafficLevel = 2;
+						}else if(speedDiff > 30){
+							trafficLevel = 2;
+						}else if(speedDiff > 20){
+							trafficLevel = 1;
+						}else{
+							trafficLevel = 0;
+						}
 					}else{
-						trafficLevel = 1;
-					}
-				}else if(sizeCluster>6){
-					if(speedDiff > 40){
-						trafficLevel = 3;
-					}else if(speedDiff > 20){
-						trafficLevel = 2;
-					}else if(speedDiff > 10){
-						trafficLevel = 1;
-					}else{
-						trafficLevel = 1;
-					}
-				}else if(sizeCluster>3){
-					if(speedDiff > 30){
-						trafficLevel = 2;
-					}else if(speedDiff > 20){
-						trafficLevel = 1;
-					}else{
-						trafficLevel = 0;
-					}
-				}else{
-					if(speedDiff > 40){
-						trafficLevel = 2;
-					}else if(speedDiff > 30){
-						trafficLevel = 1;
-					}else{
-						trafficLevel = 0;
+						if(speedDiff > 40){
+							trafficLevel = 2;
+						}else if(speedDiff > 30){
+							trafficLevel = 1;
+						}else{
+							trafficLevel = 0;
+						}
 					}
 				}
+			
+				//Update local variable traffic level calculated
+				waveManager.trafficLevel = trafficLevel;
+		
+				output = "o Calculated: Traffic level: " + trafficLevel + ". Traffic ahead in: " +  String.format("%.2f", distToTraffic) + "km (" + directionWords[directionCluster] + ") at " + speedCluster + "km/h";
+				waveManager.userInterface.computedTrafficInfo(output);
+				waveManager.userInterface.turnOnTrafficAhead(trafficLevel, (int)distToTraffic, speedCluster);
+			
+			}else{
+				
+				output = "o Calculated: Traffic Cluster is not considered because it is Behind";
+				waveManager.userInterface.computedTrafficInfo(output);
 			}
-		//Update local variable traffic level calculated
-		waveManager.trafficLevel = trafficLevel;
-
-		output = "o Calculated: Traffic level: " + trafficLevel + ". Traffic ahead in: " +  String.format("%.2f", distToTraffic) + "km (" + directionWords[directionCluster] + ") at " + speedCluster + "km/h";
-		waveManager.userInterface.computedTrafficInfo(output);
-		waveManager.userInterface.turnOnTrafficAhead(trafficLevel, (int)distToTraffic, speedCluster);
 		}
 	}
 
 	//CLUSTER CALCULATIONS
+	
 	public String getClusterValues(){
 		int direction = (int)(double)(waveManager.heading/22.5);
 		int speed = waveManager.getSpeed();
@@ -174,9 +195,6 @@ public class TrafficService extends Service implements Runnable {
 		gps[0] = Double.parseDouble(gpsString[0]);
 		gps[1] = Double.parseDouble(gpsString[1]);
 		
-		output = "o Calculated: Speed: " + spd[direction] + "; Heading: " + (int)(dir[direction]*22.5) + "; LAT/LNG: " + String.format("%.7f", gps[0]) + " / " + String.format("%.7f", gps[1]);
-		waveManager.userInterface.computedTrafficInfo(output);
-	
 		return  dir[direction]  + "/" + spd[direction] + "/" + dirPrv[direction] + "/" + gps[0] + "/" + gps[1];
 	}
 	
