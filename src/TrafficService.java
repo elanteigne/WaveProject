@@ -142,14 +142,22 @@ public class TrafficService extends Service implements Runnable {
 						}
 					}
 				}
-			
+				
 				//Update local variable traffic level calculated
 				waveManager.trafficLevel = trafficLevel;
+				
+				if(trafficLevel != 0){
 		
-				output = "o Calculated: Traffic level: " + trafficLevel + ". Traffic ahead in: " +  String.format("%.2f", distToTraffic) + "km (" + directionWords[directionCluster] + ") at " + speedCluster + "km/h";
-				waveManager.userInterface.computedTrafficInfo(output);
-				waveManager.userInterface.turnOnTrafficAhead(trafficLevel, (int)distToTraffic, speedCluster);
-			
+					output = "o Calculated: Traffic level: " + trafficLevel + ". Traffic ahead in: " +  String.format("%.2f", distToTraffic) + "km (" + directionWords[directionCluster] + ") at " + speedCluster + "km/h";
+					waveManager.userInterface.computedTrafficInfo(output);
+					waveManager.userInterface.turnOnTrafficAhead(trafficLevel, (int)distToTraffic, speedCluster);
+					
+				}else{
+					output = "o Calculated: Traffic ahead is going the same speed";
+					waveManager.userInterface.computedTrafficInfo(output);
+				}
+				
+				
 			}else{
 				
 				output = "o Calculated: Traffic Cluster is not considered because it is Behind";
@@ -207,7 +215,7 @@ public class TrafficService extends Service implements Runnable {
 		if(s1 != 0){
 			d = ((s1 - s2)*100)/s1;	
 		}else{
-			d = 7;
+			d = 0;
 		}
 		
 		return d;
