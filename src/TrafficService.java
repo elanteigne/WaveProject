@@ -47,13 +47,13 @@ public class TrafficService extends Service implements Runnable {
 		while(true){
 			
 			delay = waveManager.delay*2;
-			
-			sendControlMessage(); 
-			//Wait 
-			try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
-			
+
 			if(waveManager.getTrafficValue()){
 				this.clusterVariables = getClusterValues();
+				
+				sendControlMessage(); 
+				//Wait 
+				try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
 				
 				int count = 0;
 				while(count<5){
