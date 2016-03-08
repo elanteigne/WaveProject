@@ -427,7 +427,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   rightPanel.setPreferredSize(new Dimension(UIscaleMain*140,UIscaleMain*100));
 	   calculatedInfoPanel1.setPreferredSize(new Dimension(UIscaleMain*70,UIscaleMain*65));
 	   calculatedInfoPanel2.setPreferredSize(new Dimension(UIscaleMain*70,UIscaleMain*90));
-	   buttonPanel.setPreferredSize(new Dimension(UIscaleMain*200,UIscaleMain*10));
+	   buttonPanel.setPreferredSize(new Dimension(UIscaleMain*250,UIscaleMain*10));
 	   outputPanel.setPreferredSize(new Dimension(UIscaleMain*225,UIscaleMain*300));
 	   leftComputedDataPanel.setPreferredSize(new Dimension(UIscaleMain*110,UIscaleMain*140));
 	   rightComputedDataPanel.setPreferredSize(new Dimension(UIscaleMain*110,UIscaleMain*140));
@@ -521,7 +521,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   
 	   mainFrame.add(mainPanel); 
 	   mainFrame.setTitle("WAVE Interface");
-	   mainFrame.setSize(5*250,5*125);
+	   mainFrame.setSize(UIscaleMain*250,UIscaleMain*125);
 	   mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	   mainFrame.setVisible(true);
 	   
