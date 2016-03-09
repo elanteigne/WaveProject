@@ -92,8 +92,7 @@ public class TrafficService extends Service implements Runnable {
 				
 				distToTraffic = calculateDistance(latCluster, lngCluster);
 				speedDiff = speedDifference(speed, speedCluster);
-			
-				System.out.println(""+speedCluster);
+				
 				//If cluster speed is smaller
 				if(speed < speedCluster){
 					trafficLevel = 0;	
@@ -147,19 +146,15 @@ public class TrafficService extends Service implements Runnable {
 				waveManager.trafficLevel = trafficLevel;
 				
 				if(trafficLevel != 0){
-		
 					output = "o Calculated: Traffic level: " + trafficLevel + ". Traffic ahead in: " +  String.format("%.2f", distToTraffic) + "km (" + directionWords[directionCluster] + ") at " + speedCluster + "km/h";
 					waveManager.userInterface.computedTrafficInfo(output);
 					waveManager.userInterface.turnOnTrafficAhead(trafficLevel, (int)distToTraffic, speedCluster);
-					
+
 				}else{
 					output = "o Calculated: Traffic ahead is going the same speed";
 					waveManager.userInterface.computedTrafficInfo(output);
 				}
-				
-				
 			}else{
-				
 				output = "o Calculated: Traffic Cluster is not considered because it is Behind";
 				waveManager.userInterface.computedTrafficInfo(output);
 			}
@@ -202,7 +197,10 @@ public class TrafficService extends Service implements Runnable {
 		String[] gpsString = getAvgGPS(vehicles, numVehicles, longitude, lattitude, dir[direction]).split("/");
 		gps[0] = Double.parseDouble(gpsString[0]);
 		gps[1] = Double.parseDouble(gpsString[1]);
-		
+
+		output = "o Calculated: Speed: " + spd[direction] + "; Heading: " + (int)(dir[direction]*22.5) + "; LAT/LNG: " + String.format("%.7f", gps[0]) + " / " + String.format("%.7f", gps[1]);
+		waveManager.userInterface.computedTrafficInfo(output);
+	
 		return  dir[direction]  + "/" + spd[direction] + "/" + dirPrv[direction] + "/" + gps[0] + "/" + gps[1];
 	}
 	
