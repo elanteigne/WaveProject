@@ -40,7 +40,7 @@ public class WaveManager {
 	
 	//Constructor
 	public WaveManager(){
-		CarID = checkVinNumber();
+		CarID = "222-222-222-222";
 		vehicleType = checkVehicleType();
 		speed[0] = checkSpeed();
 		brakeAmount = checkBrake();
@@ -80,12 +80,7 @@ public class WaveManager {
 	public static void main(String[] args){
 		waveManager = new WaveManager();
 	}
-	
-	public String checkVinNumber(){
-		String vinNum = "111-111-111-111";
-		return vinNum;
-	}
-	
+		
 	//Make this recurring and figure out GPS format
 	public void checkGPS(){
 		GPSlattitude = 45.382620;
