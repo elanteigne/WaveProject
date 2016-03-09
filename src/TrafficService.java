@@ -91,7 +91,10 @@ public class TrafficService extends Service implements Runnable {
 			if(checkIfAhead((int)(directionCluster*22.5), latCluster, lngCluster)){
 				
 				distToTraffic = calculateDistance(latCluster, lngCluster);
-				speedDiff = speedDifference(speed, speedCluster);
+				speedDiff = speedDifference(speed, speedCluster);				
+				
+				output = "Cluster size: " + sizeCluster + ". Speed: "+speed+". Cluster Speed: "+speedCluster+". Speed Diff: " +  speedDiff+"%";
+				waveManager.userInterface.computedTrafficInfo(output);
 				
 				//If cluster speed is smaller
 				if(speed < speedCluster){
@@ -198,7 +201,7 @@ public class TrafficService extends Service implements Runnable {
 		gps[0] = Double.parseDouble(gpsString[0]);
 		gps[1] = Double.parseDouble(gpsString[1]);
 
-		output = "o Calculated: Speed: " + spd[direction] + "; Heading: " + (int)(dir[direction]*22.5) + "; LAT/LNG: " + String.format("%.7f", gps[0]) + " / " + String.format("%.7f", gps[1]);
+		output = "o Calculated: Speed: " + spd[direction] + "; Num Cars: "+dirPrv[direction]+" Heading: " + (int)(dir[direction]*22.5) + "; LAT/LNG: " + String.format("%.7f", gps[0]) + " / " + String.format("%.7f", gps[1]);
 		waveManager.userInterface.computedTrafficInfo(output);
 	
 		return  dir[direction]  + "/" + spd[direction] + "/" + dirPrv[direction] + "/" + gps[0] + "/" + gps[1];
