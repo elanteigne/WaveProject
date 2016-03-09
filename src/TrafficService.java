@@ -77,7 +77,7 @@ public class TrafficService extends Service implements Runnable {
 		
 		//Calculated variables
 		int trafficLevel = 0;
-		double speedDiff = 0;
+		double speedDiff = 30;
 		double distToTraffic = 0;	
 		
 		//Output variables
@@ -197,11 +197,15 @@ public class TrafficService extends Service implements Runnable {
 			direction = 1;
 		}
 		
+		//Account for this vehicles speed, direction 
+		spd[direction] = (spd[direction]*dirPrv[direction] + speed)/(dirPrv[direction]+1);
+		dirPrv[direction]++;
+		
 		String[] gpsString = getAvgGPS(vehicles, numVehicles, longitude, lattitude, dir[direction]).split("/");
 		gps[0] = Double.parseDouble(gpsString[0]);
 		gps[1] = Double.parseDouble(gpsString[1]);
-
-		output = "o Calculated: Speed: " + spd[direction] + "; Num Cars: "+dirPrv[direction]+" Heading: " + (int)(dir[direction]*22.5) + "; LAT/LNG: " + String.format("%.7f", gps[0]) + " / " + String.format("%.7f", gps[1]);
+		
+		output = "o Calculated: Speed: " + spd[direction] + "; Heading: " + (int)(dir[direction]*22.5) + "; LAT/LNG: " + String.format("%.7f", gps[0]) + " / " + String.format("%.7f", gps[1]);
 		waveManager.userInterface.computedTrafficInfo(output);
 	
 		return  dir[direction]  + "/" + spd[direction] + "/" + dirPrv[direction] + "/" + gps[0] + "/" + gps[1];
@@ -210,11 +214,11 @@ public class TrafficService extends Service implements Runnable {
 	//METHODS
 	
 	//Calculate difference in speed
-	public static double speedDifference(int s1,int s2){
+	public static double speedDifference(int speed,int speedCluster){
 		
 		double d = 0;
-		if(s1 != 0){
-			d = ((s1 - s2)*100)/s1;	
+		if(speed != 0){
+			d = ((speed - speedCluster)*100)/speed;	
 		}else{
 			d = 0;
 		}
