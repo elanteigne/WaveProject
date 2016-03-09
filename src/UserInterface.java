@@ -52,6 +52,11 @@ public class UserInterface implements Runnable, ActionListener{
     private ImageIcon trafficAheadOrange;
     private ImageIcon trafficAheadYellow;
     private ImageIcon backArrow;
+    private ImageIcon sirenGrey;
+    private ImageIcon generalInfoGreyAhead;
+    private ImageIcon generalInfoGreyBehind;
+    private ImageIcon brakingAheadGrey;
+    private ImageIcon trafficIconGrey;
     
     private JLabel leftPanelLabel;
     private JLabel centerPanelLabel;
@@ -224,6 +229,11 @@ public class UserInterface implements Runnable, ActionListener{
 	   trafficAheadOrange = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\TrafficIconOrange.png");
 	   trafficAheadYellow = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\TrafficIconYellow.png");
 	   backArrow = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\BackArrow.png");
+	   generalInfoGreyAhead = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\GeneralInfoIconGreyUp.png");
+	   generalInfoGreyBehind = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\GeneralInfoIconGreyDown.png");
+	   brakingAheadGrey = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\BrakeIconGrey.png");
+	   sirenGrey = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\SirenGrey.png");
+	   trafficIconGrey = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\TrafficIconGrey.png");
 	   
 	   //Labels
 	   leftPanelLabel = new JLabel("<html><u>Vehicle Info</u></html>");
@@ -290,18 +300,17 @@ public class UserInterface implements Runnable, ActionListener{
 		};
 	   brakeAmount = new JLabel("Brake Amount: -");
 	   vehicleType = new JLabel("Vehicle Type: -");
-	   generalInfoCarAhead = new JLabel();
+	   generalInfoCarAhead = new JLabel(generalInfoGreyAhead);
 	   generalInfoCarAheadSpeed = new JLabel();
-	   generalInfoCarBehind = new JLabel();
+	   generalInfoCarBehind = new JLabel(generalInfoGreyBehind);
 	   generalInfoCarBehindSpeed = new JLabel();
 	   suggestedSpeedAdjustment = new JLabel("Speed Adjustment:");
 	   suggestedSpeedAdjustmentValue = new JLabel("0 Km/h");
 	   brakingCarAheadSpeed = new JLabel();
-	   brakingCarAhead = new JLabel();
-	   trafficAhead = new JLabel();
+	   brakingCarAhead = new JLabel(brakingAheadGrey);
+	   trafficAhead = new JLabel(trafficIconGrey);
 	   trafficAheadDistance = new JLabel();
-	   emergencySiren = new JLabel(sirenIconOff);
-	   emergencySiren.setVisible(false);
+	   emergencySiren = new JLabel(sirenGrey);
 	   emergencySirenDistance = new JLabel();
 	   sirenDirection = new JLabel(backArrow);
 	   sirenDirection.setVisible(false);
@@ -623,7 +632,6 @@ public class UserInterface implements Runnable, ActionListener{
 		}else{
 			generalInfoCarAhead.setIcon(carAheadRed);
 		}	
-    	generalInfoCarAhead.setVisible(true);
     	generalInfoCarAheadSpeed.setText(vehicleSpeed+" Km/h");
     	generalInfoCarAheadSpeed.setVisible(true);
     	carAheadIconTimestamp = System.currentTimeMillis();
@@ -637,7 +645,6 @@ public class UserInterface implements Runnable, ActionListener{
 		}else{
 			generalInfoCarBehind.setIcon(carBehindRed);
 		}	
-    	generalInfoCarBehind.setVisible(true);
     	generalInfoCarBehindSpeed.setText(vehicleSpeed+" Km/h");
     	generalInfoCarBehindSpeed.setVisible(true);
     	carBehindIconTimestamp = System.currentTimeMillis();
@@ -655,18 +662,17 @@ public class UserInterface implements Runnable, ActionListener{
 		}else{
 			brakingCarAhead.setIcon(brakingRed);
 		}
-    	brakingCarAhead.setVisible(true);
     	brakingCarAheadSpeed.setText(brakeAmount+"%, "+distance+"m");
     	brakingCarAheadSpeed.setVisible(true);
     	brakeIconTimestamp = System.currentTimeMillis();
     }
     
     public void turnOnEmergencySiren(int distance, boolean behind){
-		emergencySiren.setVisible(true);
 		if(sirenFlashing!=true){
 			sirenFlashing = true;
 	    	sirenFlashingTimestamp = System.currentTimeMillis();
 		}
+		emergencySiren.setIcon(sirenIconOff);
 		emergencySirenDistance.setText(distance+"m");
 		emergencySirenDistance.setVisible(true);
 		if(behind){
@@ -683,7 +689,6 @@ public class UserInterface implements Runnable, ActionListener{
 		}else{
 			trafficAhead.setIcon(trafficAheadRed);
 		}
-    	trafficAhead.setVisible(true);
 		trafficAheadDistance.setText(distance+"m, "+avSpeed+" Km/h");
 		trafficAheadDistance.setVisible(true);
 		trafficAheadTimestamp = System.currentTimeMillis();
@@ -706,28 +711,29 @@ public class UserInterface implements Runnable, ActionListener{
     public void checkIconTimestamps(){
     	long currentTime = System.currentTimeMillis();
     	if(carAheadIconTimestamp!=0 && carAheadIconTimestamp+4000<currentTime){
-    		generalInfoCarAhead.setVisible(false);
+    		generalInfoCarAhead.setIcon(generalInfoGreyAhead);
 	    	generalInfoCarAheadSpeed.setVisible(false);
     		carAheadIconTimestamp=0;
     	}
 		if(carBehindIconTimestamp!=0 && carBehindIconTimestamp+4000<currentTime){
-			generalInfoCarBehind.setVisible(false);
+			generalInfoCarBehind.setIcon(generalInfoGreyBehind);
 	    	generalInfoCarBehindSpeed.setVisible(false);
 			carBehindIconTimestamp=0;
 		}
 		if(brakeIconTimestamp!=0 && brakeIconTimestamp+2000<currentTime){
-			brakingCarAhead.setVisible(false);
+			brakingCarAhead.setIcon(brakingAheadGrey);
 			brakingCarAheadSpeed.setVisible(false);
 			brakeIconTimestamp=0;
 		}
 		if(sirenIconTimestamp!=0 && sirenIconTimestamp+2000<currentTime){
-			emergencySiren.setVisible(false);
+			emergencySiren.setIcon(sirenGrey);
 			emergencySirenDistance.setVisible(false);
 			sirenDirection.setVisible(false);
 			sirenIconTimestamp=0;
+			sirenFlashing = false;
 		}
 		if(trafficAheadTimestamp!=0 && trafficAheadTimestamp+5000<currentTime){
-			trafficAhead.setVisible(false);
+			trafficAhead.setIcon(trafficIconGrey);
 			trafficAheadDistance.setVisible(false);
 			trafficAheadTimestamp=0;
 		}
@@ -785,7 +791,6 @@ public class UserInterface implements Runnable, ActionListener{
     	}else if(e.getSource().equals(sirenButton)){
     		if(waveManager.sirensOn){
     			waveManager.sirensOn=false;
-    			sirenFlashing = false;
     			sirensLabel.setText("OFF");
     		}else{
     			waveManager.sirensOn=true;

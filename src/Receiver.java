@@ -207,26 +207,28 @@ public class Receiver implements Runnable{
 	}
 
 	private void passAlongMessage(String fromCarID, String fromGroup, String messageID, int hopCount, String messageGroup, int heading,  int vehicleSpeed, double vehicleLattitude, double vehicleLongitudeString, String data){
-		try{
-			passAlongProcess = new MulticastSocket();
-			
-			hopCount++;
-			
-			//Preparing packet envelope
-			InetAddress InetDestination = InetAddress.getByName(currentGroup);
-			
-			String message = fromCarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+messageGroup+"/"+heading+"/"+vehicleSpeed+"/"+vehicleLattitude+"/"+vehicleLongitudeString+"/"+data;
-			DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetDestination, waveManager.port);
-			
-			//Send packet
-			passAlongProcess.send(packet);
-
-			numPacketsPassed++;
-			waveManager.userInterface.updateNumPacketsPassed(numPacketsPassed);
-			
-			output = "->-> Passed messageID '"+messageID+"' along on "+fromGroup+" with hopCount '"+hopCount+"': "+message;
-			waveManager.userInterface.output(output);
-		}catch(Exception e){ }
+		if(fromGroup.equals(trafficService.serviceGroup) || fromGroup.equals(emergencyService.serviceGroup)){
+			try{
+				passAlongProcess = new MulticastSocket();
+				
+				hopCount++;
+				
+				//Preparing packet envelope
+				InetAddress InetDestination = InetAddress.getByName(currentGroup);
+				
+				String message = fromCarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+messageGroup+"/"+heading+"/"+vehicleSpeed+"/"+vehicleLattitude+"/"+vehicleLongitudeString+"/"+data;
+				DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetDestination, waveManager.port);
+				
+				//Send packet
+				passAlongProcess.send(packet);
+	
+				numPacketsPassed++;
+				waveManager.userInterface.updateNumPacketsPassed(numPacketsPassed);
+				
+				output = "->-> Passed messageID '"+messageID+"' along on "+fromGroup+" with hopCount '"+hopCount+"': "+message;
+				waveManager.userInterface.output(output);
+			}catch(Exception e){ }
+		}
 	}
 	
 	private boolean receivedMessagePreviously(String fromCarID, String messageID, String fromGroup){
