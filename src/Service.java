@@ -33,7 +33,8 @@ public class Service {
 			String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.heading+"/"+60+"/"+45.38286+"/"+-75.68836+"/"+data;
 			
 			DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetDestination, waveManager.port);
-						
+			
+			System.out.println(message.getBytes().length);
 			//Send packet
 			sendingProcess.send(packet);
 			
