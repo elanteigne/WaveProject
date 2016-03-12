@@ -48,8 +48,8 @@ public class TrafficService extends Service implements Runnable {
 			
 			delay = waveManager.delay*2;
 
-			if(waveManager.getTrafficValue()){
-				
+//			if(waveManager.getTrafficValue()){
+			if(true){	
 				this.clusterVariables = getClusterValues();
 				waveManager.userInterface.computedTrafficInfo(clusterVariables);
 				sendControlMessage(); 
@@ -89,6 +89,7 @@ public class TrafficService extends Service implements Runnable {
 		if(direction == directionCluster || direction == directionCluster + 1 || direction == directionCluster - 1 ){
 			
 			//If cluster is ahead
+			
 			if(checkIfAhead((int)(directionCluster*22.5), latCluster, lngCluster)){
 				
 				distToTraffic = calculateDistance(latCluster, lngCluster);
@@ -187,7 +188,7 @@ public class TrafficService extends Service implements Runnable {
 		dir[1] = Integer.parseInt(dirString[1]);
 		dirPrv[0] = Integer.parseInt(dirString[2]);			
 		dirPrv[1] = Integer.parseInt(dirString[3]);
-
+		
 		//Approximate direction of local vehicle to prevalent directions
 		if(dir[0] != dir[1]){
 			if(Math.abs(direction-dir[1]) > Math.abs(direction-dir[0])){
@@ -195,8 +196,8 @@ public class TrafficService extends Service implements Runnable {
 			}else{
 				direction = 1;
 			}
-		}else{//TO do: if directions are equal and local isnt close at all
-			if(dirPrv[0]>dirPrv[1]){
+		}else {
+			if(dirPrv[0]>dirPrv[1]){//TO do: if directions are equal and local isnt close at all
 				direction = 0;
 			}else{
 				direction = 1;
@@ -208,7 +209,7 @@ public class TrafficService extends Service implements Runnable {
 		String[] spdString = getAvgSpd(vehicles, numVehicles, dir, speed, direction).split("/");
 		spd[0] = Integer.parseInt(spdString[0]);
 		spd[1] = Integer.parseInt(spdString[1]);
-		
+
 		//Get Average GPS
 		String[] gpsString = getAvgGPS(vehicles, numVehicles, longitude, lattitude, dir[direction]).split("/");
 		gps[0] = Double.parseDouble(gpsString[0]);
@@ -216,7 +217,6 @@ public class TrafficService extends Service implements Runnable {
 		
 		output = "o Calculated: Speed: " + spd[direction] + "; Heading: " + (int)(dir[direction]*22.5) + "; Size: " + dirPrv[direction] + "; LAT/LNG: " + String.format("%.7f", gps[0]) + " / " + String.format("%.7f", gps[1]);
 		waveManager.userInterface.computedTrafficInfo(output);
-		waveManager.userInterface.computedTrafficInfo("SPD" +spd[0] + ";" + spd[1]);
 		
 		return  dir[direction]  + "/" + spd[direction] + "/" + dirPrv[direction] + "/" + gps[0] + "/" + gps[1];
 	}
@@ -311,17 +311,20 @@ public class TrafficService extends Service implements Runnable {
 				//Approx. direction of current vehicle to two lane directions
 				if(direction != laneDir[0] && direction != laneDir[1]){
 					if(Math.abs(direction-laneDir[1]) > Math.abs(direction-laneDir[0])){
-						spd[0] = spd[0]+speed;
-						count[0]++;
-					}else{
 						spd[1] = spd[1] + speed;
 						count[1]++;
+					}else{
+						spd[0] = spd[0]+speed;
+						count[0]++;
 						}
 				}
 			}
+			if(count[0]!=0){
 			spd[0]=spd[0]/count[0];
+			}
+			if(count[1]!=0){
 			spd[1]=spd[1]/count[1];
-			
+			}
 		}else if(vLength == 1){
 			
 			v = vehicles.get(0);
@@ -349,7 +352,7 @@ public class TrafficService extends Service implements Runnable {
 			if(count[0]!=0){
 				spd[0]=spd[0]/count[0];
 			}
-			if(count[1]!=1){
+			if(count[1]!=0){
 			spd[1]=spd[1]/count[1];
 			}
 		}else{

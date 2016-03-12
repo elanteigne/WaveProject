@@ -40,7 +40,7 @@ public class WaveManager {
 	
 	//Constructor
 	public WaveManager(){
-		CarID = "222-222-222-222";
+		CarID = "222-222-222-227";
 		vehicleType = checkVehicleType();
 		speed[0] = checkSpeed();
 		brakeAmount = checkBrake();
@@ -48,6 +48,18 @@ public class WaveManager {
 		headlights = 0; //0 is off, 1 is low-beams, 2 is high-beams
 		checkGPS();	
 		
+		//Add dummy vehicles
+		ArrayList<Object> vehicle = new ArrayList<Object>(); 
+		for(int i=0; i < 7; i++){
+			vehicle.add("222-222-222-20" + i);
+			vehicle.add(330);
+			vehicle.add(50);
+			vehicle.add(45.38262);
+			vehicle.add(-75.688210);
+			vehiclesAccountedFor.add(vehicle);
+		}
+
+		inTraffic = true;
 		userInterface = new UserInterface(this);
 		userInterface.start();
 		
@@ -83,8 +95,10 @@ public class WaveManager {
 	
 	//Make this recurring and figure out GPS format
 	public void checkGPS(){
-		GPSlattitude = 45.382620;
-		GPSlongitude = -75.688210;
+		//GPSlattitude = 45.382620;
+		//GPSlongitude = -75.688210;
+		GPSlattitude = 45.38214;
+		GPSlongitude = -75.68781;
 	}
 
 	public int checkHeading(){

@@ -24,13 +24,13 @@ public class Service {
 			
 			int hopCount = 0;
 			
-			//String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.heading+"/"+waveManager.speed[0]+"/"+waveManager.GPSlattitude+"/"+waveManager.GPSlongitude+"/"+data;
+			String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.heading+"/"+waveManager.speed[0]+"/"+waveManager.GPSlattitude+"/"+waveManager.GPSlongitude+"/"+data;
 			
 			/**Testing**/
 			//CarBehind
 			//String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.heading+"/"+60+"/"+45.38214+"/"+-75.68781+"/"+data;
 			///CarAhead
-			String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.heading+"/"+60+"/"+45.38286+"/"+-75.68836+"/"+data;
+			//String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.heading+"/"+60+"/"+45.38286+"/"+-75.68836+"/"+data;
 			
 			DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetDestination, waveManager.port);
 			
@@ -104,7 +104,7 @@ public class Service {
 	public boolean checkIfBehind(int heading, double lat1, double lon1) {
 		//Should ideally check if on the same road but can't without a maps API
 		double bearing = compareBearing(heading, lat1, lon1);
-		if(bearing>170 && bearing<190){		
+		if(bearing>170 && bearing<190){
 			if(heading<waveManager.heading+10 && heading>waveManager.heading-10){
 				return true;
 			}else{

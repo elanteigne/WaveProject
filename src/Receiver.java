@@ -102,7 +102,7 @@ public class Receiver implements Runnable{
 			
 			//Commented for testing purposes
 			//if(!(strings[0].equals(waveManager.CarID))){
-			if(fromCarID.equals(waveManager.CarID)){
+				if(fromCarID.equals(waveManager.CarID)){
 				if(receivedMessagePreviously(fromCarID, messageID, messageGroup)){
 					
 					//The order of these is where PRIORITIES take place
