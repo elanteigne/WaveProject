@@ -29,12 +29,7 @@ public class BrakeService extends Service implements Runnable{
 	public void run(){
 		while(true){
 			delay = waveManager.delay;
-<<<<<<< HEAD
-//			System.out.println(""+waveManager.speed);
-			if(waveManager.speed[0]>10){
-=======
 			if(waveManager.getSpeed()>10){
->>>>>>> refs/remotes/origin/Eric
 				if(checkBrake()){				
 					sendControlMessage();
 					//Wait

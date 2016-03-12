@@ -80,16 +80,7 @@ public class WaveManager {
 	public static void main(String[] args){
 		waveManager = new WaveManager();
 	}
-<<<<<<< HEAD
 	
-	public String checkVinNumber(){
-		String vinNum = "222-222-222-222";
-		return vinNum;
-	}
-	
-=======
-		
->>>>>>> refs/remotes/origin/Eric
 	//Make this recurring and figure out GPS format
 	public void checkGPS(){
 		GPSlattitude = 45.382620;

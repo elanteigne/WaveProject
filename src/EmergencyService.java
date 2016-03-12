@@ -39,11 +39,7 @@ public class EmergencyService extends Service implements Runnable {
 	public void run(){
 		while(true){
 			delay = waveManager.delay;
-<<<<<<< HEAD
-			if(waveManager.sirensOn){
-=======
 			if(waveManager.getSiren()){
->>>>>>> refs/remotes/origin/Eric
 				sendControlMessage();
 				//Wait 
 				try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
