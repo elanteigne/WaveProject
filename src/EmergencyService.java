@@ -60,7 +60,7 @@ public class EmergencyService extends Service implements Runnable {
 	//Method to calculate speed adjustment based on received packets
 	public void computeData(int heading, double vehicleLattitude, double vehicleLongitude){
 		double distance = calculateDistance(vehicleLattitude, vehicleLongitude);
-		if(distance<150){
+		if(distance<300){
 			if(checkIfBehind(heading, vehicleLattitude, vehicleLongitude)){
 				
 				output = "o Calculated: Emergency Vehicle approaching behind ("+(int)distance+"m). Please be aware.";
