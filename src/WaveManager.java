@@ -62,9 +62,6 @@ public class WaveManager {
 		if(vehicleType.equals("Emergency")){
 			sirensOn = false;
 		}
-	
-		//Traffic Service
-		//
 		
 		receiver = new Receiver(this,generalInfoService, brakeService, emergencyService, trafficService);
 		
