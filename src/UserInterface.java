@@ -124,8 +124,8 @@ public class UserInterface implements Runnable, ActionListener{
     private long sirenFlashingTimestamp = 0;
     private long trafficAheadTimestamp = 0;
     
-    private int UIscaleMain = 5;    
-    private int UIscaleDev = 5;    
+    private int UIscaleMain = 4;    
+    private int UIscaleDev = 4;    
     private int InnerTextScaleMain = UIscaleMain+1;
     private int OuterTextScaleMain = InnerTextScaleMain+1;
     private int InnerTextScaleDev = UIscaleDev+1;
@@ -210,26 +210,27 @@ public class UserInterface implements Runnable, ActionListener{
 	   sirenButton.addActionListener(this);
 	   
 	   //Images
-	   carAheadRed = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarAheadRed.png");
-	   carAheadOrange = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarAheadOrange.png");
-	   carAheadYellow = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarAheadYellow.png");
-	   carBehindRed = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarBehindRed.png");
-	   carBehindOrange = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarBehindOrange.png");
-	   carBehindYellow = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\CarBehindYellow.png");
-	   brakingRed = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\BrakingRed.png");
-	   brakingOrange = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\BrakingOrange.png");
-	   brakingYellow = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\BrakingYellow.png");
-	   sirenIconOff = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\SirenOff.png");
-	   sirenIconOn = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\SirenOn.png");
-	   trafficAheadRed = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\TrafficIconRed.png");
-	   trafficAheadOrange = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\TrafficIconOrange.png");
-	   trafficAheadYellow = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\TrafficIconYellow.png");
-	   backArrow = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\BackArrow.png");
-	   generalInfoGreyAhead = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\GeneralInfoIconGreyUp.png");
-	   generalInfoGreyBehind = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\GeneralInfoIconGreyDown.png");
-	   brakingAheadGrey = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\BrakeIconGrey.png");
-	   sirenGrey = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\SirenGrey.png");
-	   trafficIconGrey = new ImageIcon("C:\\Users\\OWNER\\workspace\\WaveProject\\images\\TrafficIconGrey.png");
+	   carAheadRed = new ImageIcon("/Users/adamaziz/Documents/workspace/WaveProject/images/CarAheadRed.png");
+	   carAheadOrange = new ImageIcon("/Users/adamaziz/Documents/workspace/WaveProject/images/CarAheadOrange.png");
+	   carAheadYellow = new ImageIcon("/Users/adamaziz/Documents/workspace/WaveProject/images/CarAheadYellow.png");
+	   carBehindRed = new ImageIcon("/Users/adamaziz/Documents/workspace/WaveProject/images/CarBehindRed.png");
+	   carBehindOrange = new ImageIcon("/Users/adamaziz/Documents/workspace/WaveProject/images/CarBehindOrange.png");
+	   carBehindYellow = new ImageIcon("/Users/adamaziz/Documents/workspace/WaveProject/images/CarBehindYellow.png");
+	   brakingRed = new ImageIcon("/Users/adamaziz/Documents/workspace/WaveProject/images/BrakingRed.png");
+	   brakingOrange = new ImageIcon("/Users/adamaziz/Documents/workspace/WaveProject/images/BrakingOrange.png");
+	   brakingYellow = new ImageIcon("/Users/adamaziz/Documents/workspace/WaveProject/images/BrakingYellow.png");
+	   sirenIconOff = new ImageIcon("/Users/adamaziz/Documents/workspace/WaveProject/images/SirenOff.png");
+	   sirenIconOn = new ImageIcon("/Users/adamaziz/Documents/workspace/WaveProject/images/SirenOn.png");
+	   trafficAheadRed = new ImageIcon("/Users/adamaziz/Documents/workspace/WaveProject/images/TrafficIconRed.png");
+	   trafficAheadOrange = new ImageIcon("/Users/adamaziz/Documents/workspace/WaveProject/images/TrafficIconOrange.png");
+	   trafficAheadYellow = new ImageIcon("/Users/adamaziz/Documents/workspace/WaveProject/images/TrafficIconYellow.png");
+	   backArrow = new ImageIcon("/Users/adamaziz/Documents/workspace/WaveProject/images/BackArrow.png");
+	   generalInfoGreyAhead = new ImageIcon("/Users/adamaziz/Documents/workspace/WaveProject/images/GeneralInfoIconGreyUp.png");
+	   generalInfoGreyBehind = new ImageIcon("/Users/adamaziz/Documents/workspace/WaveProject/images/GeneralInfoIconGreyDown.png");
+	   brakingAheadGrey = new ImageIcon("/Users/adamaziz/Documents/workspace/WaveProject/images/BrakeIconGrey.png");
+	   sirenGrey = new ImageIcon("/Users/adamaziz/Documents/workspace/WaveProject/images/SirenGrey.png");
+	   trafficIconGrey = new ImageIcon("/Users/adamaziz/Documents/workspace/WaveProject/images/TrafficIconGrey.png");
+
 	   
 	   //Labels
 	   leftPanelLabel = new JLabel("<html><u>Vehicle Info</u></html>");

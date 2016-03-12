@@ -40,7 +40,7 @@ public class WaveManager {
 	
 	//Constructor
 	public WaveManager(){
-		CarID = "222-222-222-222";
+		CarID = "333-222-222-222";
 		vehicleType = checkVehicleType();
 		speed[0] = checkSpeed();
 		brakeAmount = checkBrake();
@@ -106,8 +106,8 @@ public class WaveManager {
 	}
 	
 	public String checkVehicleType(){
-		//String vehicleType = "Emergency";
-		String vehicleType = "Civilian";
+		String vehicleType = "Emergency";
+		//String vehicleType = "Civilian";
 		return vehicleType;
 	}
 
