@@ -40,7 +40,7 @@ public class WaveManager {
 	
 	//Constructor
 	public WaveManager(){
-		CarID = checkVinNumber();
+		CarID = "222-222-222-222";
 		vehicleType = checkVehicleType();
 		speed[0] = checkSpeed();
 		brakeAmount = checkBrake();
@@ -60,7 +60,7 @@ public class WaveManager {
 		
 		//Emergency Service
 		if(vehicleType.equals("Emergency")){
-			sirensOn = checkSirens();
+			sirensOn = false;
 		}
 	
 		//Traffic Service
@@ -80,12 +80,7 @@ public class WaveManager {
 	public static void main(String[] args){
 		waveManager = new WaveManager();
 	}
-	
-	public String checkVinNumber(){
-		String vinNum = "111-111-111-111";
-		return vinNum;
-	}
-	
+		
 	//Make this recurring and figure out GPS format
 	public void checkGPS(){
 		GPSlattitude = 45.382620;
@@ -119,9 +114,17 @@ public class WaveManager {
 		//String vehicleType = "Civilian";
 		return vehicleType;
 	}
-	
-	public boolean checkSirens(){
-		return false;
+
+	public synchronized int getSpeed(){
+		return speed[0];
 	}
 	
+	public synchronized boolean getSiren(){
+		return sirensOn;
+	}
+	
+
+	public synchronized boolean getTrafficValue(){
+		return inTraffic;
+	}
 }

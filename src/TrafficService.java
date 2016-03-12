@@ -14,10 +14,13 @@ public class TrafficService extends Service implements Runnable {
 	public String serviceGroup = "230.0.0.5";
 	private String output;
 	
+	//Global
+	public String clusterVariables = "";
+	
 	//Constructor
 	public TrafficService(WaveManager waveManager){
 		super(waveManager);
-		delay = waveManager.delay*2;
+		delay = waveManager.delay;
 	}
 	
 	//Class Methods
@@ -35,214 +38,207 @@ public class TrafficService extends Service implements Runnable {
 	}
 	
 	public void sendServiceMessage(){
-		sendMessage(serviceGroup, serviceGroup, messageID, ""+waveManager.trafficLevel);
+		sendMessage(serviceGroup, serviceGroup, messageID, ""+clusterVariables);
 		messageID++;
 		waveManager.userInterface.updateTrafficServicePacketsSent(messageID);
 	}
 	
 	public void run(){
 		while(true){
-			delay = waveManager.delay;
-			System.out.println(""+waveManager.inTraffic);
 			
-			if(waveManager.inTraffic == true){
+			delay = waveManager.delay*2;
+
+			if(waveManager.getTrafficValue()){
 				
-				sendControlMessage();
-				
+				this.clusterVariables = getClusterValues();
+				waveManager.userInterface.computedTrafficInfo(clusterVariables);
+				sendControlMessage(); 
+				//Wait 
 				try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
 				
-				//if(checkTraffic()){
-					//Wait 
-					//try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
+				int count = 0;
+				while(count<5){
+					sendServiceMessage();
 					
-					int count = 0;
-					while(count<5){
-						sendServiceMessage();
-						delay = waveManager.delay;
-						//Wait
-						try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
-						count++;
-					}
-				//}
+					delay = waveManager.delay*4;
+					//Wait
+					try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
+					count++;
+				}
 			}
 		}
 	}
 
-	/*
-	public boolean checkTraffic(){
-		if(waveManager.trafficLevel>2){			
-			return true;
-		}
-		return false;
-	}
-	*/
-	
-	//TRAFFIC ROUTING ALOGORITHM*/
-	
-	public void computeData(){
-		//waveManager.userInterface.computedGeneralInfo(">>>>>> It's computing data!");
-		String[] trafficWords = {"Low", "Limited", "Moderate","Mild", "Heavy", "Severe"};
-		String[] directionWords = {"N","NNE", "NE", "NEE", "E", "SEE", "SE", "SSE", "S","SSW", "SW", "SWW","W", "NWW", "NW", "NNW"};
-		int direction = waveManager.heading;
-		int speed = waveManager.speed[0];
+	public void computeData(int directionCluster, int speedCluster, int sizeCluster, double latCluster, double lngCluster){
+		//Variables
+		int direction = (int)(double)(waveManager.heading/22.5);
+		int speed = waveManager.getSpeed();
 		double longitude = waveManager.GPSlongitude;
 		double lattitude = waveManager.GPSlattitude;
-		double speedDiff = 0;
+		
+		//Calculated variables
 		int trafficLevel = 0;
-		String userMessage = "";
+		double speedDiff = 30;
+		double distToTraffic = 0;	
+		
+		//Output variables
+		String[] directionWords = {"N","NNE", "NE", "NEE", "E", "SEE", "SE", "SSE", "S","SSW", "SW", "SWW","W", "NWW", "NW", "NNW"};
+		
+		//TRAFFIC LEVEL ALGORITHM
+		//If cluster in the same direction
+		if(direction == directionCluster || direction == directionCluster + 1 || direction == directionCluster - 1 ){
+			
+			//If cluster is ahead
+			if(checkIfAhead((int)(directionCluster*22.5), latCluster, lngCluster)){
+				
+				distToTraffic = calculateDistance(latCluster, lngCluster);
+				speedDiff = speedDifference(speed, speedCluster);				
+				
+				output = "Cluster size: " + sizeCluster + ". Speed: "+speed+". Cluster Speed: "+speedCluster+". Speed Diff: " +  speedDiff+"%";
+				waveManager.userInterface.computedTrafficInfo(output);
+				
+				//If cluster speed is smaller
+				if(speed < speedCluster){
+					trafficLevel = 0;	
+				}else{	
+					if(sizeCluster>9){
+						if(speedDiff > 40){
+							trafficLevel = 3;
+						}else if(speedDiff > 30){
+							trafficLevel = 3;
+						}else if(speedDiff > 20){
+							trafficLevel = 2;
+						}else if(speedDiff > 10){
+							trafficLevel = 2;
+						}else{
+							trafficLevel = 1;
+						}
+					}else if(sizeCluster>6){
+						if(speedDiff > 40){
+							trafficLevel = 3;
+						}else if(speedDiff > 30){
+							trafficLevel = 2;
+						}else if(speedDiff > 20){
+							trafficLevel = 2;
+						}else if(speedDiff > 10){
+							trafficLevel = 1;
+						}else{
+							trafficLevel = 1;
+						}
+					}else if(sizeCluster>3){
+						if(speedDiff > 40){
+							trafficLevel = 2;
+						}else if(speedDiff > 30){
+							trafficLevel = 2;
+						}else if(speedDiff > 20){
+							trafficLevel = 1;
+						}else{
+							trafficLevel = 0;
+						}
+					}else{
+						if(speedDiff > 40){
+							trafficLevel = 2;
+						}else if(speedDiff > 30){
+							trafficLevel = 1;
+						}else{
+							trafficLevel = 0;
+						}
+					}
+				}
+				
+				//Update local variable traffic level calculated
+				waveManager.trafficLevel = trafficLevel;
+				
+				if(trafficLevel != 0){
+					output = "o Calculated: Traffic level: " + trafficLevel + ". Traffic ahead in: " +  String.format("%.2f", distToTraffic) + "km (" + directionWords[directionCluster] + ") at " + speedCluster + "km/h";
+					waveManager.userInterface.computedTrafficInfo(output);
+					waveManager.userInterface.turnOnTrafficAhead(trafficLevel, (int)distToTraffic, speedCluster);
+
+				}else{
+					output = "o Calculated: Traffic ahead is going the same speed";
+					waveManager.userInterface.computedTrafficInfo(output);
+				}
+			}else{
+				output = "o Calculated: Traffic Cluster is not considered because it is Behind";
+				waveManager.userInterface.computedTrafficInfo(output);
+			}
+		}
+	}
+
+	//CLUSTER CALCULATIONS
+	
+	public String getClusterValues(){
+		int direction = (int)(double)(waveManager.heading/22.5);
+		int speed = waveManager.getSpeed();
+		double longitude = waveManager.GPSlongitude;
+		double lattitude = waveManager.GPSlattitude;
 		
 		int numVehicles = waveManager.vehiclesAccountedFor.size();
 		ArrayList<ArrayList<Object>> vehicles = waveManager.vehiclesAccountedFor;
 		
-		
 		int[] dir = new int[2];
 		int[] dirPrv = new int[2];
 		int[] spd = new int[2];
+		double[] gps = new double[2];
 		
+		//Get most Prevalent directions
 		String[] dirString = getAvgDir(vehicles, numVehicles).split("/");
 		dir[0] = Integer.parseInt(dirString[0]);
 		dir[1] = Integer.parseInt(dirString[1]);
 		dirPrv[0] = Integer.parseInt(dirString[2]);			
 		dirPrv[1] = Integer.parseInt(dirString[3]);
-		
 
-		String[] spdString = getAvgSpd(vehicles, numVehicles, dir).split("/");
+		//Approximate direction of local vehicle to prevalent directions
+		if(dir[0] != dir[1]){
+			if(Math.abs(direction-dir[1]) > Math.abs(direction-dir[0])){
+				direction = 0;
+			}else{
+				direction = 1;
+			}
+		}else{//TO do: if directions are equal and local isnt close at all
+			if(dirPrv[0]>dirPrv[1]){
+				direction = 0;
+			}else{
+				direction = 1;
+			}
+		}
+		dirPrv[direction]++;
+		
+		//Get Average speed for both directions (including this vehicle)
+		String[] spdString = getAvgSpd(vehicles, numVehicles, dir, speed, direction).split("/");
 		spd[0] = Integer.parseInt(spdString[0]);
 		spd[1] = Integer.parseInt(spdString[1]);
 		
-	
-		double distToTraffic = getDistToTraffic(vehicles, numVehicles, direction, longitude, lattitude);
+		//Get Average GPS
+		String[] gpsString = getAvgGPS(vehicles, numVehicles, longitude, lattitude, dir[direction]).split("/");
+		gps[0] = Double.parseDouble(gpsString[0]);
+		gps[1] = Double.parseDouble(gpsString[1]);
 		
-		for(int out = 0; out<2; out++){
-			System.out.println("o Calculated: There are " + dirPrv[out] + " vehicles travelling at " +spd[out]+ "km/h, approximately " + distToTraffic + " km away in the " + directionWords[dir[out]] + " direction");
-			output = "o Calculated: There are " + dirPrv[out] + " vehicles travelling at " +spd[out]+ "km/h, approximately " + distToTraffic + " km away in the " + directionWords[dir[out]] + " direction";
-			//waveManager.userInterface.computedTrafficInfo(output);
-			waveManager.userInterface.computedTrafficInfo(output);
-			if(numVehicles <2){out++;};
-		}
-		
-		//Approximate this vehicles direction
-		
-		if(direction != dir[0] && direction != dir[1]){
-			if(direction-dir[1] > direction-dir[0]){direction = 0;
-			}else{
-				direction = 1;
-				}
-		}
-		
-		speedDiff = speedDifference(speed, spd[direction]);
-	
-		//ALGORITHM
-		
-		if(speed < spd[direction]){
-				trafficLevel = 0;	
-		}else{	
-
-		if(dirPrv[direction]>9){
-			
-			if(speedDiff > 40){
-				trafficLevel = 5;
-			}else if(speedDiff > 30){
-				trafficLevel = 5;
-			}else if(speedDiff > 20){
-				trafficLevel = 4;
-			}else if(speedDiff > 10){
-				trafficLevel = 3;
-			}else{
-				trafficLevel = 2;
-			}
-				
-		}else if( dirPrv[direction]>7){
-			
-			if(speedDiff > 40){
-				trafficLevel = 5;
-			}else if(speedDiff > 30){
-				trafficLevel = 4;
-			}else if(speedDiff > 20){
-				trafficLevel = 3;
-			}else if(speedDiff > 10){
-				trafficLevel = 2;
-			}else{
-				trafficLevel = 1;
-			}
-		
-		}else if( dirPrv[direction]>5){
-			
-			if(speedDiff > 40){
-				trafficLevel = 4;
-			}else if(speedDiff > 30){
-				trafficLevel = 3;
-			}else if(speedDiff > 20){
-				trafficLevel = 2;
-			}else if(speedDiff > 10){
-				trafficLevel = 1;
-			}else{
-				trafficLevel = 0;
-			}
-
-		}else if( dirPrv[direction]>3){
-			
-			if(speedDiff > 40){
-				trafficLevel = 3;
-			}else if(speedDiff > 30){
-				trafficLevel = 2;
-			}else if(speedDiff > 20){
-				trafficLevel = 1;
-			}else{
-				trafficLevel = 0;
-			}
-
-		}else{
-			
-			if(speedDiff > 40){
-				trafficLevel = 2;
-			}else if(speedDiff > 30){
-				trafficLevel = 1;
-			}else{
-				trafficLevel = 0;
-			}
-		}
-	}
-		
-		System.out.println("o Calculated: Traffic ahead is: " + trafficWords[trafficLevel]);
-		output = "o Calculated: Traffic ahead is: " + trafficWords[trafficLevel];
-		//waveManager.userInterface.computedTrafficInfo(output);
+		output = "o Calculated: Speed: " + spd[direction] + "; Heading: " + (int)(dir[direction]*22.5) + "; Size: " + dirPrv[direction] + "; LAT/LNG: " + String.format("%.7f", gps[0]) + " / " + String.format("%.7f", gps[1]);
 		waveManager.userInterface.computedTrafficInfo(output);
 		
-	if(trafficLevel > 3){
-		userMessage = trafficWords[trafficLevel] + " traffic in " + distToTraffic + "km. Please find an alternative route.";
-	}else if(trafficLevel > 1){
-		userMessage = trafficWords[trafficLevel] + " traffic in " + distToTraffic + "km. Please excercise caution.";
-	}else{
-		userMessage = trafficWords[trafficLevel] + " traffic in " + distToTraffic + "km.";
+		return  dir[direction]  + "/" + spd[direction] + "/" + dirPrv[direction] + "/" + gps[0] + "/" + gps[1];
 	}
 	
-	//waveManager.userInterface.userInfo(userMessage);
-	System.out.println(userMessage);
-	//waveManager.userInterface.computedTrafficInfo(userMessage);
-	waveManager.userInterface.computedTrafficInfo(output);
-	/*	To do: 	Possible convenience algorithm implementation -> general or traffic?					*/
-				
-	}
-
-//METHODS
+	//METHODS
 	
-	public static double speedDifference(int s1,int s2){
-		double d = (s1 - s2)/s1;
-		d = d*100;
+	//Calculate difference in speed
+	public static double speedDifference(int speed, int speedCluster){
+		
+		double d = 0;
+		if(speed != 0){
+			d = ((speed - speedCluster)*100)/speed;	
+		}else{
+			d = 0;
+		}
+		
 		return d;
 	}
 	
-	/*return average flow of traffic in two directions
-	Ie. Avg speed north,east,etc. (use vectors to approx. to a given direction
-	approx. to the two most prevalent directions (ie. northeast, southwest)
-	vehicle can check if it is heading in the same direction
-	Average Vehicle direction in two directions
-	To do: add two other directions for cross-traffic.*/
-	
+	/*Avg direction to the two most prevalent directions
+	To do: add two other directions for cross-traffic.*/	
 	public static String getAvgDir(ArrayList<ArrayList<Object>> vehicles, int vLength ){
 		
-		//int vLength = waveManager.vehiclesAccountedFor.size();
 		int[] direction = new int[vLength];
 		int[] prevalence = new int[16];
 		Arrays.fill(prevalence, 0);
@@ -251,112 +247,149 @@ public class TrafficService extends Service implements Runnable {
 		
 		ArrayList<Object> v = new ArrayList<Object>();
 		
-		for(int i = 0; i<vLength; i++){
-			//String fromCarID, int heading,  int vehicleSpeed, double vehicleLattitude, double vehicleLongitude
-			v = vehicles.get(i);
-			direction[i] = (int)v.get(1);
+		if(vLength == 1){
+			v = vehicles.get(0);
+			laneDir[0] = (int)(double)((int)v.get(1)/22.5);
+			dirPrv[0] = 1;
+		}else{
+			for(int i = 0; i<vLength; i++){
+				v = vehicles.get(i);
+				direction[i] = (int)v.get(1);
+				
+				int j =0;
+				if(direction[i] < 11.25 || direction[i] > 348.75){prevalence[0]++;}
+				
+				for(j = 1; j<16; j++){
+					if(direction[i] < j*22.5 + 11.25 && direction[i] > j*22.5 - 11.25){
+						prevalence[j]++;
+						}
+					}
+			}
+			//if the direction k has highest appearance, update the top count to the appearance amount;
+			//set previous highest value to second, highest to first (two most used directions)
 			
-			int j =0;
-			if(direction[i] < 11.25 || direction[i] > 348.75){prevalence[0]++;}
-			
-			for(j = 1; j<16; j++){
-				if(direction[i] < j*22.5 + 11.25 && direction[i] > j*22.5 - 11.25){
-					prevalence[j]++;
+			int top_count = 0;
+			for(int w = 0; w<2; w++){
+				for(int k = 0; k<16; k++){
+					
+					if(prevalence[k] >= top_count){
+						top_count = prevalence[k];
+						laneDir[w] = k;
+						dirPrv[w] = prevalence[k];
 					}
 				}
-		}
-		//if the direction k has highest appearance, update the top count to the appearance amount;
-		//set previous highest value to second, highest to first (two most used directions)
-		
-		int top_count = 0;
-		for(int w = 0; w<2; w++){
-			for(int k = 0; k<16; k++){
-				
-				if(prevalence[k] >= top_count){
-					top_count = prevalence[k];
-					laneDir[w] = k;
-					dirPrv[w] = prevalence[k];
-				}
+				prevalence[laneDir[0]] = 0;
+				top_count = 0;
 			}
-			prevalence[laneDir[0]] = 0;
-			top_count = 0;
 		}
+		
 		return laneDir[0]+"/"+laneDir[1]+"/"+dirPrv[0]+"/"+dirPrv[1];
 	}
 	
 	//Average Vehicle Speed in two directions
 	//To do: add two other directions for cross-traffic.
-	
-	public static String getAvgSpd(ArrayList<ArrayList<Object>> vehicles, int vLength, int laneDir[]){
+	public static String getAvgSpd(ArrayList<ArrayList<Object>> vehicles, int vLength, int laneDir[], int thisVehicleSpeed, int thisVehicleDirection){
 		int speed = 0;
-		int direction;
+		int direction; //double d;
 		int[] spd = new int[]{0,0};
 		int[] count = new int[]{0,0};
-		
 		ArrayList<Object> v = new ArrayList<Object>();
 		
-		if(vLength>1){
+		//Approximate this vehicle's direction to add it's speed
+		spd[thisVehicleDirection] = spd[thisVehicleDirection] + thisVehicleSpeed;
+		count[thisVehicleDirection]++;
 			
+		//Average Vehicle Array speeds
+		if(vLength>=1){
 			for(int i = 0; i<vLength; i++){
-				
 				v = vehicles.get(i);
 				speed = (int)v.get(2);
-				direction = (int)v.get(1);
-				
+				direction = (int)((double)((int)v.get(1))/22.5);
+
 				//Approx. direction of current vehicle to two lane directions
 				if(direction != laneDir[0] && direction != laneDir[1]){
-					if(direction-laneDir[1] > direction-laneDir[0]){direction = laneDir[0];
+					if(Math.abs(direction-laneDir[1]) > Math.abs(direction-laneDir[0])){
+						spd[0] = spd[0]+speed;
+						count[0]++;
 					}else{
-						direction = laneDir[1];
+						spd[1] = spd[1] + speed;
+						count[1]++;
 						}
 				}
-				
-				//Compare to the lanes (add to respective lane speed)
-				if(direction == laneDir[0]){
-					spd[0] = spd[0] + speed;
+			}
+			if(count[0]!=0){
+			spd[0]=spd[0]/count[0];
+			}
+			if(count[1]!=0){
+			spd[1]=spd[1]/count[1];
+			}
+		}else if(vLength == 1){
+			
+			v = vehicles.get(0);
+			speed = (int)v.get(2);
+			direction = (int)((double)((int)v.get(1))/22.5);
+			
+			if((direction == laneDir[thisVehicleDirection])){
+				if(thisVehicleDirection == laneDir[0]){
+					spd[0]=spd[0]+speed;
 					count[0]++;
 				}else{
-					spd[1] = spd[1] + speed;
+					spd[1]=spd[1]+speed;
 					count[1]++;
 				}
+			}else{
+				if(thisVehicleDirection == laneDir[0]){
+					spd[1]=spd[1]+speed;
+					count[1]++;
+				}else{
+					spd[0]=spd[0]+speed;
+					count[0]++;
+				}
 			}
-			spd[0] = spd[0]/count[0];
-			spd[1] = spd[1]/count[1];
-		
+			
+			if(count[0]!=0){
+				spd[0]=spd[0]/count[0];
+			}
+			if(count[1]!=0){
+			spd[1]=spd[1]/count[1];
+			}
 		}else{
-			v = vehicles.get(0);
-			spd[0] = (int)v.get(2);
-			spd[1] = 0;
+			
+			if(thisVehicleDirection == laneDir[0]){
+				spd[0] = thisVehicleSpeed;
+				spd[1]= 0;
+				count[1] = 0;
+			}else{
+				spd[1] = thisVehicleSpeed;
+				spd[0]= 0;
+				count[0] = 0;
+			}
 		}
 		
-		return spd[0]+"/"+spd[1];//+"/"+count[0]+"/"+count[1];
+		return spd[0]+"/"+spd[1];
 	}
 	
-	public static double getDistToTraffic(ArrayList<ArrayList<Object>> vehicles, int vLength, int direction, double longitude, double lattitude){
-		double lng = 0;
-		double lat = 0;
-		double distance;
-		
-		int count = 0;
+	//Avg GPS coords of vehicles in same direction
+	public static String getAvgGPS(ArrayList<ArrayList<Object>> vehicles, int vLength, double longitude, double lattitude, int direction){
+		double lng = longitude;
+		double lat = lattitude;
+		int count = 1;
 		
 		ArrayList<Object> v = new ArrayList<Object>();
 		
 		for(int i = 0; i<vehicles.size(); i++){
 			v = vehicles.get(i);
 			
-			if(direction == (int)v.get(1) || direction == (int)v.get(1)+1 ||direction == (int)v.get(1)-1){
+			if((int)v.get(1)/22.5 > direction-1 || (int)v.get(1)/22.5 + 1 < direction+1){
 				lat = lat + (double)v.get(3);
 				lng = lng + (double)v.get(4);
 				count++;
 			}
 		}
+		
 		lat = lat/count;
 		lng = lng/count;
-		
-		distance = Math.sqrt(Math.pow((lng - longitude), 2) + Math.pow((lat - lattitude),2));
-		distance = 111*distance;
-		
-		return distance;
+
+		return lat + "/" + lng;
 	}
-	
 }

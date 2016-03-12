@@ -29,11 +29,12 @@ public class Service {
 			/**Testing**/
 			//CarBehind
 			//String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.heading+"/"+60+"/"+45.38214+"/"+-75.68781+"/"+data;
-			//CarAhead
+			///CarAhead
 			String message = waveManager.CarID+"/"+messageID+"/"+fromGroup+"/"+hopCount+"/"+toGroup+"/"+waveManager.heading+"/"+60+"/"+45.38286+"/"+-75.68836+"/"+data;
 			
 			DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetDestination, waveManager.port);
-						
+			
+			System.out.println(message.getBytes().length);
 			//Send packet
 			sendingProcess.send(packet);
 			
@@ -46,7 +47,6 @@ public class Service {
 			
 			String output = "-> Sent "+packetType+" message to "+fromGroup+": "+message;
 			waveManager.userInterface.output(output);
-			System.out.println(output);
 		}catch(Exception e){ }
 	}
 	
