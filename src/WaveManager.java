@@ -124,8 +124,8 @@ public class WaveManager {
 	}
 	
 	public String checkVehicleType(){
-		String vehicleType = "Emergency";
-		//String vehicleType = "Civilian";
+//		String vehicleType = "Emergency";
+		String vehicleType = "Civilian";
 		return vehicleType;
 	}
 
