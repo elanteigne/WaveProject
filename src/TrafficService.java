@@ -51,7 +51,6 @@ public class TrafficService extends Service implements Runnable {
 //			if(waveManager.getTrafficValue()){
 			if(true){	
 				this.clusterVariables = getClusterValues();
-				waveManager.userInterface.computedTrafficInfo(clusterVariables);
 				sendControlMessage(); 
 				//Wait 
 				try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
@@ -215,8 +214,6 @@ public class TrafficService extends Service implements Runnable {
 		gps[0] = Double.parseDouble(gpsString[0]);
 		gps[1] = Double.parseDouble(gpsString[1]);
 		
-		output = "o Calculated: Speed: " + spd[direction] + "; Heading: " + (int)(dir[direction]*22.5) + "; Size: " + dirPrv[direction] + "; LAT/LNG: " + String.format("%.7f", gps[0]) + " / " + String.format("%.7f", gps[1]);
-		waveManager.userInterface.computedTrafficInfo(output);
 		
 		return  dir[direction]  + "/" + spd[direction] + "/" + dirPrv[direction] + "/" + gps[0] + "/" + gps[1];
 	}
