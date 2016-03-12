@@ -67,8 +67,6 @@ public class UserInterface implements Runnable, ActionListener{
     private JLabel speed;
     private JLabel brakeAmount;
     private JLabel vehicleType;
-    private JLabel suggestedSpeedAdjustment;
-    private JLabel suggestedSpeedAdjustmentValue;
     private JLabel generalInfoCarAhead;
     private JLabel generalInfoCarAheadSpeed;
     private JLabel generalInfoCarBehind;
@@ -89,13 +87,13 @@ public class UserInterface implements Runnable, ActionListener{
     private JLabel sender;
     private JLabel receiver;
     private JLabel delay;
-    private JLabel sirensLabel;
     private JLabel groupsListeningToLabel;
     private JLabel generalInfoServiceOutputLabel;
     private JLabel brakeServiceOutputLabel;
     private JLabel emergencyServiceOutputLabel;
     private JLabel trafficServiceOutputLabel;
     private JLabel sirenDirection;
+    private JLabel sirenStatusLabel;
     
     private JButton speedUpButton;
     private JButton speedDownButton;
@@ -125,7 +123,6 @@ public class UserInterface implements Runnable, ActionListener{
     private long sirenIconTimestamp = 0;
     private long sirenFlashingTimestamp = 0;
     private long trafficAheadTimestamp = 0;
-    private long speedAdjustmentTimestamp = 0;
     
     private int UIscaleMain = 5;    
     private int UIscaleDev = 5;    
@@ -134,7 +131,6 @@ public class UserInterface implements Runnable, ActionListener{
     private int InnerTextScaleDev = UIscaleDev+1;
     private int OuterTextScaleDev = InnerTextScaleDev+1;
 
-    private int currentSpeedAdjustment = 0;
     private int generalInfoComputations = 0;
     private int brakeComputations = 0;
     private int emergencyComputations = 0;
@@ -304,8 +300,6 @@ public class UserInterface implements Runnable, ActionListener{
 	   generalInfoCarAheadSpeed = new JLabel();
 	   generalInfoCarBehind = new JLabel(generalInfoGreyBehind);
 	   generalInfoCarBehindSpeed = new JLabel();
-	   suggestedSpeedAdjustment = new JLabel("Speed Adjustment:");
-	   suggestedSpeedAdjustmentValue = new JLabel("0 Km/h");
 	   brakingCarAheadSpeed = new JLabel();
 	   brakingCarAhead = new JLabel(brakingAheadGrey);
 	   trafficAhead = new JLabel(trafficIconGrey);
@@ -324,8 +318,8 @@ public class UserInterface implements Runnable, ActionListener{
 	   numPacketsPassed = new JLabel("Packets Passed: 0 ");
 	   numPacketsOmitted = new JLabel("Omitted Packets: 0 ");
 	   delay = new JLabel("Smallest Delay = "+waveManager.delay+"ms");
-	   sirensLabel = new JLabel("OFF");
 	   groupsListeningToLabel = new JLabel("Listening To 0 Service Group(s)");
+	   sirenStatusLabel = new JLabel("<html> <font style='font-weight:bold; color:#a0aaae'>Sirens OFF</u></html>");
 	
 	   leftPanelLabel.setHorizontalAlignment(JLabel.CENTER);
 	   centerPanelLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -344,9 +338,6 @@ public class UserInterface implements Runnable, ActionListener{
 	   vehicleType.setFont(new Font("Open Sans", Font.BOLD, OuterTextScaleMain*2)); 
 	   generalInfoCarAhead.setHorizontalAlignment(JLabel.CENTER);
 	   generalInfoCarAhead.setFont(new Font("Open Sans", Font.BOLD, OuterTextScaleMain*2)); 
-	   suggestedSpeedAdjustment.setHorizontalAlignment(JLabel.CENTER);
-	   suggestedSpeedAdjustment.setFont(new Font("Open Sans", Font.BOLD, OuterTextScaleMain*2)); 
-	   suggestedSpeedAdjustmentValue.setFont(new Font("Open Sans", Font.BOLD, OuterTextScaleMain*3)); 
 	   generalInfoCarAhead.setHorizontalAlignment(JLabel.CENTER);
 	   generalInfoCarAheadSpeed.setFont(new Font("Open Sans", Font.BOLD, OuterTextScaleMain*3)); 
 	   generalInfoCarBehind.setHorizontalAlignment(JLabel.CENTER);
@@ -378,6 +369,8 @@ public class UserInterface implements Runnable, ActionListener{
 	   groupsListeningToLabel.setHorizontalAlignment(JLabel.CENTER);    
 	   groupsListeningToLabel.setFont(new Font("Open Sans", Font.BOLD, OuterTextScaleDev*2)); 
 	   generalInfoCarBehind.setHorizontalAlignment(JLabel.CENTER);
+	   sirenStatusLabel.setFont(new Font("Open Sans", Font.BOLD, OuterTextScaleMain*3)); 
+	   sirenStatusLabel.setHorizontalAlignment(JLabel.CENTER);
 	   
 	   //Output boxes
 	   JLabel outputLabel = new JLabel("<html><u>Sending/Receiving</u></html>");
@@ -424,7 +417,7 @@ public class UserInterface implements Runnable, ActionListener{
 	   staticDataPanel.setLayout(new GridLayout(3,1));
 	   variableDataPanel.setLayout(new GridLayout(4,1));
 	   calculatedInfoPanel1.setLayout(new GridLayout(2,2));
-	   calculatedInfoPanel2.setLayout(new GridLayout(4,2));
+	   calculatedInfoPanel2.setLayout(new GridLayout(3,2));
 	   buttonPanel.setLayout(new GridLayout(1,2));
 	   otherInfoPanel.setLayout(new GridLayout(1,2));
 	   packetInfoPanel.setLayout(new GridLayout(1,2));
@@ -443,8 +436,8 @@ public class UserInterface implements Runnable, ActionListener{
 	   outputPanel.setPreferredSize(new Dimension(UIscaleMain*225,UIscaleMain*300));
 	   leftComputedDataPanel.setPreferredSize(new Dimension(UIscaleMain*110,UIscaleMain*140));
 	   rightComputedDataPanel.setPreferredSize(new Dimension(UIscaleMain*110,UIscaleMain*140));
-	   speedometerPanel.setPreferredSize(new Dimension(UIscaleMain*50,UIscaleMain*50));
-	   speed.setPreferredSize(new Dimension(UIscaleMain*42,UIscaleMain*42));
+	   speedometerPanel.setPreferredSize(new Dimension(UIscaleMain*50,UIscaleMain*80));
+	   speed.setPreferredSize(new Dimension(UIscaleMain*42,UIscaleMain*50));
 	   
 	   otherInfoPanel.setPreferredSize(new Dimension(UIscaleDev*160,UIscaleDev*16));
 	   packetInfoPanel.setPreferredSize(new Dimension(UIscaleDev*160,UIscaleDev*16));
@@ -479,8 +472,6 @@ public class UserInterface implements Runnable, ActionListener{
 	   speedometerPanel.add(speed);
 	   rightPanel.add(rightPanelLabel);
 	   rightPanel.add(calculatedInfoPanel2);
-	   calculatedInfoPanel2.add(suggestedSpeedAdjustment);
-	   calculatedInfoPanel2.add(suggestedSpeedAdjustmentValue);
 	   calculatedInfoPanel2.add(generalInfoCarAhead);
 	   calculatedInfoPanel2.add(generalInfoCarAheadSpeed);
 	   calculatedInfoPanel2.add(generalInfoCarBehind);
@@ -494,8 +485,8 @@ public class UserInterface implements Runnable, ActionListener{
 	   controlsPanel.add(brakeUpButton);
 	   controlsPanel.add(brakeDownButton);
 	   if(waveManager.vehicleType.equals("Emergency")){
+		   speedometerPanel.add(sirenStatusLabel);
 		   controlsPanel.add(sirenButton);
-		   controlsPanel.add(sirensLabel);
 	   }
 	   outputPanel.add(packetInfoPanel);
 	   outputPanel.add(otherInfoPanel);
@@ -627,7 +618,7 @@ public class UserInterface implements Runnable, ActionListener{
     	
     }
     
-    public void turnOnGeneralInfoCarAhead(int speedDifference, int vehicleSpeed){
+    public void turnOnGeneralInfoCarAhead(int speedDifference){
     	if(speedDifference<=20){
     		generalInfoCarAhead.setIcon(carAheadYellow);
 		}else if(speedDifference<=40){
@@ -635,12 +626,12 @@ public class UserInterface implements Runnable, ActionListener{
 		}else{
 			generalInfoCarAhead.setIcon(carAheadRed);
 		}	
-    	generalInfoCarAheadSpeed.setText(vehicleSpeed+" Km/h");
+    	generalInfoCarAheadSpeed.setText("- "+speedDifference+" Km/h");
     	generalInfoCarAheadSpeed.setVisible(true);
     	carAheadIconTimestamp = System.currentTimeMillis();
     }
     
-    public void turnOnGeneralInfoCarBehind(int speedDifference, int vehicleSpeed){
+    public void turnOnGeneralInfoCarBehind(int speedDifference){
     	if(speedDifference<=20){
     		generalInfoCarBehind.setIcon(carBehindYellow);
 		}else if(speedDifference<=40){
@@ -648,17 +639,9 @@ public class UserInterface implements Runnable, ActionListener{
 		}else{
 			generalInfoCarBehind.setIcon(carBehindRed);
 		}	
-    	generalInfoCarBehindSpeed.setText(vehicleSpeed+" Km/h");
+    	generalInfoCarBehindSpeed.setText("+ "+speedDifference+" Km/h");
     	generalInfoCarBehindSpeed.setVisible(true);
     	carBehindIconTimestamp = System.currentTimeMillis();
-    }
-    
-    public synchronized void setSuggestedSpeedAdjustment(int outputNum){
-    	if(outputNum>currentSpeedAdjustment){
-    		currentSpeedAdjustment=outputNum;
-        	suggestedSpeedAdjustmentValue.setText("- "+outputNum+" Km/h");
-        	speedAdjustmentTimestamp = System.currentTimeMillis();
-    	}
     }
     
     public void turnOnBrakeApplied(int brakeAmount, int distance){
@@ -744,11 +727,6 @@ public class UserInterface implements Runnable, ActionListener{
 			trafficAheadDistance.setVisible(false);
 			trafficAheadTimestamp=0;
 		}
-		if(speedAdjustmentTimestamp!=0 && speedAdjustmentTimestamp+6000<currentTime){
-			currentSpeedAdjustment = 0;
-        	suggestedSpeedAdjustmentValue.setText("0 Km/h");
-			speedAdjustmentTimestamp=0;
-		}
     }
     
     public void updateNumPacketsReceived(int output){
@@ -803,10 +781,10 @@ public class UserInterface implements Runnable, ActionListener{
     	}else if(e.getSource().equals(sirenButton)){
     		if(waveManager.sirensOn){
     			waveManager.sirensOn=false;
-    			sirensLabel.setText("OFF");
+    			sirenStatusLabel.setText("<html> <font style='font-weight:bold; color:#a0aaae'>Sirens OFF</u></html>");
     		}else{
     			waveManager.sirensOn=true;
-    			sirensLabel.setText("ON");
+    			sirenStatusLabel.setText("<html> <font style='font-weight:bold; color:green'>Sirens ON</u></html>");
     		}
     	}else if(e.getSource().equals(delayDownButton)){
     		waveManager.delay*=0.5;
