@@ -79,8 +79,8 @@ public class WaveManager {
 		
 	//Make this recurring and figure out GPS format
 	public void checkGPS(){
-		GPSlattitude = 45.382620;
-		GPSlongitude = -75.688210;
+		GPSlattitude = 45.38214;
+		GPSlongitude = -75.68781;
 	}
 
 	public int checkHeading(){
