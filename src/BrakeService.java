@@ -9,6 +9,8 @@ public class BrakeService extends Service implements Runnable{
 	public String serviceGroup = "230.0.0.3";
 	public int messageID = 0;
 	private String output;
+	private String[] vehicleBrakingInfo = {"","",""};
+	private double vehicleBrakingTimestamp = 0;
 	
 	//Constructor
 	public BrakeService(WaveManager waveManager){
@@ -27,13 +29,16 @@ public class BrakeService extends Service implements Runnable{
 	public void run(){
 		while(true){
 			delay = waveManager.delay;
+<<<<<<< HEAD
 //			System.out.println(""+waveManager.speed);
 			if(waveManager.speed[0]>10){
+=======
+			if(waveManager.getSpeed()>10){
+>>>>>>> refs/remotes/origin/Eric
 				if(checkBrake()){				
 					sendControlMessage();
 					//Wait
 					try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
-	
 					
 					int count = 0;
 					while(count<5){
@@ -47,6 +52,7 @@ public class BrakeService extends Service implements Runnable{
 					}
 				}
 			}
+			checkTimestamps();
 		}
 	}
 	
@@ -71,7 +77,7 @@ public class BrakeService extends Service implements Runnable{
 	}
 	
 	//Method to calculate speed adjustment based on received packets
-	public void computeData(int heading, int speed, double vehicleLattitude, double vehicleLongitude, int brakeAmount){
+	public void computeData(String fromCarID, int heading, int speed, double vehicleLattitude, double vehicleLongitude, int brakeAmount){
 		//This should check if it is ahead on the SAME ROAD if possible
 		if(checkIfAhead(heading, vehicleLattitude, vehicleLongitude)){
 			//Distance away affect speed at which you get to desired amount
@@ -80,10 +86,17 @@ public class BrakeService extends Service implements Runnable{
 			//If there are weather conditions it should affect break amount by a certain percentage
 			
 			double distanceBetweenVehicles = calculateDistance(vehicleLattitude, vehicleLongitude);
-			int speedDifference = waveManager.speed[0]-speed;
+			int speedDifference = waveManager.getSpeed()-speed;
 
 			//If vehicle ahead is going faster then there is no point in braking
 			if(speedDifference>0){
+				if(vehicleBrakingInfo[0].equals("") || speed<Integer.parseInt(vehicleBrakingInfo[1]) && distanceBetweenVehicles<(Double.parseDouble(vehicleBrakingInfo[2])+30)){
+					vehicleBrakingInfo[0] = fromCarID;
+					vehicleBrakingInfo[1] = ""+speed;
+					vehicleBrakingInfo[2] = ""+brakeAmount;
+					vehicleBrakingTimestamp = System.currentTimeMillis();
+				}
+				
 				waveManager.suggestedBrakeAmount = brakeAmount;
 				
 				//The more of a speed difference there is the more the brake should be applied
@@ -113,21 +126,28 @@ public class BrakeService extends Service implements Runnable{
 				}else{
 					waveManager.suggestedBrakeSpeed = 1;
 				}
-				System.out.println("o Calculated: SpeedDifference = "+speedDifference+" km/h, mySpeed = "+waveManager.speed[0]+" km/h, DistanceBetweenVehicles = "+distanceBetweenVehicles+" m, SuggestedBrakeAmount = "+waveManager.suggestedBrakeAmount+"%, AdditionalBrakeAmount = "+waveManager.additionalBrakeAmount+"%, SuggestedBrakeSpeed = '"+waveManager.suggestedBrakeSpeed+"'");
-				output = "o Calculated: SpeedDifference = "+speedDifference+" km/h, mySpeed = "+waveManager.speed[0]+" km/h,"+""
+				output = "o Calculated: SpeedDifference = "+speedDifference+" km/h, mySpeed = "+waveManager.getSpeed()+" km/h,"+""
 						+ " DistanceBetweenVehicles = "+distanceBetweenVehicles+" m, SuggestedBrakeAmount = "+waveManager.suggestedBrakeAmount+"%,"
 						+" AdditionalBrakeAmount = "+waveManager.additionalBrakeAmount+"%, SuggestedBrakeSpeed = '"+waveManager.suggestedBrakeSpeed+"'";
 				waveManager.userInterface.computedBrakeInfo(output);
-				waveManager.userInterface.writeSpeedBrakeApplied(brakeAmount);
+				waveManager.userInterface.turnOnBrakeApplied(brakeAmount, (int)distanceBetweenVehicles);
 			}else{
-				System.out.println("o Calculated: Vehicle ahead is going faster than you, therefore braking is not considered");
 				output = "o Calculated: Vehicle ahead is going faster than you, therefore braking is not considered";
 				waveManager.userInterface.computedBrakeInfo(output);
 			}
 		}else{
-			System.out.println("o Calculated: Vehicle is not ahead, therefore braking is not considered");
 			output = "o Calculated: Vehicle is not ahead, therefore braking is not considered";
 			waveManager.userInterface.computedBrakeInfo(output);
 		}
+	}
+
+	private void checkTimestamps(){
+		if(vehicleBrakingTimestamp+2000<System.currentTimeMillis()){
+			vehicleBrakingInfo[0] = "";
+			vehicleBrakingInfo[1] = "";
+			vehicleBrakingInfo[2] = "";
+			
+		}
+		
 	}
 }

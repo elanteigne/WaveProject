@@ -39,7 +39,11 @@ public class EmergencyService extends Service implements Runnable {
 	public void run(){
 		while(true){
 			delay = waveManager.delay;
+<<<<<<< HEAD
 			if(waveManager.sirensOn){
+=======
+			if(waveManager.getSiren()){
+>>>>>>> refs/remotes/origin/Eric
 				sendControlMessage();
 				//Wait 
 				try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
@@ -60,17 +64,17 @@ public class EmergencyService extends Service implements Runnable {
 	//Method to calculate speed adjustment based on received packets
 	public void computeData(int heading, double vehicleLattitude, double vehicleLongitude){
 		double distance = calculateDistance(vehicleLattitude, vehicleLongitude);
-		if(checkIfBehind(heading, vehicleLattitude, vehicleLongitude)){
-			
-			output = "o Calculated: Emergency Vehicle approaching behind ("+(int)distance+"m). Please be aware.";
-			System.out.println(output);
-			waveManager.userInterface.computedEmergencyInfo(output);
-			waveManager.userInterface.writeEmergencySiren();
-		}else{
-			output = "o Calculated: Emergency Vehicle nearby ("+(int)distance+"m). Please be aware.";
-			System.out.println(output);
-			waveManager.userInterface.computedEmergencyInfo(output);
-			waveManager.userInterface.writeEmergencySiren();
+		if(distance<150){
+			if(checkIfBehind(heading, vehicleLattitude, vehicleLongitude)){
+				
+				output = "o Calculated: Emergency Vehicle approaching behind ("+(int)distance+"m). Please be aware.";
+				waveManager.userInterface.computedEmergencyInfo(output);
+				waveManager.userInterface.turnOnEmergencySiren((int)distance, true);
+			}else{
+				output = "o Calculated: Emergency Vehicle nearby ("+(int)distance+"m). Please be aware.";
+				waveManager.userInterface.computedEmergencyInfo(output);
+				waveManager.userInterface.turnOnEmergencySiren((int)distance, false);
+			}
 		}
 	}
 }
