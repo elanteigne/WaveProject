@@ -36,7 +36,6 @@ public class UserInterface implements Runnable, ActionListener{
     private JPanel speedometerPanel;
     private JPanel sirenInfoPanel;
     
-    
     private ImageIcon carAheadRed;
     private ImageIcon carAheadOrange;
     private ImageIcon carAheadYellow;
@@ -98,7 +97,6 @@ public class UserInterface implements Runnable, ActionListener{
     private JLabel trafficServiceOutputLabel;
     private JLabel sirenDirection;
     
-    
     private JButton speedUpButton;
     private JButton speedDownButton;
     private JButton brakeUpButton;
@@ -127,14 +125,16 @@ public class UserInterface implements Runnable, ActionListener{
     private long sirenIconTimestamp = 0;
     private long sirenFlashingTimestamp = 0;
     private long trafficAheadTimestamp = 0;
+    private long speedAdjustmentTimestamp = 0;
     
-    public int UIscaleMain = 5;    
-    public int UIscaleDev = 5;    
-    public int InnerTextScaleMain = UIscaleMain+1;
-    public int OuterTextScaleMain = InnerTextScaleMain+1;
-    public int InnerTextScaleDev = UIscaleDev+1;
-    public int OuterTextScaleDev = InnerTextScaleDev+1;
-    
+    private int UIscaleMain = 5;    
+    private int UIscaleDev = 5;    
+    private int InnerTextScaleMain = UIscaleMain+1;
+    private int OuterTextScaleMain = InnerTextScaleMain+1;
+    private int InnerTextScaleDev = UIscaleDev+1;
+    private int OuterTextScaleDev = InnerTextScaleDev+1;
+
+    private int currentSpeedAdjustment = 0;
     private int generalInfoComputations = 0;
     private int brakeComputations = 0;
     private int emergencyComputations = 0;
@@ -388,28 +388,32 @@ public class UserInterface implements Runnable, ActionListener{
 	   consoleScroll = new JScrollPane (output, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	   consoleScroll.setPreferredSize(new Dimension(UIscaleDev*220,UIscaleDev*40));
 	
-	   generalInfoServiceOutputLabel = new JLabel("<html><u>General Info Service Computed Information</u> Computations: 0</html>");
+	   generalInfoServiceOutputLabel = new JLabel("<html><u>General Info Service Computed Information</u> <font style='color:blue'>Computations:</font> 0</html>");
+	   generalInfoServiceOutputLabel.setFont(new Font("Open Sans", Font.BOLD, OuterTextScaleDev*2)); 
 	   computedGeneralInfo = new JTextArea();
 	   computedGeneralInfo.setFont(new Font("Open Sans", Font.PLAIN, InnerTextScaleDev*2));
 	   computedGeneralInfo.setEditable(false);
 	   computedGeneralInfoScroll = new JScrollPane (computedGeneralInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	   computedGeneralInfoScroll.setPreferredSize(new Dimension(UIscaleDev*108,UIscaleDev*30));
 	
-	   brakeServiceOutputLabel = new JLabel("<html><u>Brake Service Computed Information</u> Computations: 0</html>");
+	   brakeServiceOutputLabel = new JLabel("<html><u>Brake Service Computed Information</u> <font style='color:blue'>Computations:</font> 0</html>");
+	   brakeServiceOutputLabel.setFont(new Font("Open Sans", Font.BOLD, OuterTextScaleDev*2)); 
 	   computedBrakeInfo = new JTextArea();
 	   computedBrakeInfo.setFont(new Font("Open Sans", Font.PLAIN, InnerTextScaleDev*2));
 	   computedBrakeInfo.setEditable(false);
 	   computedBrakeInfoScroll = new JScrollPane (computedBrakeInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	   computedBrakeInfoScroll.setPreferredSize(new Dimension(UIscaleDev*108,UIscaleDev*30));
 	   
-	   emergencyServiceOutputLabel = new JLabel("<html><u>Emergency Service Computed Information</u> Computations: 0</html>");
+	   emergencyServiceOutputLabel = new JLabel("<html><u>Emergency Service Computed Information</u> <font style='color:blue'>Computations:</font> 0</html>");
+	   emergencyServiceOutputLabel.setFont(new Font("Open Sans", Font.BOLD, OuterTextScaleDev*2)); 
 	   computedEmergencyInfo = new JTextArea();
 	   computedEmergencyInfo.setFont(new Font("Open Sans", Font.PLAIN, InnerTextScaleDev*2));
 	   computedEmergencyInfo.setEditable(false);
 	   computedEmergencyInfoScroll = new JScrollPane (computedEmergencyInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	   computedEmergencyInfoScroll.setPreferredSize(new Dimension(UIscaleDev*108,UIscaleDev*30));
 
-	   trafficServiceOutputLabel = new JLabel("<html><u>Traffic Service Computed Information</u> Computations: 0</html>");
+	   trafficServiceOutputLabel = new JLabel("<html><u>Traffic Service Computed Information</u> <font style='color:blue'>Computations:</font> 0</html>");
+	   trafficServiceOutputLabel.setFont(new Font("Open Sans", Font.BOLD, OuterTextScaleDev*2)); 
 	   computedTrafficInfo = new JTextArea();
 	   computedTrafficInfo.setFont(new Font("Open Sans", Font.PLAIN, InnerTextScaleDev*2));
 	   computedTrafficInfo.setEditable(false);
@@ -428,7 +432,6 @@ public class UserInterface implements Runnable, ActionListener{
 	   receivedPacketInfoPanel.setLayout(new GridLayout(4,1));
 	   computedDataPanel.setLayout(new GridLayout(1,2));
 	   sirenInfoPanel.setLayout(new GridLayout(1,2));
-	   
 	   
 	   topPanel.setPreferredSize(new Dimension(UIscaleMain*250,UIscaleMain*100));
 	   staticDataPanel.setPreferredSize(new Dimension(UIscaleMain*140,UIscaleMain*15));
@@ -578,25 +581,25 @@ public class UserInterface implements Runnable, ActionListener{
     public void computedGeneralInfo(String outputText){
     	computedGeneralInfo.append(outputText+"\n");
     	generalInfoComputations ++;
-    	generalInfoServiceOutputLabel.setText("<html><u>General Info Service Computed Information</u> Computations: "+generalInfoComputations+"</html>");
+    	generalInfoServiceOutputLabel.setText("<html><u>General Info Service Computed Information</u> <font style='color:blue'>Computations:</font>"+generalInfoComputations+"</html>");
     }
 
     public void computedBrakeInfo(String outputText){
     	computedBrakeInfo.append(outputText+"\n");
     	brakeComputations ++;
-    	brakeServiceOutputLabel.setText("<html><u>Brake Service Computed Information</u> Computations: "+brakeComputations+"</html>");
+    	brakeServiceOutputLabel.setText("<html><u>Brake Service Computed Information</u> <font style='color:blue'>Computations:</font>"+brakeComputations+"</html>");
     }
 
     public void computedEmergencyInfo(String outputText){
     	computedEmergencyInfo.append(outputText+"\n");
     	emergencyComputations ++;
-    	emergencyServiceOutputLabel.setText("<html><u>Brake Service Computed Information</u> Computations: "+emergencyComputations+"</html>");
+    	emergencyServiceOutputLabel.setText("<html><u>Brake Service Computed Information</u> <font style='color:blue'>Computations:</font>"+emergencyComputations+"</html>");
     }
 
     public void computedTrafficInfo(String outputText){
     	computedTrafficInfo.append(outputText+"\n");
     	trafficComputations ++;
-    	trafficServiceOutputLabel.setText("<html><u>Brake Service Computed Information</u> Computations: "+trafficComputations+"</html>");
+    	trafficServiceOutputLabel.setText("<html><u>Brake Service Computed Information</u> <font style='color:blue'>Computations:</font>"+trafficComputations+"</html>");
     }
     
     public void writeCarID(String outputText){
@@ -650,8 +653,12 @@ public class UserInterface implements Runnable, ActionListener{
     	carBehindIconTimestamp = System.currentTimeMillis();
     }
     
-    public void setSuggestedSpeedAdjustment(String outputText){
-    	suggestedSpeedAdjustmentValue.setText(outputText+" Km/h");
+    public synchronized void setSuggestedSpeedAdjustment(int outputNum){
+    	if(outputNum>currentSpeedAdjustment){
+    		currentSpeedAdjustment=outputNum;
+        	suggestedSpeedAdjustmentValue.setText("- "+outputNum+" Km/h");
+        	speedAdjustmentTimestamp = System.currentTimeMillis();
+    	}
     }
     
     public void turnOnBrakeApplied(int brakeAmount, int distance){
@@ -736,6 +743,11 @@ public class UserInterface implements Runnable, ActionListener{
 			trafficAhead.setIcon(trafficIconGrey);
 			trafficAheadDistance.setVisible(false);
 			trafficAheadTimestamp=0;
+		}
+		if(speedAdjustmentTimestamp!=0 && speedAdjustmentTimestamp+6000<currentTime){
+			currentSpeedAdjustment = 0;
+        	suggestedSpeedAdjustmentValue.setText("0 Km/h");
+			speedAdjustmentTimestamp=0;
 		}
     }
     

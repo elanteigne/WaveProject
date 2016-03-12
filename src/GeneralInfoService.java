@@ -145,7 +145,7 @@ public class GeneralInfoService extends Service implements Runnable{
 						}
 					}
 				}else{
-					for(int i=0; i<waveManager.vehiclesAccountedFor.size(); i++){
+					while(waveManager.vehiclesAccountedFor.size() != 0){
 						waveManager.vehiclesAccountedFor.remove(0);
 						//only remove 0 since removing element(0) will make the second element element(0) on next iteration
 					}

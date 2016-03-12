@@ -216,7 +216,6 @@ public class TrafficService extends Service implements Runnable {
 		
 		output = "o Calculated: Speed: " + spd[direction] + "; Heading: " + (int)(dir[direction]*22.5) + "; Size: " + dirPrv[direction] + "; LAT/LNG: " + String.format("%.7f", gps[0]) + " / " + String.format("%.7f", gps[1]);
 		waveManager.userInterface.computedTrafficInfo(output);
-		waveManager.userInterface.computedTrafficInfo("SPD" +spd[0] + ";" + spd[1]);
 		
 		return  dir[direction]  + "/" + spd[direction] + "/" + dirPrv[direction] + "/" + gps[0] + "/" + gps[1];
 	}
@@ -253,7 +252,6 @@ public class TrafficService extends Service implements Runnable {
 			laneDir[0] = (int)(double)((int)v.get(1)/22.5);
 			dirPrv[0] = 1;
 		}else{
-		
 			for(int i = 0; i<vLength; i++){
 				v = vehicles.get(i);
 				direction[i] = (int)v.get(1);
@@ -319,9 +317,12 @@ public class TrafficService extends Service implements Runnable {
 						}
 				}
 			}
+			if(count[0]!=0){
 			spd[0]=spd[0]/count[0];
+			}
+			if(count[1]!=0){
 			spd[1]=spd[1]/count[1];
-			
+			}
 		}else if(vLength == 1){
 			
 			v = vehicles.get(0);
@@ -349,7 +350,7 @@ public class TrafficService extends Service implements Runnable {
 			if(count[0]!=0){
 				spd[0]=spd[0]/count[0];
 			}
-			if(count[1]!=1){
+			if(count[1]!=0){
 			spd[1]=spd[1]/count[1];
 			}
 		}else{
