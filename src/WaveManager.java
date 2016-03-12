@@ -54,8 +54,8 @@ public class WaveManager {
 			vehicle.add("222-222-222-20" + i);
 			vehicle.add(330);
 			vehicle.add(50);
-			vehicle.add(45.38262);
-			vehicle.add(-75.688210);
+			vehicle.add(GPSlattitude);
+			vehicle.add(GPSlongitude);
 			vehiclesAccountedFor.add(vehicle);
 		}
 
@@ -97,8 +97,8 @@ public class WaveManager {
 	public void checkGPS(){
 		//GPSlattitude = 45.382620;
 		//GPSlongitude = -75.688210;
-		GPSlattitude = 45.38214;
-		GPSlongitude = -75.68781;
+		GPSlattitude = 45.38369;
+		GPSlongitude = -75.68895;
 	}
 
 	public int checkHeading(){
