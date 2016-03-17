@@ -48,9 +48,10 @@ public class TrafficService extends Service implements Runnable {
 			
 			delay = waveManager.delay*2;
 
-//			if(waveManager.getTrafficValue()){
-			if(true){	
+			if(waveManager.getTrafficValue()){
+			//if(true){	
 				this.clusterVariables = getClusterValues();
+				//waveManager.userInterface.computedTrafficInfo(clusterVariables);
 				sendControlMessage(); 
 				//Wait 
 				try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
@@ -69,7 +70,8 @@ public class TrafficService extends Service implements Runnable {
 	}
 
 	public void computeData(int directionCluster, int speedCluster, int sizeCluster, double latCluster, double lngCluster){
-		//Variables
+		//Variables 
+		
 		int direction = (int)(double)(waveManager.heading/22.5);
 		int speed = waveManager.getSpeed();
 		double longitude = waveManager.GPSlongitude;
@@ -85,7 +87,7 @@ public class TrafficService extends Service implements Runnable {
 		
 		//TRAFFIC LEVEL ALGORITHM
 		//If cluster in the same direction
-		if(direction == directionCluster || direction == directionCluster + 1 || direction == directionCluster - 1 ){
+		if(direction == directionCluster || (direction == directionCluster + 1) || (direction == directionCluster - 1) ){
 			
 			//If cluster is ahead
 			
@@ -102,12 +104,8 @@ public class TrafficService extends Service implements Runnable {
 					trafficLevel = 0;	
 				}else{	
 					if(sizeCluster>9){
-						if(speedDiff > 40){
+						if(speedDiff > 30){
 							trafficLevel = 3;
-						}else if(speedDiff > 30){
-							trafficLevel = 3;
-						}else if(speedDiff > 20){
-							trafficLevel = 2;
 						}else if(speedDiff > 10){
 							trafficLevel = 2;
 						}else{
@@ -116,19 +114,13 @@ public class TrafficService extends Service implements Runnable {
 					}else if(sizeCluster>6){
 						if(speedDiff > 40){
 							trafficLevel = 3;
-						}else if(speedDiff > 30){
-							trafficLevel = 2;
 						}else if(speedDiff > 20){
 							trafficLevel = 2;
-						}else if(speedDiff > 10){
-							trafficLevel = 1;
 						}else{
 							trafficLevel = 1;
 						}
 					}else if(sizeCluster>3){
 						if(speedDiff > 40){
-							trafficLevel = 2;
-						}else if(speedDiff > 30){
 							trafficLevel = 2;
 						}else if(speedDiff > 20){
 							trafficLevel = 1;
@@ -150,12 +142,12 @@ public class TrafficService extends Service implements Runnable {
 				waveManager.trafficLevel = trafficLevel;
 				
 				if(trafficLevel != 0){
-					output = "o Calculated: Traffic level: " + trafficLevel + ". Traffic ahead in: " +  String.format("%.2f", distToTraffic) + "km (" + directionWords[directionCluster] + ") at " + speedCluster + "km/h";
+					//output = "o Calculated: Traffic level: " + trafficLevel + ". Traffic ahead in: " +  String.format("%.2f", distToTraffic) + "km (" + directionWords[directionCluster] + ") at " + speedCluster + "km/h";
+					output = "o Calculated: Traffic level: " + trafficLevel + ". Traffic ahead in: " +  String.format("%.2f", distToTraffic*1000)+ "m (" + directionWords[directionCluster] + ") at " + speedCluster + "km/h";
 					waveManager.userInterface.computedTrafficInfo(output);
-					waveManager.userInterface.turnOnTrafficAhead(trafficLevel, (int)distToTraffic, speedCluster);
 
 				}else{
-					output = "o Calculated: Traffic ahead is going the same speed";
+					output = "o Calculated: Traffic ahead is going faster or the same speed";
 					waveManager.userInterface.computedTrafficInfo(output);
 				}
 			}else{
@@ -176,46 +168,51 @@ public class TrafficService extends Service implements Runnable {
 		int numVehicles = waveManager.vehiclesAccountedFor.size();
 		ArrayList<ArrayList<Object>> vehicles = waveManager.vehiclesAccountedFor;
 		
-		int[] dir = new int[2];
-		int[] dirPrv = new int[2];
-		int[] spd = new int[2];
-		double[] gps = new double[2];
+		int[] mostPrevalentDirections = new int[2];
+		int[] numberVehiclesInDirections = new int[2];
+		int[] speedInDirections = new int[2];
+		int[] vehicleCount = new int[2];
+		double[] avgGpsVehicles = new double[2];
 		
 		//Get most Prevalent directions
 		String[] dirString = getAvgDir(vehicles, numVehicles).split("/");
-		dir[0] = Integer.parseInt(dirString[0]);
-		dir[1] = Integer.parseInt(dirString[1]);
-		dirPrv[0] = Integer.parseInt(dirString[2]);			
-		dirPrv[1] = Integer.parseInt(dirString[3]);
+		mostPrevalentDirections[0] = Integer.parseInt(dirString[0]);
+		mostPrevalentDirections[1] = Integer.parseInt(dirString[1]);
+		numberVehiclesInDirections[0] = Integer.parseInt(dirString[2]);			
+		numberVehiclesInDirections[1] = Integer.parseInt(dirString[3]);
 		
 		//Approximate direction of local vehicle to prevalent directions
-		if(dir[0] != dir[1]){
-			if(Math.abs(direction-dir[1]) > Math.abs(direction-dir[0])){
+		if(mostPrevalentDirections[0] != mostPrevalentDirections[1]){
+			if(Math.abs(direction-mostPrevalentDirections[1]) > Math.abs(direction-mostPrevalentDirections[0])){
 				direction = 0;
 			}else{
 				direction = 1;
 			}
 		}else {
-			if(dirPrv[0]>dirPrv[1]){//TO do: if directions are equal and local isnt close at all
+			if(numberVehiclesInDirections[0]>numberVehiclesInDirections[1]){//TO do: if directions are equal and local isnt close at all
 				direction = 0;
 			}else{
 				direction = 1;
 			}
 		}
-		dirPrv[direction]++;
+		numberVehiclesInDirections[direction]++;
 		
 		//Get Average speed for both directions (including this vehicle)
-		String[] spdString = getAvgSpd(vehicles, numVehicles, dir, speed, direction).split("/");
-		spd[0] = Integer.parseInt(spdString[0]);
-		spd[1] = Integer.parseInt(spdString[1]);
-
+		String[] spdString = getAvgSpd(vehicles, numVehicles, mostPrevalentDirections, numberVehiclesInDirections, speed, direction).split("/");
+		speedInDirections[0] = Integer.parseInt(spdString[0]);
+		speedInDirections[1] = Integer.parseInt(spdString[1]);
+		vehicleCount[0] = Integer.parseInt(spdString[2]);
+		vehicleCount[1] = Integer.parseInt(spdString[3]);
+		
 		//Get Average GPS
-		String[] gpsString = getAvgGPS(vehicles, numVehicles, longitude, lattitude, dir[direction]).split("/");
-		gps[0] = Double.parseDouble(gpsString[0]);
-		gps[1] = Double.parseDouble(gpsString[1]);
+		String[] gpsString = getAvgGPS(vehicles, numVehicles, longitude, lattitude, mostPrevalentDirections[direction]).split("/");
+		avgGpsVehicles[0] = Double.parseDouble(gpsString[0]);
+		avgGpsVehicles[1] = Double.parseDouble(gpsString[1]);
 		
+		output = "o Calculated: Speed: " + speedInDirections[direction] + "; Heading: " + (int)(mostPrevalentDirections[direction]*22.5) + "; Size: " + vehicleCount[direction] + "; LAT/LNG: " + String.format("%.7f", avgGpsVehicles[0]) + " / " + String.format("%.7f", avgGpsVehicles[1]);	
+		waveManager.userInterface.computedTrafficInfo(output);
 		
-		return  dir[direction]  + "/" + spd[direction] + "/" + dirPrv[direction] + "/" + gps[0] + "/" + gps[1];
+		return  mostPrevalentDirections[direction]  + "/" + speedInDirections[direction] + "/" + vehicleCount[direction] + "/" + avgGpsVehicles[0] + "/" + avgGpsVehicles[1];
 	}
 	
 	//METHODS
@@ -287,7 +284,7 @@ public class TrafficService extends Service implements Runnable {
 	
 	//Average Vehicle Speed in two directions
 	//To do: add two other directions for cross-traffic.
-	public static String getAvgSpd(ArrayList<ArrayList<Object>> vehicles, int vLength, int laneDir[], int thisVehicleSpeed, int thisVehicleDirection){
+	public static String getAvgSpd(ArrayList<ArrayList<Object>> vehicles, int vLength, int laneDir[], int dirPrv[], int thisVehicleSpeed, int thisVehicleDirection){
 		int speed = 0;
 		int direction; //double d;
 		int[] spd = new int[]{0,0};
@@ -314,8 +311,15 @@ public class TrafficService extends Service implements Runnable {
 						spd[0] = spd[0]+speed;
 						count[0]++;
 						}
+				}else if(direction == laneDir[0]){
+					spd[0] = spd[0]+speed;
+					count[0]++;
+				}else{
+					spd[1] = spd[1] + speed;
+					count[1]++;
 				}
 			}
+			
 			if(count[0]!=0){
 			spd[0]=spd[0]/count[0];
 			}
@@ -365,7 +369,7 @@ public class TrafficService extends Service implements Runnable {
 			}
 		}
 		
-		return spd[0]+"/"+spd[1];
+		return spd[0]+"/"+spd[1]+"/"+count[0]+"/"+count[1]+"/";//To-do: Re-add count here to keep track of number vehicles that have been approximated to the directions*
 	}
 	
 	//Avg GPS coords of vehicles in same direction

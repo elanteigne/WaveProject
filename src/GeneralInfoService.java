@@ -189,13 +189,13 @@ public class GeneralInfoService extends Service implements Runnable{
 	}
 	
 	private void checkTimestamps(){
-		if(vehicleAheadTimestamp+2000<System.currentTimeMillis()){
+		if(vehicleAheadTimestamp+4000<System.currentTimeMillis()){
 			vehicleAheadInfo[0] = "";
 			vehicleAheadInfo[1] = "";
 			vehicleAheadInfo[2] = "";
 			
 		}
-		if(vehicleBehindTimestamp+2000<System.currentTimeMillis()){
+		if(vehicleBehindTimestamp+4000<System.currentTimeMillis()){
 			vehicleBehindInfo[0] = "";
 			vehicleBehindInfo[1] = "";
 			vehicleBehindInfo[2] = "";

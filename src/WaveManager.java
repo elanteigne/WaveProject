@@ -35,7 +35,7 @@ public class WaveManager {
 	
 	//Resources
 	public int port = 2222;
-	public int delay = 500;
+	public int delay = 350;
 	public String controlGroup = "230.0.0.1";
 	
 	//Constructor
@@ -97,8 +97,8 @@ public class WaveManager {
 	public void checkGPS(){
 		//GPSlattitude = 45.382620;
 		//GPSlongitude = -75.688210;
-		GPSlattitude = 45.38369;
-		GPSlongitude = -75.68895;
+		GPSlattitude = 45.38375;
+		GPSlongitude = -75.68896;
 	}
 
 	public int checkHeading(){
