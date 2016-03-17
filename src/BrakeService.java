@@ -36,13 +36,15 @@ public class BrakeService extends Service implements Runnable{
 					
 					int count = 0;
 					while(count<5){
-						sendServiceMessage();
-
-						delay = waveManager.delay;
-						//Wait
-						try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
+						if(checkBrake()){			
+							sendServiceMessage();
 	
-						count++;
+							delay = waveManager.delay;
+							//Wait
+							try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
+		
+							count++;
+						}
 					}
 				}
 			}
