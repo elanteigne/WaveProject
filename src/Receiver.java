@@ -102,7 +102,7 @@ public class Receiver implements Runnable{
 			
 			//Commented for testing purposes
 			if(!(strings[0].equals(waveManager.CarID))){
-//			if(fromCarID.equals(waveManager.CarID)){
+			//if(fromCarID.equals(waveManager.CarID)){
 				if(receivedMessagePreviously(fromCarID, messageID, messageGroup)){
 					
 					//The order of these is where PRIORITIES take place
@@ -128,13 +128,11 @@ public class Receiver implements Runnable{
 						int directionCluster = Integer.parseInt(strings[9]);
 						int speedCluster = Integer.parseInt(strings[10]);
 						int sizeCluster = Integer.parseInt(strings[11]);
-						double latCluster = Double.parseDouble(strings[12]);
-						double lngCluster = Double.parseDouble(strings[13]);
 						
-						output = "+ Received *TrafficService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+vehicleSpeed+"': Direction:'"+directionCluster*22.5+"': Speed:'"+speedCluster+"': Size:'"+sizeCluster+"': Cluster lattitude:'"+latCluster+"': Cluster longitude:'"+lngCluster+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Heading:'"+heading+"', HopCount = "+hopCount;
+						output = "+ Received *TrafficService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+vehicleSpeed+"': Direction:'"+directionCluster*22.5+"': Speed:'"+speedCluster+"': Size:'"+sizeCluster+"' Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Heading:'"+heading+"', HopCount = "+hopCount;
 						waveManager.userInterface.output(output);
 						
-						trafficService.computeData(directionCluster, speedCluster, sizeCluster, latCluster, lngCluster);
+						trafficService.computeData(directionCluster, speedCluster, sizeCluster, vehicleLattitude, vehicleLongitude);
 					}else{
 						output = "+ Received *Control* message advertising '"+messageGroup+"' from CarID '"+fromCarID+"'";
 						waveManager.userInterface.output(output);

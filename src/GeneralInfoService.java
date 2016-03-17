@@ -55,7 +55,6 @@ public class GeneralInfoService extends Service implements Runnable{
 
 				count++;
 			}
-			checkTimestamps();
 		}
 	}
 	
@@ -79,18 +78,19 @@ public class GeneralInfoService extends Service implements Runnable{
 			//Only way to check ahead so far is checking the direction
 			if(checkIfAhead(heading, vehicleLattitude, vehicleLongitude)){
 				if(vehicleSpeed<waveManager.getSpeed()){
-					if(vehicleAheadInfo[0].equals("") || vehicleSpeed<Integer.parseInt(vehicleAheadInfo[1]) && distanceBetweenVehicles<(Double.parseDouble(vehicleAheadInfo[2])+30)){
+					if(vehicleAheadInfo[0].equals("") || vehicleSpeed<Integer.parseInt(vehicleAheadInfo[1]) && distanceBetweenVehicles<(Double.parseDouble(vehicleAheadInfo[2])+30) || vehicleAheadInfo[0].equals(fromCarID)){
 						vehicleAheadInfo[0] = fromCarID;
 						vehicleAheadInfo[1] = ""+vehicleSpeed;
 						vehicleAheadInfo[2] = ""+distanceBetweenVehicles;
-						vehicleAheadTimestamp = System.currentTimeMillis();
 					}
 					
 					int speedDifference = waveManager.getSpeed() - Integer.parseInt(vehicleAheadInfo[1]);
 					
 					output = "o Calculated: Traffic Ahead Slower by "+speedDifference+" Km/h";
 					waveManager.userInterface.computedGeneralInfo(output);
+
 					
+
 					waveManager.userInterface.turnOnGeneralInfoCarAhead(speedDifference);
 				}else{
 					output = "o Calculated: Vehicle is ahead but is not slower so it is not considered";
@@ -98,7 +98,7 @@ public class GeneralInfoService extends Service implements Runnable{
 				}
 			}else if(checkIfBehind(heading, vehicleLattitude, vehicleLongitude)){
 				if(vehicleSpeed>waveManager.getSpeed()){
-					if(vehicleBehindInfo[0].equals("") || vehicleSpeed>Integer.parseInt(vehicleAheadInfo[1]) && distanceBetweenVehicles<(Double.parseDouble(vehicleAheadInfo[2])+30)){
+					if(vehicleBehindInfo[0].equals("") || vehicleSpeed>Integer.parseInt(vehicleBehindInfo[1]) && distanceBetweenVehicles<(Double.parseDouble(vehicleBehindInfo[2])+30) || vehicleBehindInfo[0].equals(fromCarID)){
 						vehicleBehindInfo[0] = fromCarID;
 						vehicleBehindInfo[1] = ""+vehicleSpeed;
 						vehicleBehindInfo[2] = ""+distanceBetweenVehicles;
@@ -125,32 +125,31 @@ public class GeneralInfoService extends Service implements Runnable{
 			}
 			
 			//Decide if trafficService should start sending
-			//if(distanceBetweenVehicles<100){
-			if(false){
-				if(waveManager.vehiclesAccountedFor.size()==0){
-					closebyVehiclesTimestamp = System.currentTimeMillis();
-				}
-				
-				listVehicle(fromCarID, heading, vehicleSpeed, vehicleLattitude, vehicleLongitude);
 
-				//output = "o Calculated: "+vehicleSpeed+" Km/h";
-				//waveManager.userInterface.computedGeneralInfo(output);
-				
-				if(System.currentTimeMillis()<closebyVehiclesTimestamp+5000){
-					//if(waveManager.vehiclesAccountedFor.size()>5){
-					if(waveManager.vehiclesAccountedFor.size()>0){
-						if(waveManager.speed[4]>(waveManager.getSpeed()*1.25)){
-							waveManager.inTraffic = true;							
-							waveManager.userInterface.computedGeneralInfo("o Calculated: In traffic");
+			if(distanceBetweenVehicles<100){
+				if(heading<waveManager.heading+10 && heading>waveManager.heading-10){
+					if(waveManager.vehiclesAccountedFor.size()==0){
+						closebyVehiclesTimestamp = System.currentTimeMillis();
+					}
+					
+					listVehicle(fromCarID, heading, vehicleSpeed, vehicleLattitude, vehicleLongitude);
+	
+					if(System.currentTimeMillis()<closebyVehiclesTimestamp+5000){
+						if(waveManager.vehiclesAccountedFor.size()>5){
+						//if(waveManager.vehiclesAccountedFor.size()>0){
+							if(waveManager.speed[4]>(waveManager.getSpeed()*1.25)){
+								waveManager.inTraffic = true;							
+								waveManager.userInterface.computedGeneralInfo("o Calculated: In traffic");
+							}
 						}
+					}else{
+						for(int i=0; i<waveManager.vehiclesAccountedFor.size(); i++){
+							waveManager.vehiclesAccountedFor.remove(i);
+							//only remove 0 since removing element(0) will make the second element element(0) on next iteration
+						}
+						waveManager.inTraffic = false;
+						//waveManager.userInterface.computedGeneralInfo(">>>Emptied vehicles list");
 					}
-				}else{
-					while(waveManager.vehiclesAccountedFor.size() != 0){
-						waveManager.vehiclesAccountedFor.remove(0);
-						//only remove 0 since removing element(0) will make the second element element(0) on next iteration
-					}
-					waveManager.inTraffic = false;
-					//waveManager.userInterface.computedTrafficInfo(">>>Emptied vehicles list");
 				}
 			}
 		}else{
@@ -184,23 +183,20 @@ public class GeneralInfoService extends Service implements Runnable{
 		vehicle.add(vehicleLongitude);
 		
 		waveManager.vehiclesAccountedFor.add(vehicle);
-		
 		}
 	}
 	
-	private void checkTimestamps(){
-		if(vehicleAheadTimestamp+4000<System.currentTimeMillis()){
+	public void eraseAheadVehicle(){
 			vehicleAheadInfo[0] = "";
 			vehicleAheadInfo[1] = "";
 			vehicleAheadInfo[2] = "";
-			
-		}
-		if(vehicleBehindTimestamp+4000<System.currentTimeMillis()){
+	}
+	
+	public void eraseBehindVehicle(){
 			vehicleBehindInfo[0] = "";
 			vehicleBehindInfo[1] = "";
 			vehicleBehindInfo[2] = "";
 			
-		}
 	}
 	
 }

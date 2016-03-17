@@ -700,20 +700,23 @@ public class UserInterface implements Runnable, ActionListener{
     
     public void checkIconTimestamps(){
     	long currentTime = System.currentTimeMillis();
-    	if(carAheadIconTimestamp!=0 && carAheadIconTimestamp+4000<currentTime){
+    	if(carAheadIconTimestamp!=0 && carAheadIconTimestamp+5000<currentTime){
     		generalInfoCarAhead.setIcon(generalInfoGreyAhead);
 	    	generalInfoCarAheadSpeed.setVisible(false);
     		carAheadIconTimestamp=0;
+			waveManager.generalInfoService.eraseAheadVehicle();
     	}
-		if(carBehindIconTimestamp!=0 && carBehindIconTimestamp+4000<currentTime){
+		if(carBehindIconTimestamp!=0 && carBehindIconTimestamp+5000<currentTime){
 			generalInfoCarBehind.setIcon(generalInfoGreyBehind);
 	    	generalInfoCarBehindSpeed.setVisible(false);
 			carBehindIconTimestamp=0;
+			waveManager.generalInfoService.eraseBehindVehicle();
 		}
-		if(brakeIconTimestamp!=0 && brakeIconTimestamp+2000<currentTime){
+		if(brakeIconTimestamp!=0 && brakeIconTimestamp+4000<currentTime){
 			brakingCarAhead.setIcon(brakingAheadGrey);
 			brakingCarAheadSpeed.setVisible(false);
 			brakeIconTimestamp=0;
+			waveManager.brakeService.eraseData();
 		}
 		if(sirenIconTimestamp!=0 && sirenIconTimestamp+2000<currentTime){
 			emergencySiren.setIcon(sirenGrey);
@@ -784,7 +787,7 @@ public class UserInterface implements Runnable, ActionListener{
     			sirenStatusLabel.setText("<html> <font style='font-weight:bold; color:#a0aaae'>Sirens OFF</u></html>");
     		}else{
     			waveManager.sirensOn=true;
-    			sirenStatusLabel.setText("<html> <font style='font-weight:bold; color:green'>Sirens ON</u></html>");
+    			sirenStatusLabel.setText("<html> <font style='font-weight:bold; color:red'>Sirens ON</u></html>");
     		}
     	}else if(e.getSource().equals(delayDownButton)){
     		waveManager.delay*=0.5;

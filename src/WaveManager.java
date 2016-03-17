@@ -5,8 +5,8 @@ import java.util.concurrent.TimeUnit;
 public class WaveManager {
 	//Objects
 	private static WaveManager waveManager;
-	private GeneralInfoService generalInfoService;
-	private BrakeService brakeService;
+	public GeneralInfoService generalInfoService;
+	public BrakeService brakeService;
 	private EmergencyService emergencyService;
 	private TrafficService trafficService;
 	private Receiver receiver;
@@ -74,9 +74,6 @@ public class WaveManager {
 		if(vehicleType.equals("Emergency")){
 			sirensOn = false;
 		}
-	
-		//Traffic Service
-		//
 		
 		receiver = new Receiver(this,generalInfoService, brakeService, emergencyService, trafficService);
 		
@@ -85,7 +82,6 @@ public class WaveManager {
 		brakeService.start();
 		emergencyService.start();
 		trafficService.start();
-		
 	}
 	
 	//Class Methods

@@ -96,9 +96,6 @@ public class TrafficService extends Service implements Runnable {
 				distToTraffic = calculateDistance(latCluster, lngCluster);
 				speedDiff = speedDifference(speed, speedCluster);				
 				
-				output = "Cluster size: " + sizeCluster + ". Speed: "+speed+". Cluster Speed: "+speedCluster+". Speed Diff: " +  speedDiff+"%";
-				waveManager.userInterface.computedTrafficInfo(output);
-				
 				//If cluster speed is smaller
 				if(speed < speedCluster){
 					trafficLevel = 0;	
@@ -319,7 +316,7 @@ public class TrafficService extends Service implements Runnable {
 					count[1]++;
 				}
 			}
-			
+
 			if(count[0]!=0){
 			spd[0]=spd[0]/count[0];
 			}
