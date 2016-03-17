@@ -5,8 +5,8 @@ import java.util.concurrent.TimeUnit;
 public class WaveManager {
 	//Objects
 	private static WaveManager waveManager;
-	private GeneralInfoService generalInfoService;
-	private BrakeService brakeService;
+	public GeneralInfoService generalInfoService;
+	public BrakeService brakeService;
 	private EmergencyService emergencyService;
 	private TrafficService trafficService;
 	private Receiver receiver;
@@ -35,7 +35,7 @@ public class WaveManager {
 	
 	//Resources
 	public int port = 2222;
-	public int delay = 500;
+	public int delay = 350;
 	public String controlGroup = "230.0.0.1";
 	
 	//Constructor
@@ -79,8 +79,8 @@ public class WaveManager {
 		
 	//Make this recurring and figure out GPS format
 	public void checkGPS(){
-		GPSlattitude = 45.38214;
-		GPSlongitude = -75.68781;
+		GPSlattitude = 45.382620;
+		GPSlongitude = -75.688210;
 	}
 
 	public int checkHeading(){
@@ -106,8 +106,8 @@ public class WaveManager {
 	}
 	
 	public String checkVehicleType(){
-		//String vehicleType = "Emergency";
-		String vehicleType = "Civilian";
+		String vehicleType = "Emergency";
+		//String vehicleType = "Civilian";
 		return vehicleType;
 	}
 

@@ -55,7 +55,6 @@ public class GeneralInfoService extends Service implements Runnable{
 
 				count++;
 			}
-			checkTimestamps();
 		}
 	}
 	
@@ -79,11 +78,10 @@ public class GeneralInfoService extends Service implements Runnable{
 			//Only way to check ahead so far is checking the direction
 			if(checkIfAhead(heading, vehicleLattitude, vehicleLongitude)){
 				if(vehicleSpeed<waveManager.getSpeed()){
-					if(vehicleAheadInfo[0].equals("") || vehicleSpeed<Integer.parseInt(vehicleAheadInfo[1]) && distanceBetweenVehicles<(Double.parseDouble(vehicleAheadInfo[2])+30)){
+					if(vehicleAheadInfo[0].equals("") || vehicleSpeed<Integer.parseInt(vehicleAheadInfo[1]) && distanceBetweenVehicles<(Double.parseDouble(vehicleAheadInfo[2])+30) || vehicleAheadInfo[0].equals(fromCarID)){
 						vehicleAheadInfo[0] = fromCarID;
 						vehicleAheadInfo[1] = ""+vehicleSpeed;
 						vehicleAheadInfo[2] = ""+distanceBetweenVehicles;
-						vehicleAheadTimestamp = System.currentTimeMillis();
 					}
 					
 					int speedDifference = waveManager.getSpeed() - Integer.parseInt(vehicleAheadInfo[1]);
@@ -97,7 +95,7 @@ public class GeneralInfoService extends Service implements Runnable{
 				}
 			}else if(checkIfBehind(heading, vehicleLattitude, vehicleLongitude)){
 				if(vehicleSpeed>waveManager.getSpeed()){
-					if(vehicleBehindInfo[0].equals("") || vehicleSpeed>Integer.parseInt(vehicleAheadInfo[1]) && distanceBetweenVehicles<(Double.parseDouble(vehicleAheadInfo[2])+30)){
+					if(vehicleBehindInfo[0].equals("") || vehicleSpeed>Integer.parseInt(vehicleBehindInfo[1]) && distanceBetweenVehicles<(Double.parseDouble(vehicleBehindInfo[2])+30) || vehicleBehindInfo[0].equals(fromCarID)){
 						vehicleBehindInfo[0] = fromCarID;
 						vehicleBehindInfo[1] = ""+vehicleSpeed;
 						vehicleBehindInfo[2] = ""+distanceBetweenVehicles;
@@ -184,19 +182,17 @@ public class GeneralInfoService extends Service implements Runnable{
 		}
 	}
 	
-	private void checkTimestamps(){
-		if(vehicleAheadTimestamp+2000<System.currentTimeMillis()){
+	public void eraseAheadVehicle(){
 			vehicleAheadInfo[0] = "";
 			vehicleAheadInfo[1] = "";
 			vehicleAheadInfo[2] = "";
-			
-		}
-		if(vehicleBehindTimestamp+2000<System.currentTimeMillis()){
+	}
+	
+	public void eraseBehindVehicle(){
 			vehicleBehindInfo[0] = "";
 			vehicleBehindInfo[1] = "";
 			vehicleBehindInfo[2] = "";
 			
-		}
 	}
 	
 }

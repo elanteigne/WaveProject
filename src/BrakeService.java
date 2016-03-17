@@ -9,8 +9,7 @@ public class BrakeService extends Service implements Runnable{
 	public String serviceGroup = "230.0.0.3";
 	public int messageID = 0;
 	private String output;
-	private String[] vehicleBrakingInfo = {"","",""};
-	private double vehicleBrakingTimestamp = 0;
+	private String[] vehicleBrakingInfo = {"","0","0"};
 	
 	//Constructor
 	public BrakeService(WaveManager waveManager){
@@ -47,7 +46,6 @@ public class BrakeService extends Service implements Runnable{
 					}
 				}
 			}
-			checkTimestamps();
 		}
 	}
 	
@@ -85,11 +83,11 @@ public class BrakeService extends Service implements Runnable{
 
 			//If vehicle ahead is going faster then there is no point in braking
 			if(speedDifference>0){
-				if(vehicleBrakingInfo[0].equals("") || speed<Integer.parseInt(vehicleBrakingInfo[1]) && distanceBetweenVehicles<(Double.parseDouble(vehicleBrakingInfo[2])+30)){
+				
+				if(vehicleBrakingInfo[0].equals("") || distanceBetweenVehicles<Double.parseDouble(vehicleBrakingInfo[2]) || vehicleBrakingInfo[0].equals(fromCarID)){
 					vehicleBrakingInfo[0] = fromCarID;
-					vehicleBrakingInfo[1] = ""+speed;
-					vehicleBrakingInfo[2] = ""+brakeAmount;
-					vehicleBrakingTimestamp = System.currentTimeMillis();
+					vehicleBrakingInfo[1] = ""+brakeAmount;
+					vehicleBrakingInfo[2] = ""+distanceBetweenVehicles;
 				}
 				
 				waveManager.suggestedBrakeAmount = brakeAmount;
@@ -125,7 +123,7 @@ public class BrakeService extends Service implements Runnable{
 						+ " DistanceBetweenVehicles = "+distanceBetweenVehicles+" m, SuggestedBrakeAmount = "+waveManager.suggestedBrakeAmount+"%,"
 						+" AdditionalBrakeAmount = "+waveManager.additionalBrakeAmount+"%, SuggestedBrakeSpeed = '"+waveManager.suggestedBrakeSpeed+"'";
 				waveManager.userInterface.computedBrakeInfo(output);
-				waveManager.userInterface.turnOnBrakeApplied(brakeAmount, (int)distanceBetweenVehicles);
+				waveManager.userInterface.turnOnBrakeApplied(Integer.parseInt(vehicleBrakingInfo[1]), (int)Double.parseDouble(vehicleBrakingInfo[2]));
 			}else{
 				output = "o Calculated: Vehicle ahead is going faster than you, therefore braking is not considered";
 				waveManager.userInterface.computedBrakeInfo(output);
@@ -136,13 +134,11 @@ public class BrakeService extends Service implements Runnable{
 		}
 	}
 
-	private void checkTimestamps(){
-		if(vehicleBrakingTimestamp+2000<System.currentTimeMillis()){
+	public void eraseData(){
 			vehicleBrakingInfo[0] = "";
 			vehicleBrakingInfo[1] = "";
 			vehicleBrakingInfo[2] = "";
 			
-		}
 		
 	}
 }
