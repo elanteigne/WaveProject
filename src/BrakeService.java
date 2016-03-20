@@ -141,6 +141,5 @@ public class BrakeService extends Service implements Runnable{
 			vehicleBrakingInfo[1] = "";
 			vehicleBrakingInfo[2] = "";
 			
-		
 	}
 }

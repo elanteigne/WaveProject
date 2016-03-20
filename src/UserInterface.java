@@ -124,8 +124,8 @@ public class UserInterface implements Runnable, ActionListener{
     private long sirenFlashingTimestamp = 0;
     private long trafficAheadTimestamp = 0;
     
-    private int UIscaleMain = 5;    
-    private int UIscaleDev = 5;    
+    private int UIscaleMain = 6;    
+    private int UIscaleDev = 6;    
     private int InnerTextScaleMain = UIscaleMain+1;
     private int OuterTextScaleMain = InnerTextScaleMain+1;
     private int InnerTextScaleDev = UIscaleDev+1;
@@ -590,7 +590,7 @@ public class UserInterface implements Runnable, ActionListener{
     public void computedTrafficInfo(String outputText){
     	computedTrafficInfo.append(outputText+"\n");
     	trafficComputations ++;
-    	trafficServiceOutputLabel.setText("<html><u>Brake Service Computed Information</u> <font style='color:blue'>Computations:</font>"+trafficComputations+"</html>");
+    	trafficServiceOutputLabel.setText("<html><u>Traffic Service Computed Information</u> <font style='color:blue'>Computations:</font>"+trafficComputations+"</html>");
     }
     
     public void writeCarID(String outputText){
