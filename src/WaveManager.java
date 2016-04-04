@@ -74,7 +74,7 @@ public class WaveManager {
 			sirensOn = false;
 		}
 		
-		receiver = new Receiver(this,services.get(0), services.get(1), services.get(2), services.get(3));
+		receiver = new Receiver(this);
 		
 		receiver.start();
 		for(Service service:services){
