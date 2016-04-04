@@ -5,10 +5,7 @@ import java.util.concurrent.TimeUnit;
 public class WaveManager {
 	//Objects
 	private static WaveManager waveManager;
-	public GeneralInfoService generalInfoService;
-	public BrakeService brakeService;
-	private EmergencyService emergencyService;
-	private TrafficService trafficService;
+	public ArrayList<Service> services;
 	private Receiver receiver;
 	public UserInterface userInterface;
 	
@@ -41,19 +38,20 @@ public class WaveManager {
 	//Constructor
 	public WaveManager(){
 		CarID = "222-222-222-227";
-		vehicleType = checkVehicleType();
-		speed[0] = checkSpeed();
-		brakeAmount = checkBrake();
-		heading = checkHeading();
+		setVehicleType("Civilian");
+		setSpeed(speed[0]);
+		setBrake(100);
+		setHeading(330);
 		headlights = 0; //0 is off, 1 is low-beams, 2 is high-beams
-		checkGPS();	
+		setGPS(45.38375,-75.68896);	
 		
 		//Add dummy vehicles
-		ArrayList<Object> vehicle = new ArrayList<Object>(); 
+		ArrayList<Object> vehicle; 
 		for(int i=0; i < 7; i++){
+			vehicle = new ArrayList<Object>();
 			vehicle.add("222-222-222-20" + i);
 			vehicle.add(330);
-			vehicle.add(50);
+			vehicle.add(this.speed[0]);
 			vehicle.add(GPSlattitude);
 			vehicle.add(GPSlongitude);
 			vehiclesAccountedFor.add(vehicle);
@@ -65,23 +63,23 @@ public class WaveManager {
 		
 		try{ TimeUnit.SECONDS.sleep(1); } catch(Exception e){ }
 		
-		generalInfoService = new GeneralInfoService(this);
-		brakeService = new BrakeService(this);
-		emergencyService = new EmergencyService(this);
-		trafficService = new TrafficService(this);
+		services = new ArrayList<>();
+		services.add(new GeneralInfoService(this));
+		services.add(new BrakeService(this));
+		services.add(new EmergencyService(this));
+		services.add(new TrafficService(this));
 		
 		//Emergency Service
 		if(vehicleType.equals("Emergency")){
 			sirensOn = false;
 		}
 		
-		receiver = new Receiver(this,generalInfoService, brakeService, emergencyService, trafficService);
+		receiver = new Receiver(this,services.get(0), services.get(1), services.get(2), services.get(3));
 		
 		receiver.start();
-		generalInfoService.start();
-		brakeService.start();
-		emergencyService.start();
-		trafficService.start();
+		for(Service service:services){
+			service.start();
+			}
 	}
 	
 	//Class Methods
@@ -89,22 +87,17 @@ public class WaveManager {
 		waveManager = new WaveManager();
 	}
 	
-	//Make this recurring and figure out GPS format
-	public void checkGPS(){
-		//GPSlattitude = 45.382620;
-		//GPSlongitude = -75.688210;
-		GPSlattitude = 45.38375;
-		GPSlongitude = -75.68896;
+	public void setGPS(double lat, double lng){
+		this.GPSlattitude = lat;
+		this.GPSlongitude = lng;
 	}
 
-	public int checkHeading(){
-		int heading = 330; //N
-		return heading;
+	public void setHeading(int heading){
+		this.heading = heading; 
 	}
 	
-	public int checkSpeed(){
-		int speed = this.speed[0];
-		return speed;
+	public void setSpeed(int speed){
+		this.speed[0] = speed;
 	}
 	
 	public synchronized void addSpeed(int speed){
@@ -114,15 +107,12 @@ public class WaveManager {
 		this.speed[0]=speed;
 	}
 	
-	public int checkBrake(){
-		int brakeAmount = 100;
-		return brakeAmount;
+	public void setBrake(int bAmount){
+		this.brakeAmount = bAmount;
 	}
 	
-	public String checkVehicleType(){
-//		String vehicleType = "Emergency";
-		String vehicleType = "Civilian";
-		return vehicleType;
+	public void setVehicleType(String vType){
+		this.vehicleType = vType;
 	}
 
 	public synchronized int getSpeed(){

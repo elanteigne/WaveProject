@@ -1,56 +1,35 @@
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 public class BrakeService extends Service implements Runnable{
 	//Objects
-	private Thread brakeServiceThread;
 
 	//Resources
-	public int delay;
-	public String serviceGroup = "230.0.0.3";
-	public int messageID = 0;
-	private String output;
 	private String[] vehicleBrakingInfo = {"","0","0"};
 
 	//Constructor
 	public BrakeService(WaveManager waveManager){
 		super(waveManager);
-		delay = waveManager.delay;
+		this.updateRunConditions();
+		this.updateMsgDelays();
+		this.serviceGroup = "230.0.0.3";
+		this.threadName = "BrakeService";
+		runAlgorithm = this;
 	}
 
 	//Class Methods
-	public void start(){
-		if(brakeServiceThread==null){
-			brakeServiceThread = new Thread(this, "BrakeService");
-			brakeServiceThread.start();
-		}
+	public void updateRunConditions(){
+		this.runCondition1 = waveManager.getSpeed()>10 && checkBrake();
+		this.runCondition2 = checkBrake();
 	}
-
-	public void run(){
-		while(true){
-			delay = waveManager.delay;
-			if(waveManager.getSpeed()>10){
-				if(checkBrake()){				
-					sendControlMessage();
-					//Wait
-					try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
-
-					int count = 0;
-					while(count<5){
-						if(this.checkBrake()){
-							sendServiceMessage();
-
-							delay = waveManager.delay;
-							//Wait
-							try{ TimeUnit.MILLISECONDS.sleep(delay); } catch(Exception e){ }
-
-							count++;
-						}
-					}
-				}
-			}
-		}
+	
+	public void updateMsgDelays(){
+		this.delay = waveManager.delay;
+		this.controlMsgDelay = delay;
+		this.serviceMsgDelay = delay;
 	}
-
+	
 	public void sendControlMessage(){
 		sendMessage(waveManager.controlGroup, serviceGroup, messageID, "0");
 		messageID++;
@@ -63,6 +42,7 @@ public class BrakeService extends Service implements Runnable{
 		waveManager.userInterface.updateBrakeServicePacketsSent(messageID);
 	}
 
+
 	//The check to see if I send
 	public boolean checkBrake(){
 		if(waveManager.brakeAmount>0){			
@@ -72,26 +52,32 @@ public class BrakeService extends Service implements Runnable{
 	}
 
 	//Method to calculate speed adjustment based on received packets
-	public void computeData(String fromCarID, int heading, int speed, double vehicleLattitude, double vehicleLongitude, int brakeAmount){
+	//brake amount of other vehicles ahead should influence suggested brake amount calculation
+	//Certain weather conditions should affect brake amount calculation by a percentage
+	public void computeData(ArrayList<Object> params){
+		//Parameters
+				String fromCarID = (String) params.get(0);
+				int heading = (int) params.get(1);
+				int speed = (int) params.get(2);
+				double vehicleLattitude = (double) params.get(3);
+				double vehicleLongitude = (double) params.get(4);
+				int brakeAmount = (int) params.get(5);
+				
 		//This should check if it is ahead on the SAME ROAD if possible
-		if(checkIfAhead(heading, vehicleLattitude, vehicleLongitude)){
-			//Distance away affect speed at which you get to desired amount
-			//Speed difference affects the amount of brake that should be pressed
-			//The amount others ahead are breaking should influence how much you need to break
-			//If there are weather conditions it should affect break amount by a certain percentage
-
-			double distanceBetweenVehicles = calculateDistance(vehicleLattitude, vehicleLongitude);
+		if(checkIfAhead(heading, vehicleLattitude, vehicleLongitude)){			
+			//affects speed at which you get to desired brake amount
+			double distanceBetweenVehicles = calculateDistance(vehicleLattitude, vehicleLongitude);	
+			
+			//affects the brake amount that should be applied
 			int speedDifference = waveManager.getSpeed()-speed;
 
 			//If vehicle ahead is going faster then there is no point in braking
 			if(speedDifference>0){
-
 				if(vehicleBrakingInfo[0].equals("") || distanceBetweenVehicles<Double.parseDouble(vehicleBrakingInfo[2]) || vehicleBrakingInfo[0].equals(fromCarID)){
 					vehicleBrakingInfo[0] = fromCarID;
 					vehicleBrakingInfo[1] = ""+brakeAmount;
 					vehicleBrakingInfo[2] = ""+distanceBetweenVehicles;
 				}
-
 				waveManager.suggestedBrakeAmount = brakeAmount;
 
 				//The more of a speed difference there is the more the brake should be applied
@@ -110,7 +96,6 @@ public class BrakeService extends Service implements Runnable{
 				}else{
 					waveManager.additionalBrakeAmount = 40;
 				}
-
 				//The closer the vehicle ahead is the faster the brake should be applied
 				if(distanceBetweenVehicles<50){
 					waveManager.suggestedBrakeSpeed = 4;
@@ -124,23 +109,17 @@ public class BrakeService extends Service implements Runnable{
 				output = "o Calculated: SpeedDifference = "+speedDifference+" km/h, mySpeed = "+waveManager.getSpeed()+" km/h,"+""
 						+ " DistanceBetweenVehicles = "+distanceBetweenVehicles+" m, SuggestedBrakeAmount = "+waveManager.suggestedBrakeAmount+"%,"
 						+" AdditionalBrakeAmount = "+waveManager.additionalBrakeAmount+"%, SuggestedBrakeSpeed = '"+waveManager.suggestedBrakeSpeed+"'";
-				waveManager.userInterface.computedBrakeInfo(output);
 				waveManager.userInterface.turnOnBrakeApplied(Integer.parseInt(vehicleBrakingInfo[1]), (int)Double.parseDouble(vehicleBrakingInfo[2]));
 			}else{
 				output = "o Calculated: Vehicle ahead is going faster than you, therefore braking is not considered";
-				waveManager.userInterface.computedBrakeInfo(output);
 			}
 		}else{
 			output = "o Calculated: Vehicle is not ahead, therefore braking is not considered";
-			waveManager.userInterface.computedBrakeInfo(output);
 		}
+		waveManager.userInterface.computedBrakeInfo(output);
 	}
 
 	public void eraseData(){
-		vehicleBrakingInfo[0] = "";
-		vehicleBrakingInfo[1] = "";
-		vehicleBrakingInfo[2] = "";
-
-
+		Arrays.fill(vehicleBrakingInfo, "");
 	}
 }

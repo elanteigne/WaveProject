@@ -1,7 +1,9 @@
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
+import java.util.ArrayList;
 
 public class UserInterface implements Runnable, ActionListener{
 	//Objects
@@ -9,99 +11,53 @@ public class UserInterface implements Runnable, ActionListener{
 	private Thread userInterfaceThread;    
 	
 	//UI Objects
-	private JFrame mainFrame;
-	private JFrame devFrame;
+	private JFrame mainFrame, devFrame;
+    private JPanel mainPanel,topPanel,buttonPanel,delayPanel,controlsPanel;
+    private JPanel devPanel,outputPanel,otherInfoPanel;
+    private JPanel packetInfoPanel,sentPacketInfoPanel,receivedPacketInfoPanel;
+    private JPanel computedDataPanel,leftComputedDataPanel,rightComputedDataPanel;
+    private JPanel leftPanel,staticDataPanel,calculatedInfoPanel1,sirenInfoPanel;
+    private JPanel centerPanel,variableDataPanel,speedometerPanel;
+    private JPanel rightPanel,calculatedInfoPanel2;
     
-    private JPanel mainPanel;
-    private JPanel devPanel;
-    private JPanel topPanel;
-    private JPanel leftPanel;
-    private JPanel centerPanel;
-    private JPanel rightPanel;
-    private JPanel staticDataPanel;
-    private JPanel variableDataPanel;
-    private JPanel calculatedInfoPanel1;
-    private JPanel calculatedInfoPanel2;
-    private JPanel buttonPanel;
-    private JPanel outputPanel;
-    private JPanel packetInfoPanel;
-    private JPanel otherInfoPanel;
-    private JPanel delayPanel;
-    private JPanel controlsPanel;
-    private JPanel sentPacketInfoPanel;
-    private JPanel receivedPacketInfoPanel;
-    private JPanel computedDataPanel;
-    private JPanel leftComputedDataPanel;
-    private JPanel rightComputedDataPanel;
-    private JPanel speedometerPanel;
-    private JPanel sirenInfoPanel;
+    //Images
+    private final ImageIcon carAheadRed = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\CarAheadRed.png");
+    private final ImageIcon carAheadOrange = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\CarAheadOrange.png");
+    private final ImageIcon carAheadYellow = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\CarAheadYellow.png");
+    private final ImageIcon carBehindRed = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\CarBehindRed.png");
+    private final ImageIcon carBehindOrange = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\CarBehindOrange.png");
+    private final ImageIcon carBehindYellow = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\CarBehindYellow.png");
+    private final ImageIcon brakingRed = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\BrakingRed.png");
+    private final ImageIcon brakingOrange = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\BrakingOrange.png");
+    private final ImageIcon brakingYellow = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\BrakingYellow.png");
+    private final ImageIcon sirenIconOff = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\SirenOff.png");
+    private final ImageIcon sirenIconOn = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\SirenOn.png");
+    private final ImageIcon trafficAheadRed = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\TrafficIconRed.png");
+    private final ImageIcon trafficAheadOrange = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\TrafficIconOrange.png");
+    private final ImageIcon trafficAheadYellow = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\TrafficIconYellow.png");
+    private final ImageIcon backArrow = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\BackArrow.png");
+    private final ImageIcon sirenGrey = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\SirenGrey.png");
+    private final ImageIcon generalInfoGreyAhead = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\GeneralInfoIconGreyUp.png");
+    private final ImageIcon generalInfoGreyBehind = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\GeneralInfoIconGreyDown.png");
+    private final ImageIcon brakingAheadGrey = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\BrakeIconGrey.png");
+    private final ImageIcon trafficIconGrey = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\TrafficIconGrey.png");
     
-    private ImageIcon carAheadRed;
-    private ImageIcon carAheadOrange;
-    private ImageIcon carAheadYellow;
-    private ImageIcon carBehindRed;
-    private ImageIcon carBehindOrange;
-    private ImageIcon carBehindYellow;
-    private ImageIcon brakingRed;
-    private ImageIcon brakingOrange;
-    private ImageIcon brakingYellow;
-    private ImageIcon sirenIconOff;
-    private ImageIcon sirenIconOn;
-    private ImageIcon trafficAheadRed;
-    private ImageIcon trafficAheadOrange;
-    private ImageIcon trafficAheadYellow;
-    private ImageIcon backArrow;
-    private ImageIcon sirenGrey;
-    private ImageIcon generalInfoGreyAhead;
-    private ImageIcon generalInfoGreyBehind;
-    private ImageIcon brakingAheadGrey;
-    private ImageIcon trafficIconGrey;
+    private JLabel carID,vehicleType;
+    private JLabel gps,heading,brakeAmount;
+    private JLabel speed,delay,groupsListeningToLabel; 
+    private JLabel leftPanelLabel,centerPanelLabel,rightPanelLabel,calcInfoLabel;
+    private JLabel generalInfoCarAhead,generalInfoCarAheadSpeed,generalInfoCarBehind,generalInfoCarBehindSpeed,trafficAhead,trafficAheadDistance;
+    private JLabel brakingCarAhead,brakingCarAheadSpeed,emergencySiren;
+    private JLabel emergencySirenDistance,sirenDirection,sirenStatusLabel;
+    private JLabel sender,generalInfoPacketsSent,brakeServicePacketsSent,emergencyServicePacketsSent,trafficServicePacketsSent;
+    private JLabel receiver,numPacketsReceived,numPacketsPassed,numPacketsOmitted;
+    private JLabel generalInfoServiceOutputLabel,emergencyServiceOutputLabel;
+    private JLabel brakeServiceOutputLabel,trafficServiceOutputLabel;
     
-    private JLabel leftPanelLabel;
-    private JLabel centerPanelLabel;
-    private JLabel rightPanelLabel;
-    private JLabel calcInfoLabel;
-    private JLabel carID;
-    private JLabel gps;
-    private JLabel heading;
-    private JLabel speed;
-    private JLabel brakeAmount;
-    private JLabel vehicleType;
-    private JLabel generalInfoCarAhead;
-    private JLabel generalInfoCarAheadSpeed;
-    private JLabel generalInfoCarBehind;
-    private JLabel generalInfoCarBehindSpeed;
-    private JLabel brakingCarAhead;
-    private JLabel brakingCarAheadSpeed;
-    private JLabel trafficAhead;
-    private JLabel trafficAheadDistance;
-    private JLabel emergencySiren;
-    private JLabel emergencySirenDistance;
-    private JLabel generalInfoPacketsSent;
-    private JLabel brakeServicePacketsSent;
-    private JLabel emergencyServicePacketsSent;
-    private JLabel trafficServicePacketsSent;
-    private JLabel numPacketsReceived;
-    private JLabel numPacketsPassed;
-    private JLabel numPacketsOmitted;
-    private JLabel sender;
-    private JLabel receiver;
-    private JLabel delay;
-    private JLabel groupsListeningToLabel;
-    private JLabel generalInfoServiceOutputLabel;
-    private JLabel brakeServiceOutputLabel;
-    private JLabel emergencyServiceOutputLabel;
-    private JLabel trafficServiceOutputLabel;
-    private JLabel sirenDirection;
-    private JLabel sirenStatusLabel;
-    
-    private JButton speedUpButton;
-    private JButton speedDownButton;
-    private JButton brakeUpButton;
-    private JButton brakeDownButton;
     private JButton sirenButton;
-    private JButton delayDownButton;
-    private JButton delayUpButton;
+    private JButton speedUpButton,speedDownButton;
+    private JButton brakeUpButton,brakeDownButton;
+    private JButton delayDownButton,delayUpButton;
 
     private JTextArea output;
     private JScrollPane consoleScroll;
@@ -209,27 +165,6 @@ public class UserInterface implements Runnable, ActionListener{
 	   brakeDownButton.addActionListener(this);
 	   sirenButton.addActionListener(this);
 	   
-	   //Images
-	   carAheadRed = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\CarAheadRed.png");
-	   carAheadOrange = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\CarAheadOrange.png");
-	   carAheadYellow = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\CarAheadYellow.png");
-	   carBehindRed = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\CarBehindRed.png");
-	   carBehindOrange = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\CarBehindOrange.png");
-	   carBehindYellow = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\CarBehindYellow.png");
-	   brakingRed = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\BrakingRed.png");
-	   brakingOrange = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\BrakingOrange.png");
-	   brakingYellow = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\BrakingYellow.png");
-	   sirenIconOff = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\SirenOff.png");
-	   sirenIconOn = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\SirenOn.png");
-	   trafficAheadRed = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\TrafficIconRed.png");
-	   trafficAheadOrange = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\TrafficIconOrange.png");
-	   trafficAheadYellow = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\TrafficIconYellow.png");
-	   backArrow = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\BackArrow.png");
-	   generalInfoGreyAhead = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\GeneralInfoIconGreyUp.png");
-	   generalInfoGreyBehind = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\GeneralInfoIconGreyDown.png");
-	   brakingAheadGrey = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\BrakeIconGrey.png");
-	   sirenGrey = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\SirenGrey.png");
-	   trafficIconGrey = new ImageIcon("C:\\Users\\DavidJF\\Google Drive\\myWorkspace\\WaveProject\\images\\TrafficIconGrey.png");
 	   
 	   //Labels
 	   leftPanelLabel = new JLabel("<html><u>Vehicle Info</u></html>");
@@ -269,13 +204,10 @@ public class UserInterface implements Runnable, ActionListener{
 			public void paintComponent(Graphics g) {
 				Graphics2D g2d = (Graphics2D) g;
 				currentSpeed = waveManager.speed[0];
-
 				g2d.fill(new Ellipse2D.Double(5, 5, width, height));
 				g2d.setStroke(new BasicStroke(3,BasicStroke.CAP_ROUND,BasicStroke.JOIN_MITER));
-
 				g2d.setColor(Color.BLUE);
 				g2d.draw(new Ellipse2D.Double(5, 5, width, height));
-
 				g2d.setColor(Color.WHITE);
 				for(int i=0; i<250;i+=20){
 					points = this.getCoordXY(i, width, height);
@@ -285,13 +217,10 @@ public class UserInterface implements Runnable, ActionListener{
 						g2d.drawString(""+i,(int)(points[0]-1*width/32),(int)(points[1]+1*width/32));
 					}
 				}
-				
-				//Find points for tick reference
+				//Find needle reference point
 				points = this.getCoordNeedle(currentSpeed, width, height);
-
 				g2d.setColor(Color.RED);
-				g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, points[0], points[1]); 
-				
+				g2d.drawLine(width/2 + (int) 5, height/2 + (int) 5, points[0], points[1]); 	
 			}
 		};
 	   brakeAmount = new JLabel("Brake Amount: -");
@@ -584,13 +513,13 @@ public class UserInterface implements Runnable, ActionListener{
     public void computedEmergencyInfo(String outputText){
     	computedEmergencyInfo.append(outputText+"\n");
     	emergencyComputations ++;
-    	emergencyServiceOutputLabel.setText("<html><u>Brake Service Computed Information</u> <font style='color:blue'>Computations:</font>"+emergencyComputations+"</html>");
+    	emergencyServiceOutputLabel.setText("<html><u>Emergency Service Computed Information</u> <font style='color:blue'>Computations:</font>"+emergencyComputations+"</html>");
     }
 
     public void computedTrafficInfo(String outputText){
     	computedTrafficInfo.append(outputText+"\n");
     	trafficComputations ++;
-    	trafficServiceOutputLabel.setText("<html><u>Brake Service Computed Information</u> <font style='color:blue'>Computations:</font>"+trafficComputations+"</html>");
+    	trafficServiceOutputLabel.setText("<html><u>Traffic Service Computed Information</u> <font style='color:blue'>Computations:</font>"+trafficComputations+"</html>");
     }
     
     public void writeCarID(String outputText){
@@ -704,19 +633,19 @@ public class UserInterface implements Runnable, ActionListener{
     		generalInfoCarAhead.setIcon(generalInfoGreyAhead);
 	    	generalInfoCarAheadSpeed.setVisible(false);
     		carAheadIconTimestamp=0;
-			waveManager.generalInfoService.eraseAheadVehicle();
+			((GeneralInfoService) waveManager.services.get(0)).eraseAheadVehicle();
     	}
 		if(carBehindIconTimestamp!=0 && carBehindIconTimestamp+5000<currentTime){
 			generalInfoCarBehind.setIcon(generalInfoGreyBehind);
 	    	generalInfoCarBehindSpeed.setVisible(false);
 			carBehindIconTimestamp=0;
-			waveManager.generalInfoService.eraseBehindVehicle();
+			((GeneralInfoService) waveManager.services.get(0)).eraseBehindVehicle();
 		}
 		if(brakeIconTimestamp!=0 && brakeIconTimestamp+4000<currentTime){
 			brakingCarAhead.setIcon(brakingAheadGrey);
 			brakingCarAheadSpeed.setVisible(false);
 			brakeIconTimestamp=0;
-			waveManager.brakeService.eraseData();
+			((BrakeService) waveManager.services.get(1)).eraseData();
 		}
 		if(sirenIconTimestamp!=0 && sirenIconTimestamp+2000<currentTime){
 			emergencySiren.setIcon(sirenGrey);
@@ -768,10 +697,16 @@ public class UserInterface implements Runnable, ActionListener{
     	if(e.getSource().equals(speedUpButton)){
     		if(waveManager.speed[0]>=0&&waveManager.speed[0]<240){
         		waveManager.addSpeed(waveManager.speed[0]+=10);
+        		for(ArrayList<Object> vehicle : this.waveManager.vehiclesAccountedFor){
+        			vehicle.set(2, waveManager.speed[0]);
+        		}
     		}
     	}else if(e.getSource().equals(speedDownButton)){
     		if(waveManager.speed[0]>0&&waveManager.speed[0]<=240){
         		waveManager.addSpeed(waveManager.speed[0]-=10);
+        		for(ArrayList<Object> vehicle : this.waveManager.vehiclesAccountedFor){
+        			vehicle.set(2, waveManager.speed[0]);
+        		}
     		}
     	}else if(e.getSource().equals(brakeUpButton)){
     		if(waveManager.brakeAmount>=0&&waveManager.brakeAmount<100){
