@@ -1,15 +1,11 @@
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.ArrayList;
 
 public class Receiver implements Runnable{
 	//Object
-	private Thread receiverThread;
-	private GeneralInfoService generalInfoService;
-	private BrakeService brakeService;
-	private EmergencyService emergencyService;
-	private TrafficService trafficService;
-	
+	private Thread receiverThread;	
 	private MulticastSocket listener;
 	private MulticastSocket passAlongProcess;
 	public WaveManager waveManager;
@@ -30,13 +26,8 @@ public class Receiver implements Runnable{
 												{"", "", ""}, {"", "", ""}, {"", "", ""}, {"", "", ""}};
 	
 	//Constructor
-	public Receiver(WaveManager waveManager, GeneralInfoService generalInfoService, BrakeService brakeService, EmergencyService emergencyService, TrafficService trafficService){
+	public Receiver(WaveManager waveManager){
 		this.waveManager=waveManager;
-		this.generalInfoService=generalInfoService;
-		this.brakeService=brakeService;
-		this.emergencyService=emergencyService;
-		this.trafficService=trafficService;
-		
 		numPacketsReceived = 0;
 		numPacketsPassed = 0;
 		numPacketsOmitted = 0;
@@ -100,30 +91,34 @@ public class Receiver implements Runnable{
 			double vehicleLattitude = Double.parseDouble(strings[7]);
 			double vehicleLongitude = Double.parseDouble(strings[8]);
 			
-			//Commented for testing purposes
+			ArrayList<Object> CDparams = new ArrayList<Object>();
+			
+			//Open packet and pass to respective service
 			if(!(strings[0].equals(waveManager.CarID))){
-			//if(fromCarID.equals(waveManager.CarID)){
 				if(receivedMessagePreviously(fromCarID, messageID, messageGroup)){
-					
-					//The order of these is where PRIORITIES take place
-					if(fromGroup.equals(emergencyService.serviceGroup)){
+					if(fromGroup.equals(((EmergencyService) waveManager.services.get(2)).serviceGroup)){
 						output = "+ Received *EmergencyService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Sirens 'On', Heading:'"+heading+"', Speed: "+vehicleSpeed+" km/h, HopCount = "+hopCount;
 						waveManager.userInterface.output(output);
 						
-						emergencyService.computeData(heading, vehicleLattitude, vehicleLongitude);
-					}else if(fromGroup.equals(brakeService.serviceGroup)){
+						CDparams.add(heading); CDparams.add(vehicleLattitude); CDparams.add(vehicleLongitude);
+						((EmergencyService) waveManager.services.get(2)).computeData(CDparams);
+						CDparams.clear();
+					}else if(fromGroup.equals(((BrakeService) waveManager.services.get(1)).serviceGroup)){
 						int brakeAmount = Integer.parseInt(strings[9]);
-						
 						output = "+ Received *BrakeService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed: "+vehicleSpeed+" km/h, BrakeAmount: "+brakeAmount+"%, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Heading:'"+heading+"', HopCount = "+hopCount;
 						waveManager.userInterface.output(output);
 						
-						brakeService.computeData(fromCarID, heading, vehicleSpeed, vehicleLattitude, vehicleLongitude, brakeAmount);
-					}else if(fromGroup.equals(generalInfoService.serviceGroup)){
+						CDparams.add(fromCarID); CDparams.add(heading); CDparams.add(vehicleSpeed); CDparams.add(vehicleLattitude);CDparams.add(vehicleLongitude);
+						CDparams.add(brakeAmount);
+						((BrakeService) waveManager.services.get(1)).computeData(CDparams);
+						CDparams.clear();
+					}else if(fromGroup.equals(((GeneralInfoService) waveManager.services.get(0)).serviceGroup)){
 						output = "+ Received *GeneralInfoService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+vehicleSpeed+" km/h, Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Heading:'"+heading+"', HopCount = "+hopCount;
 						waveManager.userInterface.output(output);
-										
-						generalInfoService.computeData(fromCarID, heading, vehicleSpeed, vehicleLattitude, vehicleLongitude);
-					}else if(fromGroup.equals(trafficService.serviceGroup)){
+						CDparams.add(fromCarID); CDparams.add(heading); CDparams.add(vehicleSpeed); CDparams.add(vehicleLattitude);CDparams.add(vehicleLongitude);
+						((GeneralInfoService) waveManager.services.get(0)).computeData(CDparams);
+						CDparams.clear();
+					}else if(fromGroup.equals(((TrafficService) waveManager.services.get(3)).serviceGroup)){
 					
 						int directionCluster = Integer.parseInt(strings[9]);
 						int speedCluster = Integer.parseInt(strings[10]);
@@ -131,8 +126,9 @@ public class Receiver implements Runnable{
 						
 						output = "+ Received *TrafficService* messageID '"+messageID+"' from CarID:'"+fromCarID+"': Speed:'"+vehicleSpeed+"': Direction:'"+directionCluster*22.5+"': Speed:'"+speedCluster+"': Size:'"+sizeCluster+"' Lattitude:'"+vehicleLattitude+"' Longitude:'"+vehicleLongitude+"', Heading:'"+heading+"', HopCount = "+hopCount;
 						waveManager.userInterface.output(output);
-						
-						trafficService.computeData(directionCluster, speedCluster, sizeCluster, vehicleLattitude, vehicleLongitude);
+						CDparams.add(directionCluster); CDparams.add(speedCluster); CDparams.add(sizeCluster); CDparams.add(vehicleLattitude);CDparams.add(vehicleLongitude);
+						((TrafficService) waveManager.services.get(3)).computeData(CDparams);
+						CDparams.clear();
 					}else{
 						output = "+ Received *Control* message advertising '"+messageGroup+"' from CarID '"+fromCarID+"'";
 						waveManager.userInterface.output(output);
@@ -156,9 +152,9 @@ public class Receiver implements Runnable{
 						}
 					}
 
-					//DECIDE IF CONTROL MESSAGES SHOULD BE PASSED HERE
+					//Check if HopCount is low enough to pass message again
 					if(hopCount < maxHopCount){
-						if(fromGroup.equals(brakeService.serviceGroup)){
+						if(fromGroup.equals(((BrakeService) waveManager.services.get(1)).serviceGroup)){
 							passAlongMessage(fromCarID, fromGroup, messageID, hopCount, messageGroup, heading, vehicleSpeed, vehicleLattitude, vehicleLongitude, strings[9]);
 						}else{
 							passAlongMessage(fromCarID, fromGroup, messageID, hopCount, messageGroup, heading, vehicleSpeed, vehicleLattitude, vehicleLongitude, "");
@@ -205,7 +201,7 @@ public class Receiver implements Runnable{
 	}
 
 	private void passAlongMessage(String fromCarID, String fromGroup, String messageID, int hopCount, String messageGroup, int heading,  int vehicleSpeed, double vehicleLattitude, double vehicleLongitudeString, String data){
-		if(fromGroup.equals(trafficService.serviceGroup) || fromGroup.equals(emergencyService.serviceGroup)){
+		if(fromGroup.equals(((TrafficService) waveManager.services.get(3)).serviceGroup) || fromGroup.equals(((EmergencyService) waveManager.services.get(2)).serviceGroup)){
 			try{
 				passAlongProcess = new MulticastSocket();
 				
@@ -233,7 +229,6 @@ public class Receiver implements Runnable{
 		for(int i=0; i<8; i++){
 			if(recentlyReceivedMessages[i][0].equals(fromCarID)&&recentlyReceivedMessages[i][1].equals(messageID)&&recentlyReceivedMessages[i][2].equals(fromGroup)){
 				numPacketsOmitted++;
-				//waveManager.userInterface.computedGeneralInfo(">>>>>> omitted traffic! ");
 				waveManager.userInterface.updateNumPacketsOmitted(numPacketsOmitted);
 				
 				output = "X Recently received message '"+messageID+"' from carID '"+fromCarID+"' on service channel '"+fromGroup+"'. Omit message";
